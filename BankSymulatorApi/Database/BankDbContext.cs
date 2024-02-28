@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BankSymulatorApi.Models;
 using System.Security.Cryptography.Xml;
+using Microsoft.AspNetCore.Identity;
 
 namespace BankSymulatorApi.Database
 {
@@ -17,7 +18,8 @@ namespace BankSymulatorApi.Database
             // .IsUnique();
             //modelBuilder.Entity<ContactSubCategory>().HasIndex(c => c.ContactSubCategoryId).IsUnique();
         }
-        public DbSet<User> Users => Set<User>();
+        public DbSet<User> Users { get; set; }
+        public DbSet<IdentityRole> Roles { get; set; }
         public DbSet<Account> Accounts => Set<Account>();
         public DbSet<Transfer> Transfers => Set<Transfer>();
     }

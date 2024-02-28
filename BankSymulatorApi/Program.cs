@@ -1,11 +1,13 @@
 
 using BankSymulatorApi.Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using BankSymulatorApi.Models;
 namespace BankSymulatorApi
 {
     public class Program
@@ -14,11 +16,10 @@ namespace BankSymulatorApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             var services = builder.Services;
 
+
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<BankDbContext>(options =>
@@ -31,14 +32,18 @@ namespace BankSymulatorApi
              {
                  options.TokenValidationParameters = new TokenValidationParameters
                  {
-                     ValidateIssuer = true,
-                     ValidateAudience = true,
+                     //ValidateIssuer = true,
+                     //ValidateAudience = true,
                      ValidateIssuerSigningKey = true,
-                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                     ValidAudience = builder.Configuration["Jwt:Audience"],
+                     //ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                     //ValidAudience = builder.Configuration["Jwt:Audience"],
                      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                  };
              });
+            //builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<BankDbContext>();
+            builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<BankDbContext>()
+    .AddDefaultTokenProviders();
 
             var app = builder.Build();
      

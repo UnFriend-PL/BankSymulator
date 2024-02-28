@@ -1,17 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace BankSymulatorApi.Models
 {
-    public class User
+    public class User : IdentityUser
     {
-        [Key]
-        public int UserId { get; set; }
-        public string Name { get; set; }
         public string Surname { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public int Phone { get; set; }
         public DateTime BirthDate { get; set; }
-
+        public string Address { get; set; }
     }
+
 }

@@ -6,7 +6,7 @@ namespace BankSymulatorApi.Models
     public class Account
     {
         [Key]
-        public int AccountId { get; set; }
+        public string AccountId { get; set; }
 
         [ForeignKey("UserId")]
         public int OwnerId { get; set; }
