@@ -1,6 +1,8 @@
 ﻿using BankSymulatorApi.Database;
 using BankSymulatorApi.Models;
+using BankSymulatorApi.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankSymulatorApi.Services
 {
@@ -31,6 +33,25 @@ namespace BankSymulatorApi.Services
             {
                 return false;
             }
+        }
+
+        public async Task<List<AccountDto>> GetAccountsByUserIdAsync(string userId)
+        {
+            var accounts = await _context.Accounts
+                .Where(a => a.OwnerId == userId)
+                .Select(a => new AccountDto
+                {
+                    AccountId = a.AccountId,
+                    OwnerId = a.OwnerId,
+                    AccountNumber = a.AccountNumber,
+                    Name = a.Name,
+                    Balance = a.Balance,
+                    IsActive = a.IsActive,
+                    IsSaveAccount = a.IsSaveAccount
+                })
+                .ToListAsync();
+
+            return accounts;
         }
     }
 }
