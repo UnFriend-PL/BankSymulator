@@ -13,10 +13,18 @@ namespace BankSymulatorApi.Database
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<User>()
-            // .HasIndex(u => u.Email)
-            // .IsUnique();
-            //modelBuilder.Entity<ContactSubCategory>().HasIndex(c => c.ContactSubCategoryId).IsUnique();
+            modelBuilder.Entity<User>()
+             .HasIndex(u => u.Email)
+             .IsUnique();
+            modelBuilder.Entity<Account>()
+               .Property(a => a.AccountId)
+               .ValueGeneratedOnAdd()
+               .IsRequired();
+
+         modelBuilder.Entity<Transfer>()
+         .Property(t => t.TransferId)
+         .ValueGeneratedOnAdd()
+         .IsRequired();
         }
         public DbSet<User> Users { get; set; }
         public DbSet<IdentityRole> Roles { get; set; }

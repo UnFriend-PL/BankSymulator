@@ -1,4 +1,6 @@
 ﻿using BankSymulatorApi.Models;
+using BankSymulatorApi.Models.DTO;
+using BankSymulatorApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -16,27 +18,20 @@ public class UserController : ControllerBase
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IConfiguration _configuration;
-
-    public UserController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration)
+    private readonly IUserService _userService;
+    public UserController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration, IUserService userService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
+        _userService = userService;
+
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterModel model)
+    public async Task<IActionResult> Register([FromBody] RegisterDto model)
     {
-        var user = new User
-        {
-            UserName = model.Email,
-            Email = model.Email,
-            Surname = model.Surname,
-            BirthDate = model.BirthDate,
-            Address = model.Address
-        };
-
-        var result = await _userManager.CreateAsync(user, model.Password);
+        var result = await _userService.CreateUserAsync(model);
 
         if (result.Succeeded)
         {
@@ -47,47 +42,15 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginModel model)
+    public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
-        var user = await _userManager.FindByEmailAsync(model.Email);
+        var result = await _userService.LoginAsync(model);
 
-        if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+        if (result.Success)
         {
-            var claims = new[]
-            {
-    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-};
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpirationInMinutes"])),
-                signingCredentials: creds
-            );
-
-            return Ok(new { Token = new JwtSecurityTokenHandler().WriteToken(token) });
+            return Ok(new { Token = result.Token });
         }
 
-        return Unauthorized(new { Message = "Invalid login attempt." });
+        return Unauthorized(new { Message = "Invalid login attempt.", Errors = result.Errors });
     }
-}
-
-public class RegisterModel
-{
-    public string Name { get; set; }
-    public string Surname { get; set; }
-    public int PhoneNumber { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public DateTime BirthDate { get; set; }
-    public string Address { get; set; }
-}
-
-public class LoginModel
-{
-    public string Email { get; set; }
-    public string Password { get; set; }
 }

@@ -6,7 +6,7 @@ namespace BankSymulatorApi.Models
     public class Transfer
     {
         [Key]
-        public int TransferId { get; set; }
+        public string TransferId { get; set; }
         public int TransferType { get; set; } = 0;
         public float TransferAmount { get; set; }
         public float TransferFee { get; set; } = 0.5f;

@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using BankSymulatorApi.Models;
+using BankSymulatorApi.Services;
 namespace BankSymulatorApi
 {
     public class Program
@@ -40,10 +41,11 @@ namespace BankSymulatorApi
                      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                  };
              });
-            //builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<BankDbContext>();
             builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<BankDbContext>()
     .AddDefaultTokenProviders();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAccountService, AccountService>();
 
             var app = builder.Build();
      
