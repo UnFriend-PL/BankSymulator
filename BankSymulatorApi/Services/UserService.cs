@@ -46,12 +46,15 @@ namespace BankSymulatorApi.Services
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
 
+
+
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var claims = new[]
                 {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email)
             };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
