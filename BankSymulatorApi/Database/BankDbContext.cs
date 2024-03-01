@@ -27,11 +27,15 @@ namespace BankSymulatorApi.Database
          .IsRequired();
 
             modelBuilder.Entity<Deposit>().Property(d => d.DepositId).ValueGeneratedOnAdd().IsRequired();
+
+        modelBuilder.Entity<Contributor>().Property(c => c.ContributorId).ValueGeneratedOnAdd().IsRequired();   
         }
         public DbSet<User> Users { get; set; }
         public DbSet<IdentityRole> Roles { get; set; }
         public DbSet<Account> Accounts => Set<Account>();
         public DbSet<Transfer> Transfers => Set<Transfer>();
         public DbSet<Deposit> Deposits => Set<Deposit>();
+        public DbSet<Contributor> Contributors => Set<Contributor>();
     }
+
 }

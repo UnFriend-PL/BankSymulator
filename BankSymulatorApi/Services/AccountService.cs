@@ -1,8 +1,10 @@
 ﻿using BankSymulatorApi.Database;
+using BankSymulatorApi.Migrations;
 using BankSymulatorApi.Models;
 using BankSymulatorApi.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BankSymulatorApi.Services
 {
@@ -16,7 +18,7 @@ namespace BankSymulatorApi.Services
         }
 
 
-        public async Task<bool> CreateAccountAsync(User user, string? currency)
+        public async Task<bool> CreateAccountAsync(User user, string currency)
         {
             try
             {
@@ -26,7 +28,7 @@ namespace BankSymulatorApi.Services
                     OwnerId = user.Id,
                     AccountNumber = Guid.NewGuid().ToString(),
                     Currency = currency
-                   
+
                 };
                 await _context.Accounts.AddAsync(account);
                 await _context.SaveChangesAsync();
@@ -60,21 +62,66 @@ namespace BankSymulatorApi.Services
 
         public async Task<bool> DepositAsync(DepositDto model, string AccountNumber)
         {
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.AccountNumber);
-            if (account == null)
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
             {
+                var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.AccountNumber);
+
+                if (account == null)
+                {
+                    return false;
+                }
+
+                var contributor = await _context.Contributors.FirstOrDefaultAsync(c => c.Pesel == model.Contributor.Pesel);
+
+                if (contributor == null)
+                {
+                    contributor = await AddNewContributorAsync(model.Contributor);
+                }
+
+                var deposit = new Deposit
+                {
+                    AccountNumber = model.AccountNumber,
+                    Amount = model.Amount,
+                    DepositTime = DateTime.Now,
+                    ContributorId = contributor.ContributorId
+                };
+
+                await _context.Deposits.AddAsync(deposit);
+                account.Balance += model.Amount;
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                await transaction.RollbackAsync();
+                Console.WriteLine(e.Message);
                 return false;
             }
-            var deposit = new Deposit
+        }
+
+        private async Task<Contributor> AddNewContributorAsync(ContributorDto contributorDto)
+        {
+            var contributor = new Contributor
             {
-                AccountNumber = model.AccountNumber,
-                Amount = model.Amount,
-                DepositTime = DateTime.Now
+                Pesel = contributorDto.Pesel,
+                Name = contributorDto.Name,
+                Surname = contributorDto.Surname,
+                Email = contributorDto.Email,
+                PhoneNumber = contributorDto.PhoneNumber,
+                Address = contributorDto.Address
             };
-            await _context.Deposits.AddAsync(deposit);
-            account.Balance += model.Amount;
+
+            await _context.Contributors.AddAsync(contributor);
             await _context.SaveChangesAsync();
-            return true;
+
+            contributor = await _context.Contributors.FirstOrDefaultAsync(u => u.Pesel == contributorDto.Pesel);
+
+            return contributor;
         }
     }
 }
