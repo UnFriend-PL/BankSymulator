@@ -37,7 +37,7 @@ namespace BankSymulatorApi.Services
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                await _accountService.CreateAccountAsync(user);
+                await _accountService.CreateAccountAsync(user, "PLN");
             }
             return result;
         }

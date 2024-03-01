@@ -28,11 +28,16 @@ namespace BankSymulatorApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("AccountNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("Balance")
                         .HasColumnType("real");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -53,13 +58,32 @@ namespace BankSymulatorApi.Migrations
                     b.ToTable("Accounts");
                 });
 
+            modelBuilder.Entity("BankSymulatorApi.Models.Deposit", b =>
+                {
+                    b.Property<string>("DepositId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Amount")
+                        .HasColumnType("real");
+
+                    b.Property<DateTime>("DepositTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("DepositId");
+
+                    b.ToTable("Deposits");
+                });
+
             modelBuilder.Entity("BankSymulatorApi.Models.Transfer", b =>
                 {
-                    b.Property<int>("TransferId")
+                    b.Property<string>("TransferId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TransferId"));
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("FromAccountId")
                         .HasColumnType("int");

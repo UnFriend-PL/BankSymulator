@@ -17,15 +17,30 @@ namespace BankSymulatorApi.Migrations
                 {
                     AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     OwnerId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AccountNumber = table.Column<int>(type: "int", nullable: false),
+                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Balance = table.Column<float>(type: "real", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsSaveAccount = table.Column<bool>(type: "bit", nullable: false)
+                    IsSaveAccount = table.Column<bool>(type: "bit", nullable: false),
+                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Accounts", x => x.AccountId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Deposits",
+                columns: table => new
+                {
+                    DepositId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Amount = table.Column<float>(type: "real", nullable: false),
+                    DepositTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Deposits", x => x.DepositId);
                 });
 
             migrationBuilder.CreateTable(
@@ -46,8 +61,7 @@ namespace BankSymulatorApi.Migrations
                 name: "Transfers",
                 columns: table => new
                 {
-                    TransferId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransferId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     TransferType = table.Column<int>(type: "int", nullable: false),
                     TransferAmount = table.Column<float>(type: "real", nullable: false),
                     TransferFee = table.Column<float>(type: "real", nullable: false),
@@ -104,6 +118,9 @@ namespace BankSymulatorApi.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Accounts");
+
+            migrationBuilder.DropTable(
+                name: "Deposits");
 
             migrationBuilder.DropTable(
                 name: "Roles");

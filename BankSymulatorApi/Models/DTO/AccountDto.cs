@@ -7,10 +7,11 @@ namespace BankSymulatorApi.Models.DTO
     {
         public string AccountId { get; set; }
         public string OwnerId { get; set; }
-        public int AccountNumber { get; set; }
+        public string AccountNumber { get; set; }
         public string Name { get; set; }
         public float Balance { get; set; }
         public bool IsActive { get; set; }
         public bool IsSaveAccount { get; set; } = false;
+        public string currency { get; set; }
     }
 }

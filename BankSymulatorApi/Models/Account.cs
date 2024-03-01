@@ -10,13 +10,14 @@ namespace BankSymulatorApi.Models
 
         [ForeignKey("UserId")]
         public string OwnerId { get; set; }
-        public int AccountNumber { get; set; }
+        public string AccountNumber { get; set; }
         public string Name { get; set; }
         public float Balance { get; set; } = 0f;
         public bool IsActive { get; set; } = true;
         public bool IsSaveAccount { get; set; } = false;
+        public string Currency { get; set; } = "PLN";
         public Account() { }
-        public Account(string accountId, string ownerId, int accountNumber, string name, float balance, bool isActive, bool isSaveAccount)
+        public Account(string accountId, string ownerId, string accountNumber, string name, float balance, bool isActive, bool isSaveAccount, string currency)
         {
             AccountId = accountId;
             OwnerId = ownerId;
@@ -25,6 +26,7 @@ namespace BankSymulatorApi.Models
             Balance = balance;
             IsActive = isActive;
             IsSaveAccount = isSaveAccount;
+            Currency = currency;
         }
        
     }

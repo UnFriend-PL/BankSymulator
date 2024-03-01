@@ -16,14 +16,17 @@ namespace BankSymulatorApi.Services
         }
 
 
-        public async Task<bool> CreateAccountAsync(User user)
+        public async Task<bool> CreateAccountAsync(User user, string? currency)
         {
             try
             {
                 Account account = new Account
                 {
                     Name = "Main Account",
-                    OwnerId = user.Id
+                    OwnerId = user.Id,
+                    AccountNumber = Guid.NewGuid().ToString(),
+                    Currency = currency
+                   
                 };
                 await _context.Accounts.AddAsync(account);
                 await _context.SaveChangesAsync();
@@ -47,11 +50,31 @@ namespace BankSymulatorApi.Services
                     Name = a.Name,
                     Balance = a.Balance,
                     IsActive = a.IsActive,
-                    IsSaveAccount = a.IsSaveAccount
+                    IsSaveAccount = a.IsSaveAccount,
+                    currency = a.Currency
                 })
                 .ToListAsync();
 
             return accounts;
+        }
+
+        public async Task<bool> DepositAsync(DepositDto model, string AccountNumber)
+        {
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.AccountNumber);
+            if (account == null)
+            {
+                return false;
+            }
+            var deposit = new Deposit
+            {
+                AccountNumber = model.AccountNumber,
+                Amount = model.Amount,
+                DepositTime = DateTime.Now
+            };
+            await _context.Deposits.AddAsync(deposit);
+            account.Balance += model.Amount;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
