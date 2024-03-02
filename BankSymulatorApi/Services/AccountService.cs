@@ -150,6 +150,15 @@ namespace BankSymulatorApi.Services
                     }
 
                     account.Balance -= model.Amount;
+
+                    var withdraw = new Withdraw
+                    {
+                        AccountNumber = model.AccountNumber,
+                        Amount = model.Amount,
+                        WithdrawTime = DateTime.Now,
+                        BalanceAfterOperation = account.Balance
+                    };
+                    await _context.Withdraws.AddAsync(withdraw);
                     await _context.SaveChangesAsync();
 
                     transaction.Commit();

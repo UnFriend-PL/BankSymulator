@@ -6,5 +6,6 @@
         public string AccountNumber { get; set; }
         public float Amount { get; set;}
         public float BalanceAfterOperation { get; set; }
+        public DateTime WithdrawTime { get; set; }
     }
 }
