@@ -1,10 +1,7 @@
 ﻿using BankSymulatorApi.Database;
-using BankSymulatorApi.Migrations;
 using BankSymulatorApi.Models;
 using BankSymulatorApi.Models.DTO;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BankSymulatorApi.Services
 {

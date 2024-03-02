@@ -31,7 +31,8 @@ namespace BankSymulatorApi.Services
                 BirthDate = model.BirthDate,
                 Address = model.Address,
                 PhoneNumber = model.PhoneNumber,
-                Name = model.Name
+                Name = model.Name,
+                Pesel = model.Pesel,
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);

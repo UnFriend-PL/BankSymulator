@@ -64,5 +64,6 @@ namespace BankSymulatorApi.Controllers
             }
             return BadRequest(new { Message = "Deposit failed." });
         }
+
     }
 }
