@@ -53,7 +53,7 @@ namespace BankSymulatorApi.Controllers
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpPost("DepositAsync")]
+        [HttpPut("DepositAsync")]
         public async Task<IActionResult> DepositAsync([FromBody] DepositDto model)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -63,6 +63,23 @@ namespace BankSymulatorApi.Controllers
                 return Ok(new { Message = "Deposit successful!" });
             }
             return BadRequest(new { Message = "Deposit failed." });
+        }
+
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPut("WithdrawAsync")]
+        public async Task<IActionResult> WithdrawAsync([FromBody] WithdrawDto model)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(userId == null)
+            {
+                return BadRequest(new { Message = "User not found. Cant identify. try relogin" });
+            }
+            var result = await _accountService.WithdrawAsync(model, userId);
+            if (result)
+            {
+                return Ok(new { Message = "Withdraw successful!" });
+            }
+            return BadRequest(new { Message = "Withdraw failed." });
         }
 
     }

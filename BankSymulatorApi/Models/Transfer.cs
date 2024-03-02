@@ -17,5 +17,7 @@ namespace BankSymulatorApi.Models
         public int ToAccountId { get; set; }
         public string Message { get; set; }
         public bool IsCompleted { get; set; }
+        public float BalanceAfterOperation { get; set; }
+
     }
 }
