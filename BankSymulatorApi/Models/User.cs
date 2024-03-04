@@ -9,6 +9,6 @@ namespace BankSymulatorApi.Models
         public DateTime BirthDate { get; set; }
         public string Address { get; set; }
         public string Pesel { get; set; }
-}
+    }
 
 }
