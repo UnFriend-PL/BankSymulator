@@ -1,14 +1,28 @@
 .navbar {
     display: flex;
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    left: 0;
     justify-content: space-between;
-    padding: 20px;
     background-color: #f5f5f5;
-  &__links {
-    display: flex;
-    gap: 20px;
-  & a {
-    text-decoration: none;
-    color: black;
+    z-index: 1000;
+    &__title{
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      color: #333333
+    }
+    &__links {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+    & a {
+      text-decoration: none;
+      color: black;
+    }
   }
-}
+  & b{
+    color:#333333
+  }
 }
