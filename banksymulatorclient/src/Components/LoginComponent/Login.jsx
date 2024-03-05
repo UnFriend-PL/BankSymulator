@@ -3,8 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Login.scss";
 import ErrorNotification from "../ErrorNotificatioComponent/ErrorNotification";
-import { UserContext } from "../../Providers/userContext";
-import { getUserEmail } from "../../Services/tokenService";
+import { UserContext } from "../../Providers/UserContext";
+import { getUserEmail } from "../../Services/TokenService";
 function Login() {
   const { setUser } = useContext(UserContext);
   const [formData, setFormData] = useState({

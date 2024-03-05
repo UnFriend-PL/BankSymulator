@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import "./HomeModule.scss";
 import Accounts from "../../Components/AccountComponent/Account";
-import { UserContext } from "../../Providers/userContext";
+import { UserContext } from "../../Providers/UserContext";
 
 function HomeModule() {
   const { user } = useContext(UserContext);

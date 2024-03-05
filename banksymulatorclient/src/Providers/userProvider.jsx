@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { UserContext } from "./userContext";
-import { getUserEmail } from "../Services/tokenService";
+import { UserContext } from "./UserContext";
+import { getUserEmail } from "../Services/TokenService";
 
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);

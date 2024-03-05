@@ -15,6 +15,7 @@ function Deposit({ onClose, accountNumber }) {
       pesel: "",
     },
   });
+  const [errors, setErrors] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,6 +43,9 @@ function Deposit({ onClose, accountNumber }) {
       console.log(response.data);
       onClose();
     } catch (err) {
+      if (err.response && err.response.data && err.response.data.errors) {
+        setErrors(err.response.data.errors);
+      }
       console.error(err);
     }
   };

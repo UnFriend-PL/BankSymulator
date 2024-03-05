@@ -3,10 +3,11 @@ import "./Account.scss";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ErrorNotification from "../ErrorNotificatioComponent/ErrorNotification";
-import { isTokenExpired } from "../../Services/tokenService";
+import { isTokenExpired } from "../../Services/TokenService";
 import Deposit from "./DepositModalComponent/Deposit";
 import Withdraw from "./WithdrawModalComponent/Withdraw";
 import NewAccount from "./NewAccountComponent/NewAccount";
+import Transfer from "../TransferComponent/Transfer";
 function Accounts() {
   const [accounts, setAccounts] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -104,11 +105,12 @@ function Account({ account, onSuccess }) {
           />
         )}
         {showTransferModal && (
-          <TransferModal
+          <Transfer
             onClose={() => {
               setShowTransferModal(false);
               onSuccess((prev) => !prev);
             }}
+            accountNumber={account.accountNumber}
           />
         )}
       </div>

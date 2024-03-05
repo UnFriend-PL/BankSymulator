@@ -188,16 +188,19 @@ namespace BankSymulatorApi.Services
             if (fromAccount == null)
             {
                 serviceResponse.Success = false;
+                serviceResponse.Errors = new[] { "Account not found" };
                 return serviceResponse;
             }
             if (fromAccount.OwnerId != userId)
             {
                 serviceResponse.Success = false;
+                serviceResponse.Errors = new[] { "You are not the owner of the account" };
                 return serviceResponse;
             }
             if (fromAccount.Balance < model.TransferAmount)
             {
                 serviceResponse.Success = false;
+                serviceResponse.Errors = new[] { "Insufficient funds" };
                 return serviceResponse;
             }
             var toAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.ToAccountNumber);
@@ -234,6 +237,7 @@ namespace BankSymulatorApi.Services
                 {
                     transaction.Rollback();
                     serviceResponse.Success = false;
+                    serviceResponse.Errors = new[] { ex.Message };
                     return serviceResponse;
                 }
             }

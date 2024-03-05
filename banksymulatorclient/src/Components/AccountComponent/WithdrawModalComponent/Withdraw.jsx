@@ -7,7 +7,7 @@ function Withdraw({ onClose, accountNumber }) {
     accountNumber: accountNumber,
     amount: 0,
   });
-
+  const [errors, setErrors] = useState(null);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -20,10 +20,13 @@ function Withdraw({ onClose, accountNumber }) {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      if (response.status === 200) {
+      if (response.data.success) {
         onClose();
       }
     } catch (err) {
+      if (err.response && err.response.data && err.response.data.errors) {
+        setErrors(err.response.data.errors);
+      }
       console.error(err);
     }
   };
