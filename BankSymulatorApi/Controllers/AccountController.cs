@@ -36,7 +36,7 @@ namespace BankSymulatorApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("CreateAdditionalAccountAsync")]
-        public async Task<IActionResult> CreateAdditionalAccountAsync([FromBody] string? currency)
+        public async Task<IActionResult> CreateAdditionalAccountAsync([FromBody] NewAccountDto model)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
@@ -44,7 +44,7 @@ namespace BankSymulatorApi.Controllers
             {
                 return BadRequest(new { Message = "User not found." });
             }
-            var result = await _accountService.CreateAccountAsync(user, currency !=null? currency : "PLN");
+            var result = await _accountService.CreateAccountAsync(user, model);
             if (result)
             {
                 return Ok(new { Message = "Account created successfully!" });

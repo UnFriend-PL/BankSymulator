@@ -38,7 +38,7 @@ namespace BankSymulatorApi.Services
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                await _accountService.CreateAccountAsync(user, "PLN");
+                await _accountService.CreateAccountAsync(user, new NewAccountDto { Name = "Default Account", Currency = "PLN"});
             }
             return result;
         }

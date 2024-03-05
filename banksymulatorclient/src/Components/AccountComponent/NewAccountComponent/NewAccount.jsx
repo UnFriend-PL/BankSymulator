@@ -2,26 +2,29 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./NewAccount.scss";
 function NewAccount({ refresh, onClose }) {
-  const [currency, setCurrency] = useState("");
+  const [formData, setFormData] = useState({
+    currency: "PLN",
+    name: "Additional Account",
+  });
 
   const handleChange = (e) => {
-    setCurrency(e.target.value);
+    setFormData((prev) => {
+      return {
+        ...prev,
+        [e.target.name]: e.target.value,
+      };
+    });
+    console.log(formData);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(
-        "/api/Account/CreateAdditionalAccountAsync",
-        {
-          currency,
+      await axios.post("/api/Account/CreateAdditionalAccountAsync", formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      });
       refresh((prev) => !prev);
       onClose();
     } catch (err) {
@@ -38,10 +41,18 @@ function NewAccount({ refresh, onClose }) {
             type="text"
             name="currency"
             placeholder="Currency PLN, USD, EUR, etc."
-            value={currency}
+            value={formData.currency}
             onChange={handleChange}
           />
         </label>
+        <label htmlFor="name">Name:</label>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+        />
         <button type="submit">Create Account</button>
         <button onClick={() => onClose()}>Close</button>
       </form>
