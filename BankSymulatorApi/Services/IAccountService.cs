@@ -10,5 +10,6 @@ namespace BankSymulatorApi.Services
         public Task<List<AccountDto>> GetAccountsByUserIdAsync(string userId);
         public Task<bool> DepositAsync(DepositDto model, string accountNumber);
         public Task<bool> WithdrawAsync(WithdrawDto model, string userId);
+        Task<bool> TransferAsync(TransferDto model, string userId);
     }
 }

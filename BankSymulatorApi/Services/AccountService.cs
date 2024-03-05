@@ -173,5 +173,57 @@ namespace BankSymulatorApi.Services
             }
         }
 
+        public async Task<bool> TransferAsync(TransferDto model, string userId)
+        {
+            var fromAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.FromAccountNumber);
+            if (fromAccount == null)
+            {
+                return false;
+            }
+            if (fromAccount.OwnerId != userId)
+            {
+                return false;
+            }
+            if (fromAccount.Balance < model.TransferAmount)
+            {
+                return false;
+            }
+            var toAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.ToAccountNumber);
+            if (toAccount == null)
+            {
+                return false;
+            }
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    fromAccount.Balance -= model.TransferAmount;
+                    toAccount.Balance += model.TransferAmount;
+                    var transfer = new Transfer
+                    {
+                        TransferType = model.TransferType,
+                        TransferAmount = model.TransferAmount,
+                        TransferTime = DateTime.Now,
+                        FromAccountNumber = fromAccount.AccountNumber,
+                        ToAccountNumber = toAccount.AccountNumber,
+                        Message = model.Message,
+                        IsCompleted = true,
+                        BalanceAfterOperation = fromAccount.Balance
+                    };
+                    fromAccount.Balance -= transfer.TransferFee;
+                    await _context.Transfers.AddAsync(transfer);
+                    await _context.SaveChangesAsync();
+
+                    transaction.Commit();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
     }
 }

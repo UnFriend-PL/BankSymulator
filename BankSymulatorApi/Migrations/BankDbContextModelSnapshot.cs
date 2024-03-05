@@ -130,8 +130,9 @@ namespace BankSymulatorApi.Migrations
                     b.Property<float>("BalanceAfterOperation")
                         .HasColumnType("real");
 
-                    b.Property<int>("FromAccountId")
-                        .HasColumnType("int");
+                    b.Property<string>("FromAccountNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
@@ -140,8 +141,9 @@ namespace BankSymulatorApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ToAccountId")
-                        .HasColumnType("int");
+                    b.Property<string>("ToAccountNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("TransferAmount")
                         .HasColumnType("real");
@@ -152,8 +154,9 @@ namespace BankSymulatorApi.Migrations
                     b.Property<DateTime>("TransferTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TransferType")
-                        .HasColumnType("int");
+                    b.Property<string>("TransferType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TransferId");
 
