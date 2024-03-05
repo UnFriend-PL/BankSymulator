@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./HomeModule.scss";
+import Accounts from "../../Components/AccountComponent/Account";
 
 function HomeModule() {
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -16,7 +17,11 @@ function HomeModule() {
       </div>
     );
   }
-  return <div id="Home"></div>;
+  return (
+    <div id="Home">
+      <Accounts></Accounts>
+    </div>
+  );
 }
 
 export default HomeModule;
