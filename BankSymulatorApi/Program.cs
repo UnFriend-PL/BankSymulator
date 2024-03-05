@@ -76,6 +76,14 @@ namespace BankSymulatorApi
                     });
                 });
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                      builder => builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
+
             builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<BankDbContext>()
     .AddDefaultTokenProviders();
@@ -94,6 +102,7 @@ namespace BankSymulatorApi
 
             app.UseAuthorization();
 
+            app.UseCors("CorsPolicy");
 
             app.MapControllers();
 

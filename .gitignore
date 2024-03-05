@@ -475,3 +475,33 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+
+
+
+
+
+# Logs
+banksymulatorclient/logs
+banksymulatorclient/*.log
+banksymulatorclient/npm-debug.log*
+banksymulatorclient/yarn-debug.log*
+banksymulatorclient/yarn-error.log*
+banksymulatorclient/pnpm-debug.log*
+banksymulatorclient/lerna-debug.log*
+
+banksymulatorclient/node_modules
+banksymulatorclient/dist
+banksymulatorclient/dist-ssr
+banksymulatorclient/*.local
+
+# Editor directories and files
+banksymulatorclient/.vscode/*
+banksymulatorclient/!.vscode/extensions.json
+banksymulatorclient/.idea
+banksymulatorclient/.DS_Store
+banksymulatorclient/*.suo
+banksymulatorclient/*.ntvs*
+banksymulatorclient/*.njsproj
+banksymulatorclient/*.sln
+banksymulatorclient/*.sw?
