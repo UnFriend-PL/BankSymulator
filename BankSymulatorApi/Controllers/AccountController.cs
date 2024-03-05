@@ -36,7 +36,7 @@ namespace BankSymulatorApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("CreateAdditionalAccountAsync")]
-        public async Task<IActionResult> CreateAdditionalAccountAsync(string? currency)
+        public async Task<IActionResult> CreateAdditionalAccountAsync([FromBody] string? currency)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
