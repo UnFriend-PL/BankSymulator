@@ -21,7 +21,7 @@ function Register() {
   const validatePassword = (password) => {
     // At least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character
     const strongPasswordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
     return strongPasswordRegex.test(password);
   };
   const handleChange = (e) => {
