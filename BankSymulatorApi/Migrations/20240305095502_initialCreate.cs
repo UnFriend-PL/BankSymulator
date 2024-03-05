@@ -30,13 +30,32 @@ namespace BankSymulatorApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Contributors",
+                columns: table => new
+                {
+                    ContributorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Pesel = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Contributors", x => x.ContributorId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Deposits",
                 columns: table => new
                 {
                     DepositId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Amount = table.Column<float>(type: "real", nullable: false),
                     DepositTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BalanceAfterOperation = table.Column<float>(type: "real", nullable: false),
+                    ContributorId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,14 +81,15 @@ namespace BankSymulatorApi.Migrations
                 columns: table => new
                 {
                     TransferId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TransferType = table.Column<int>(type: "int", nullable: false),
+                    TransferType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TransferAmount = table.Column<float>(type: "real", nullable: false),
                     TransferFee = table.Column<float>(type: "real", nullable: false),
                     TransferTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FromAccountId = table.Column<int>(type: "int", nullable: false),
-                    ToAccountId = table.Column<int>(type: "int", nullable: false),
+                    FromAccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ToAccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsCompleted = table.Column<bool>(type: "bit", nullable: false)
+                    IsCompleted = table.Column<bool>(type: "bit", nullable: false),
+                    BalanceAfterOperation = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,6 +105,7 @@ namespace BankSymulatorApi.Migrations
                     Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Pesel = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -105,6 +126,22 @@ namespace BankSymulatorApi.Migrations
                     table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Withdraws",
+                columns: table => new
+                {
+                    WithdrawId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Amount = table.Column<float>(type: "real", nullable: false),
+                    BalanceAfterOperation = table.Column<float>(type: "real", nullable: false),
+                    WithdrawTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Withdraws", x => x.WithdrawId);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
                 table: "Users",
@@ -120,6 +157,9 @@ namespace BankSymulatorApi.Migrations
                 name: "Accounts");
 
             migrationBuilder.DropTable(
+                name: "Contributors");
+
+            migrationBuilder.DropTable(
                 name: "Deposits");
 
             migrationBuilder.DropTable(
@@ -130,6 +170,9 @@ namespace BankSymulatorApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Withdraws");
         }
     }
 }

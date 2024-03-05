@@ -11,6 +11,8 @@ namespace BankSymulatorApi.Models
         public DateTime DepositTime { get; set; }
         [ForeignKey("AccountNumber")]
         public string AccountNumber { get; set; }
+        public float BalanceAfterOperation { get; set; }
         public string ContributorId { get; set; }
+
     }
 }

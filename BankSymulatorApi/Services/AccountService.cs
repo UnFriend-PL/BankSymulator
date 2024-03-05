@@ -59,46 +59,59 @@ namespace BankSymulatorApi.Services
 
         public async Task<bool> DepositAsync(DepositDto model, string AccountNumber)
         {
-            await using var transaction = await _context.Database.BeginTransactionAsync();
-
-            try
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.AccountNumber);
 
-                if (account == null)
+                try
                 {
+                    var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.AccountNumber);
+
+                    if (account == null)
+                    {
+                        return false;
+                    }
+
+                    var contributor = await _context.Contributors.FirstOrDefaultAsync(c => c.Pesel == model.Contributor.Pesel);
+
+                    if (contributor == null)
+                    {
+                        contributor = await AddNewContributorAsync(model.Contributor);
+                    }
+                    account.Balance += model.Amount;
+
+                    var deposit = new Deposit
+                    {
+                        AccountNumber = model.AccountNumber,
+                        Amount = model.Amount,
+                        DepositTime = DateTime.Now,
+                        ContributorId = contributor.ContributorId,
+                        BalanceAfterOperation = account.Balance
+                    };
+
+                    await _context.Deposits.AddAsync(deposit);
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    await transaction.RollbackAsync();
+                    Console.WriteLine(e.Message);
                     return false;
                 }
-
-                var contributor = await _context.Contributors.FirstOrDefaultAsync(c => c.Pesel == model.Contributor.Pesel);
-
-                if (contributor == null)
-                {
-                    contributor = await AddNewContributorAsync(model.Contributor);
-                }
-
-                var deposit = new Deposit
-                {
-                    AccountNumber = model.AccountNumber,
-                    Amount = model.Amount,
-                    DepositTime = DateTime.Now,
-                    ContributorId = contributor.ContributorId
-                };
-
-                await _context.Deposits.AddAsync(deposit);
-                account.Balance += model.Amount;
-
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                return true;
             }
-            catch (Exception e)
+        }
+
+        private async Task<bool> CheckAccountOwner(string userId, string accountNumber)
+        {
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == accountNumber);
+            if (account == null)
             {
-                await transaction.RollbackAsync();
-                Console.WriteLine(e.Message);
                 return false;
             }
+            return account.OwnerId == userId;
         }
 
         private async Task<Contributor> AddNewContributorAsync(ContributorDto contributorDto)
@@ -119,6 +132,98 @@ namespace BankSymulatorApi.Services
             contributor = await _context.Contributors.FirstOrDefaultAsync(u => u.Pesel == contributorDto.Pesel);
 
             return contributor;
+        }
+
+        public async Task<bool> WithdrawAsync(WithdrawDto model, string userId)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.AccountNumber);
+                    var isUserIdOwnerOfSelectedAccount = await CheckAccountOwner(userId, model.AccountNumber);
+
+                    if (!isUserIdOwnerOfSelectedAccount || account.Balance < model.Amount)
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
+
+                    account.Balance -= model.Amount;
+
+                    var withdraw = new Withdraw
+                    {
+                        AccountNumber = model.AccountNumber,
+                        Amount = model.Amount,
+                        WithdrawTime = DateTime.Now,
+                        BalanceAfterOperation = account.Balance
+                    };
+                    await _context.Withdraws.AddAsync(withdraw);
+                    await _context.SaveChangesAsync();
+
+                    transaction.Commit();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
+
+        public async Task<bool> TransferAsync(TransferDto model, string userId)
+        {
+            var fromAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.FromAccountNumber);
+            if (fromAccount == null)
+            {
+                return false;
+            }
+            if (fromAccount.OwnerId != userId)
+            {
+                return false;
+            }
+            if (fromAccount.Balance < model.TransferAmount)
+            {
+                return false;
+            }
+            var toAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.ToAccountNumber);
+            if (toAccount == null)
+            {
+                return false;
+            }
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    fromAccount.Balance -= model.TransferAmount;
+                    toAccount.Balance += model.TransferAmount;
+                    var transfer = new Transfer
+                    {
+                        TransferType = model.TransferType,
+                        TransferAmount = model.TransferAmount,
+                        TransferTime = DateTime.Now,
+                        FromAccountNumber = fromAccount.AccountNumber,
+                        ToAccountNumber = toAccount.AccountNumber,
+                        Message = model.Message,
+                        IsCompleted = true,
+                        BalanceAfterOperation = fromAccount.Balance
+                    };
+                    fromAccount.Balance -= transfer.TransferFee;
+                    await _context.Transfers.AddAsync(transfer);
+                    await _context.SaveChangesAsync();
+
+                    transaction.Commit();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
         }
     }
 }

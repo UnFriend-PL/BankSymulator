@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankSymulatorApi.Migrations
 {
     [DbContext(typeof(BankDbContext))]
-    [Migration("20240301172721_initialCreate")]
+    [Migration("20240305095502_initialCreate")]
     partial class initialCreate
     {
         /// <inheritdoc />
@@ -61,6 +61,41 @@ namespace BankSymulatorApi.Migrations
                     b.ToTable("Accounts");
                 });
 
+            modelBuilder.Entity("BankSymulatorApi.Models.Contributor", b =>
+                {
+                    b.Property<string>("ContributorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Pesel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ContributorId");
+
+                    b.ToTable("Contributors");
+                });
+
             modelBuilder.Entity("BankSymulatorApi.Models.Deposit", b =>
                 {
                     b.Property<string>("DepositId")
@@ -73,6 +108,13 @@ namespace BankSymulatorApi.Migrations
 
                     b.Property<float>("Amount")
                         .HasColumnType("real");
+
+                    b.Property<float>("BalanceAfterOperation")
+                        .HasColumnType("real");
+
+                    b.Property<string>("ContributorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DepositTime")
                         .HasColumnType("datetime2");
@@ -88,8 +130,12 @@ namespace BankSymulatorApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("FromAccountId")
-                        .HasColumnType("int");
+                    b.Property<float>("BalanceAfterOperation")
+                        .HasColumnType("real");
+
+                    b.Property<string>("FromAccountNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
@@ -98,8 +144,9 @@ namespace BankSymulatorApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ToAccountId")
-                        .HasColumnType("int");
+                    b.Property<string>("ToAccountNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("TransferAmount")
                         .HasColumnType("real");
@@ -110,8 +157,9 @@ namespace BankSymulatorApi.Migrations
                     b.Property<DateTime>("TransferTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TransferType")
-                        .HasColumnType("int");
+                    b.Property<string>("TransferType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TransferId");
 
@@ -161,6 +209,10 @@ namespace BankSymulatorApi.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Pesel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -187,6 +239,32 @@ namespace BankSymulatorApi.Migrations
                         .HasFilter("[Email] IS NOT NULL");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("BankSymulatorApi.Models.Withdraw", b =>
+                {
+                    b.Property<int>("WithdrawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WithdrawId"));
+
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Amount")
+                        .HasColumnType("real");
+
+                    b.Property<float>("BalanceAfterOperation")
+                        .HasColumnType("real");
+
+                    b.Property<DateTime>("WithdrawTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("WithdrawId");
+
+                    b.ToTable("Withdraws");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

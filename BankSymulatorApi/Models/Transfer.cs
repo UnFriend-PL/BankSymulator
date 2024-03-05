@@ -7,15 +7,17 @@ namespace BankSymulatorApi.Models
     {
         [Key]
         public string TransferId { get; set; }
-        public int TransferType { get; set; } = 0;
+        public string TransferType { get; set; } = "Standard";
         public float TransferAmount { get; set; }
         public float TransferFee { get; set; } = 0.5f;
         public DateTime TransferTime { get; set; }
-        [ForeignKey("AccountId")]
-        public int FromAccountId { get; set; }
-        [ForeignKey("AccountId")]
-        public int ToAccountId { get; set; }
+        [ForeignKey("AccountNumber")]
+        public string FromAccountNumber { get; set; }
+        [ForeignKey("AccountNumber")]
+        public string ToAccountNumber { get; set; }
         public string Message { get; set; }
         public bool IsCompleted { get; set; }
+        public float BalanceAfterOperation { get; set; }
+
     }
 }
