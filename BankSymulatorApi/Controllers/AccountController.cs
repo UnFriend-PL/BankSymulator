@@ -45,11 +45,13 @@ namespace BankSymulatorApi.Controllers
                 return BadRequest(new { Message = "User not found." });
             }
             var result = await _accountService.CreateAccountAsync(user, model);
-            if (result)
+            if (result.Success)
             {
-                return Ok(new { Message = "Account created successfully!" });
+                result.Message = "Account created successfully!";
+                return Ok(result);
             }
-            return BadRequest(new { Message = "Account creation failed." });
+            result.Message = "Account creation failed.";
+            return BadRequest(result);
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -58,11 +60,13 @@ namespace BankSymulatorApi.Controllers
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _accountService.DepositAsync(model, userId);
-            if (result)
+            if (result.Success)
             {
-                return Ok(new { Message = "Deposit successful!" });
+                result.Message = "Deposit successful!";
+                return Ok(result);
             }
-            return BadRequest(new { Message = "Deposit failed." });
+            result.Message = "Deposit failed.";
+            return BadRequest(result);
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -72,14 +76,19 @@ namespace BankSymulatorApi.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if(userId == null)
             {
-                return BadRequest(new { Message = "User not found. Cant identify. Try relogin" });
+                var response = new ServiceResponse<bool>();
+                response.Message = "User not found. Cant identify. Try relogin";
+                response.Success = false;
+                return BadRequest(response);
             }
             var result = await _accountService.WithdrawAsync(model, userId);
-            if (result)
+            if (result.Success)
             {
-                return Ok(new { Message = "Withdraw successful!" });
+                result.Message = "Withdraw successful!";
+                return Ok(result);
             }
-            return BadRequest(new { Message = "Withdraw failed." });
+            result.Message = "Withdraw failed.";
+            return BadRequest(result);
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -89,14 +98,18 @@ namespace BankSymulatorApi.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
-                return BadRequest(new { Message = "User not found. Cant identify. Try relogin" });
+                var response = new ServiceResponse<bool>();
+                response.Message = "User not found. Cant identify. Try relogin";
+                return BadRequest(response);
             }
             var result = await _accountService.TransferAsync(model, userId);
-            if (result)
+            if (result.Success)
             {
-                return Ok(new { Message = "Transfer successful!" });
+                result.Message = "Transfer successful!";
+                return Ok(result);
             }
-            return BadRequest(new { Message = "Transfer failed." });
+            result.Message = "Transfer failed.";
+            return BadRequest(result);
         }
     }
 }

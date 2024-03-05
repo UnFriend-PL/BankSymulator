@@ -33,8 +33,7 @@ function Accounts() {
             },
           }
         );
-
-        setAccounts(response.data);
+        setAccounts(response.data.data);
         console.log(response.data);
       } catch (err) {
         console.error(err);

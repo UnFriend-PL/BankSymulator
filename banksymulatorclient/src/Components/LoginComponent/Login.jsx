@@ -28,7 +28,8 @@ function Login() {
     try {
       const response = await axios.post("/api/User/login", formData);
       if (response.status == 200) {
-        localStorage.setItem("token", response.data.token);
+        var result = response.data;
+        localStorage.setItem("token", result.data.token);
         setUser(getUserEmail());
       }
       await navigate("/");

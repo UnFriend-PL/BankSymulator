@@ -5,8 +5,8 @@ namespace BankSymulatorApi.Services
 {
     public interface IUserService
     {
-        Task<IdentityResult> CreateUserAsync(RegisterDto model);
-        Task<LoginResultDto> LoginAsync(LoginDto model);
+        Task<ServiceResponse<IdentityResult>> CreateUserAsync(RegisterDto model);
+        Task<ServiceResponse<LoginResultDto>> LoginAsync(LoginDto model);
 
     }
 }

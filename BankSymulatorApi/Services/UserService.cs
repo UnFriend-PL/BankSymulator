@@ -2,6 +2,7 @@
 using BankSymulatorApi.Models.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -21,8 +22,9 @@ namespace BankSymulatorApi.Services
             _accountService = accountService;
         }
 
-        public async Task<IdentityResult> CreateUserAsync(RegisterDto model)
+        public async Task<ServiceResponse<IdentityResult>> CreateUserAsync(RegisterDto model)
         {
+            var serviceResponse = new ServiceResponse<IdentityResult>();
             var user = new User
             {
                 UserName = model.Email,
@@ -34,20 +36,22 @@ namespace BankSymulatorApi.Services
                 Name = model.Name,
                 Pesel = model.Pesel,
             };
-
             var result = await _userManager.CreateAsync(user, model.Password);
+            serviceResponse.Success = result.Succeeded;
+            serviceResponse.Errors = result.Errors.Select(e => e.Description).ToArray();
+
             if (result.Succeeded)
             {
                 await _accountService.CreateAccountAsync(user, new NewAccountDto { Name = "Default Account", Currency = "PLN"});
             }
-            return result;
+            return serviceResponse;
         }
 
-        public async Task<LoginResultDto> LoginAsync(LoginDto model)
+        public async Task<ServiceResponse<LoginResultDto>> LoginAsync(LoginDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
 
-
+            var serviceResponse = new ServiceResponse<LoginResultDto>();
 
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
@@ -66,11 +70,13 @@ namespace BankSymulatorApi.Services
                     expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpirationInMinutes"])),
                     signingCredentials: creds
                 );
-
-                return new LoginResultDto { Success = true, Token = new JwtSecurityTokenHandler().WriteToken(token) };
+                var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+                serviceResponse.Data = new LoginResultDto(jwt, user) ;
+                return serviceResponse;
             }
-
-            return new LoginResultDto { Success = false, Errors = new[] { "Invalid login attempt." } };
+             serviceResponse.Success = false;
+            serviceResponse.Errors = new[] { "Invalid login attempt." };
+            return serviceResponse;
         }
     }
 }

@@ -31,7 +31,7 @@ function Register() {
         [e.target.name]: e.target.value,
       };
     });
-    console.log(formData);
+    // console.log(formData);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,11 +44,15 @@ function Register() {
       return;
     }
     try {
-      await axios.post("/api/User/register", formData);
-      navigate("/login");
+      const response = await axios.post("/api/User/register", formData);
+      if (response.data.success) {
+        navigate("/login");
+      } else {
+        setErrors(response.errors.map((error) => error.description));
+      }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.errors) {
-        setErrors(err.response.data.errors.map((error) => error.description));
+        setErrors(err.response.data.errors);
       }
       console.error(err);
     }
