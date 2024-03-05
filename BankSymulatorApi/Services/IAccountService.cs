@@ -6,7 +6,7 @@ namespace BankSymulatorApi.Services
 {
     public interface IAccountService
     {
-        public Task<bool> CreateAccountAsync(User user, string currency);
+        public Task<bool> CreateAccountAsync(User user, NewAccountDto model);
         public Task<List<AccountDto>> GetAccountsByUserIdAsync(string userId);
         public Task<bool> DepositAsync(DepositDto model, string accountNumber);
         public Task<bool> WithdrawAsync(WithdrawDto model, string userId);

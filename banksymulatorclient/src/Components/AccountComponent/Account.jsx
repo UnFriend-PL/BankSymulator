@@ -6,10 +6,12 @@ import ErrorNotification from "../ErrorNotificatioComponent/ErrorNotification";
 import { isTokenExpired } from "../../Services/tokenService";
 import Deposit from "./DepositModalComponent/Deposit";
 import Withdraw from "./WithdrawModalComponent/Withdraw";
+import NewAccount from "./NewAccountComponent/NewAccount";
 function Accounts() {
   const [accounts, setAccounts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [openNewAccount, setOpenNewAccount] = useState(false);
   const navigate = useNavigate();
   const [refresh, setRefresh] = useState(false);
   useEffect(() => {
@@ -47,7 +49,13 @@ function Accounts() {
 
   return (
     <div className="accountWrap">
-      <h1 className="accountWrap__title">Accounts</h1>
+      <div className="accountWrap__title">Accounts</div>
+      <button onClick={() => setOpenNewAccount(true)}>
+        Create New Account
+      </button>
+      {openNewAccount && (
+        <NewAccount onClose={setOpenNewAccount} refresh={setRefresh} />
+      )}
       {loading && <p>Loading...</p>}
       {error && <ErrorNotification errors={error} />}
       {accounts &&

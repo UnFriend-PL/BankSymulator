@@ -15,16 +15,16 @@ namespace BankSymulatorApi.Services
         }
 
 
-        public async Task<bool> CreateAccountAsync(User user, string currency)
+        public async Task<bool> CreateAccountAsync(User user, NewAccountDto model)
         {
             try
             {
                 Account account = new Account
                 {
-                    Name = "Main Account",
+                    Name = model.Name,
                     OwnerId = user.Id,
                     AccountNumber = Guid.NewGuid().ToString(),
-                    Currency = currency
+                    Currency = model.Currency,
 
                 };
                 await _context.Accounts.AddAsync(account);
