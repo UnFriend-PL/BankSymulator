@@ -7,8 +7,6 @@ function App() {
   return (
     <Router id="root">
       <Navbar />
-      <HomeModule />
-      
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

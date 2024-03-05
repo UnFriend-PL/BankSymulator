@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import "./HomeModule.scss";
+import Accounts from "../../Components/AccountComponent/Account";
+import { UserContext } from "../../Providers/userContext";
 
 function HomeModule() {
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const { user } = useContext(UserContext);
 
-  if (token == null) {
+  if (user == null) {
     return (
       <div id="Home">
         <h1>Welcome to Bank Symulator</h1>
@@ -16,7 +18,11 @@ function HomeModule() {
       </div>
     );
   }
-  return <div id="Home"></div>;
+  return (
+    <div id="Home">
+      <Accounts></Accounts>
+    </div>
+  );
 }
 
 export default HomeModule;

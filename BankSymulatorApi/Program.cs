@@ -85,8 +85,8 @@ namespace BankSymulatorApi
             });
 
             builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<BankDbContext>()
-    .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<BankDbContext>()
+            .AddDefaultTokenProviders();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAccountService, AccountService>();
 
@@ -98,11 +98,11 @@ namespace BankSymulatorApi
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("CorsPolicy");
+
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
-            app.UseCors("CorsPolicy");
 
             app.MapControllers();
 
