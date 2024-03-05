@@ -85,8 +85,8 @@ namespace BankSymulatorApi
             });
 
             builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<BankDbContext>()
-    .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<BankDbContext>()
+            .AddDefaultTokenProviders();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAccountService, AccountService>();
 
