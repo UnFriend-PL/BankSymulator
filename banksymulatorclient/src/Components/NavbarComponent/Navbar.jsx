@@ -5,7 +5,7 @@ import './Navbar.scss';
 function Navbar() {
   return (
     <nav className='navbar'>
-      <h1>Bank Symulator</h1>
+      <Link to="/" className='navbar__title'>Bank Symulator</Link>
       <div className='navbar__links'>
         <Link to="/login">Login</Link>
         <Link to="/register">Register</Link>
