@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Login.scss";
 import ErrorNotification from "../ErrorNotificatioComponent/ErrorNotification";
-
+import { UserContext } from "../../Providers/userContext";
+import { getUserEmail } from "../../Services/tokenService";
 function Login() {
+  const { setUser } = useContext(UserContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -27,9 +29,7 @@ function Login() {
       const response = await axios.post("/api/User/login", formData);
       if (response.status == 200) {
         localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", "test");
-        console.log(localStorage.getItem("user"));
-        console.log(localStorage.getItem("token"));
+        setUser(getUserEmail());
       }
       await navigate("/");
     } catch (err) {
