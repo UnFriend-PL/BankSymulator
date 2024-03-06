@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Register.scss";
-import ErrorNotification from "../ErrorNotificatioComponent/ErrorNotification";
+import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 
 function Register() {
+  const { showNotification } = useContext(NotificationContext);
   const [formData, setFormData] = useState({
     name: "test",
     surname: "test",
@@ -17,7 +18,6 @@ function Register() {
   });
 
   const navigate = useNavigate();
-  const [errors, setErrors] = useState([]);
   const validatePassword = (password) => {
     // At least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character
     const strongPasswordRegex =
@@ -31,30 +31,42 @@ function Register() {
         [e.target.name]: e.target.value,
       };
     });
-    // console.log(formData);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== confirmPassword) {
-      setErrors(["Passwords do not match"]);
+      showNotification([{ message: "Passwords do not match", type: "error" }]);
       return;
     }
     if (!validatePassword(formData.password)) {
-      setErrors(["Password does not meet the strength requirements"]);
+      showNotification([
+        {
+          message: "Password does not meet the strength requirements",
+          type: "error",
+        },
+      ]);
       return;
     }
     try {
       const response = await axios.post("/api/User/register", formData);
       if (response.data.success) {
         navigate("/login");
+        showNotification([
+          { message: "Registered successfully", type: "info" },
+        ]);
       } else {
-        setErrors(response.errors.map((error) => error.description));
+        let notifications = response.errors.map((error) => {
+          return { message: error, type: "error" };
+        });
+        showNotification(notifications);
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.errors) {
-        setErrors(err.response.data.errors);
+        let notifications = err.response.data.errors.map((error) => {
+          return { message: error, type: "error" };
+        });
+        showNotification(notifications);
       }
-      console.error(err);
     }
   };
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -64,7 +76,6 @@ function Register() {
 
   return (
     <div className="registerWrapper">
-      <ErrorNotification errors={errors} />
       <form onSubmit={handleSubmit} className="registerWrapper__form">
         <div className="registerWrapper__form__formBlock">
           <label htmlFor="name">Name</label>

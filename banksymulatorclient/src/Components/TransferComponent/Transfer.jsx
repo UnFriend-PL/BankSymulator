@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./Transfer.scss";
 import axios from "axios";
-import ErrorNotification from "../ErrorNotificatioComponent/ErrorNotification";
+import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 
 function Transfer({ onClose, accountNumber }) {
-  const [error, setErrors] = useState(null);
+  const { showNotification } = useContext(NotificationContext);
+
   const [formData, setFormData] = useState({
     fromAccountNumber: accountNumber,
     toAccountNumber: "",
@@ -31,19 +32,24 @@ function Transfer({ onClose, accountNumber }) {
         },
       });
       if (response.data.success) {
+        showNotification([{ message: "Transfer successful", type: "info" }]);
         onClose();
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.errors) {
-        setErrors(err.response.data.errors);
+        let notifications = err.response.data.errors.map((error) => {
+          return { message: error, type: "error" };
+        });
+        onClose();
+        // console.log(notifications);
+        showNotification(notifications);
+        // showNotification([{ message: "Transfer failed", type: "error" }]);
       }
-      console.error(err);
     }
   };
 
   return (
     <div className="transferModal">
-      {error && <ErrorNotification errors={error} />}
       <form onSubmit={handleSubmit}>
         <label>
           From Account Number:

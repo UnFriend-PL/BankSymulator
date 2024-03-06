@@ -1,11 +1,15 @@
 import React, { useState, useContext, useEffect } from "react";
 import "./HomeModule.scss";
 import Accounts from "../../Components/AccountComponent/Account";
-import { UserContext } from "../../Providers/UserContext";
-
+import { UserContext } from "../../Providers/UserProvider/UserContext";
+import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 function HomeModule() {
   const { user } = useContext(UserContext);
+  const { showNotification } = useContext(NotificationContext);
 
+  const handleTest = () => {
+    showNotification([{ message: "Hello, world!", type: "info" }]);
+  };
   if (user == null) {
     return (
       <div id="Home">
@@ -21,6 +25,7 @@ function HomeModule() {
   return (
     <div id="Home">
       <Accounts></Accounts>
+      <button onClick={handleTest}> test</button>
     </div>
   );
 }

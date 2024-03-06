@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import React, { useContext } from "react";
 import "./Navbar.scss";
-import { UserContext } from "../../Providers/UserContext";
+import { UserContext } from "../../Providers/UserProvider/UserContext";
+import { IoIosLogOut } from "react-icons/io";
 
 function Navbar() {
   const { user, setUser } = useContext(UserContext);
@@ -26,7 +27,7 @@ function Navbar() {
       ) : (
         <div className="navbar__links">
           <Link to="/" onClick={handleLogout}>
-            Logout
+            <IoIosLogOut />
           </Link>
         </div>
       )}

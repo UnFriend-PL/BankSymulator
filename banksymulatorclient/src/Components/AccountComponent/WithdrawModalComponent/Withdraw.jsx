@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import "./Withdraw.scss";
+import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
 
 function Withdraw({ onClose, accountNumber }) {
+  const { showNotification } = useContext(NotificationContext);
   const [formData, setFormData] = useState({
     accountNumber: accountNumber,
     amount: 0,
   });
-  const [errors, setErrors] = useState(null);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -21,13 +22,16 @@ function Withdraw({ onClose, accountNumber }) {
         },
       });
       if (response.data.success) {
+        showNotification([{ message: "Withdraw successful", type: "info" }]);
         onClose();
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.errors) {
-        setErrors(err.response.data.errors);
+        let notifications = err.response.data.errors.map((error) => {
+          return { message: error, type: "error" };
+        });
+        showNotification(notifications);
       }
-      console.error(err);
     }
   };
 

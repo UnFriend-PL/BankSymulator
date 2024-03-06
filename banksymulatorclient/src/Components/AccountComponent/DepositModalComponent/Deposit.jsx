@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import "./Deposit.scss";
+import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
 
 function Deposit({ onClose, accountNumber }) {
+  const { showNotification } = useContext(NotificationContext);
   const [formData, setFormData] = useState({
     accountNumber: accountNumber,
     amount: 0,
@@ -15,7 +17,6 @@ function Deposit({ onClose, accountNumber }) {
       pesel: "",
     },
   });
-  const [errors, setErrors] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,17 +42,23 @@ function Deposit({ onClose, accountNumber }) {
         },
       });
       console.log(response.data);
+      if (response.data.success) {
+        showNotification([{ message: "Deposit successful", type: "info" }]);
+      }
       onClose();
     } catch (err) {
       if (err.response && err.response.data && err.response.data.errors) {
-        setErrors(err.response.data.errors);
+        let notifications = err.response.data.errors.map((error) => {
+          return { message: error, type: "error" };
+        });
+        showNotification(notifications);
       }
       console.error(err);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="depositModal">
       <input
         name="accountNumber"
         value={accountNumber}

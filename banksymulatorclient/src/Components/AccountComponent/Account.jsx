@@ -1,18 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./Account.scss";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import ErrorNotification from "../ErrorNotificatioComponent/ErrorNotification";
 import { isTokenExpired } from "../../Services/TokenService";
 import Deposit from "./DepositModalComponent/Deposit";
 import Withdraw from "./WithdrawModalComponent/Withdraw";
 import NewAccount from "./NewAccountComponent/NewAccount";
 import Transfer from "../TransferComponent/Transfer";
+import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
+import { BiMoneyWithdraw } from "react-icons/bi";
+import { RiLuggageDepositFill } from "react-icons/ri";
+import { BiTransfer } from "react-icons/bi";
+
 function Accounts() {
   const [accounts, setAccounts] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [openNewAccount, setOpenNewAccount] = useState(false);
+  const { showNotification } = useContext(NotificationContext);
+
   const navigate = useNavigate();
   const [refresh, setRefresh] = useState(false);
   useEffect(() => {
@@ -34,11 +39,17 @@ function Accounts() {
             },
           }
         );
-        setAccounts(response.data.data);
-        console.log(response.data);
+        if (response.data.success) {
+          setAccounts(response.data.data);
+        }
       } catch (err) {
         console.error(err);
-        setError("An error occurred while fetching account data.");
+        showNotification([
+          {
+            message: "An error occurred while fetching account data.",
+            type: "error",
+          },
+        ]);
       } finally {
         setLoading(false);
       }
@@ -57,7 +68,6 @@ function Accounts() {
         <NewAccount onClose={setOpenNewAccount} refresh={setRefresh} />
       )}
       {loading && <p>Loading...</p>}
-      {error && <ErrorNotification errors={error} />}
       {accounts &&
         accounts.map((element, index) => (
           <Account key={index} account={element} onSuccess={setRefresh} />
@@ -82,9 +92,15 @@ function Account({ account, onSuccess }) {
         <span>Balance:</span> {account.balance} {account.currency}
       </p>
       <div>
-        <button onClick={() => setShowDepositModal(true)}>Deposit</button>
-        <button onClick={() => setShowWithdrawModal(true)}>Withdraw</button>
-        <button onClick={() => setShowTransferModal(true)}>Transfer</button>
+        <button onClick={() => setShowDepositModal(true)}>
+          <RiLuggageDepositFill />
+        </button>
+        <button onClick={() => setShowWithdrawModal(true)}>
+          <BiMoneyWithdraw />
+        </button>
+        <button onClick={() => setShowTransferModal(true)}>
+          <BiTransfer />
+        </button>
 
         {showDepositModal && (
           <Deposit

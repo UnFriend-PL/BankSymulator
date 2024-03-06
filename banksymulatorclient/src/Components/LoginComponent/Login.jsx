@@ -2,18 +2,17 @@ import { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Login.scss";
-import ErrorNotification from "../ErrorNotificatioComponent/ErrorNotification";
-import { UserContext } from "../../Providers/UserContext";
+import { UserContext } from "../../Providers/UserProvider/UserContext";
 import { getUserEmail } from "../../Services/TokenService";
+import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 function Login() {
   const { setUser } = useContext(UserContext);
+  const { showNotification } = useContext(NotificationContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const navigate = useNavigate();
-  const [errors, setErrors] = useState([]);
-
   const handleChange = (e) => {
     setFormData((prev) => {
       return {
@@ -33,9 +32,13 @@ function Login() {
         setUser(getUserEmail());
       }
       await navigate("/");
+      showNotification([{ message: "Logged in successfully", type: "info" }]);
     } catch (err) {
       if (err.response && err.response.data && err.response.data.errors) {
-        setErrors(err.response.data.errors);
+        let notifications = err.response.data.errors.map((error) => {
+          return { message: error, type: "error" };
+        });
+        showNotification(notifications);
       }
       console.error(err);
     }
@@ -43,7 +46,6 @@ function Login() {
 
   return (
     <div className="loginWrapper">
-      <ErrorNotification errors={errors} /> {/* add this line */}
       <form onSubmit={handleSubmit} className="loginWrapper__form">
         <label htmlFor="email">Email</label>
         <input

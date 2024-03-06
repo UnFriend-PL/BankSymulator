@@ -153,6 +153,7 @@ namespace BankSymulatorApi.Services
                     {
                         transaction.Rollback();
                         serviceResponse.Success = false;
+                        serviceResponse.Errors = new[] { "Insufficient funds" };
                         return serviceResponse;
                     }
 
