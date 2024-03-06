@@ -36,19 +36,19 @@ function Withdraw({ onClose, accountNumber }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="withdraw-form">
-      <input
-        name="amount"
-        type="number"
-        onChange={handleChange}
-        placeholder="Amount"
-        step={0.01}
-        className="withdraw-form__input"
-      />
-      <button type="submit" className="withdraw-form__button">
-        Submit
-      </button>
-    </form>
+    <div className="modal">
+      <form onSubmit={handleSubmit}>
+        <input
+          name="amount"
+          type="number"
+          onChange={handleChange}
+          placeholder="Amount"
+          step={0.01}
+        />
+        <button type="submit">Submit</button>
+        <button onClick={onClose}> close </button>
+      </form>
+    </div>
   );
 }
 

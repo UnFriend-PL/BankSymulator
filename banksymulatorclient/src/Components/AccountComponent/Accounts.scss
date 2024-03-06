@@ -1,0 +1,134 @@
+.accountWrap {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-self: flex-start;
+  min-height: 100vh;
+  background-color: #ffffff;
+  color: #000000;
+  padding: 0 10px;
+  flex-basis: 100%;
+  padding-top: 10vh;
+  padding-bottom: 10vh;
+
+  &__section {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-self: flex-start;
+    padding: 2%;
+    flex-basis: 100%;
+    &__title {
+      font-size: 2.2em;
+      line-height: 1.1;
+      flex-basis: 25%;
+    }
+    &__button {
+      flex-basis: 25%;
+      display: flex;
+      flex-wrap: no-wrap;
+      justify-content: center;
+      align-items: center;
+    }
+    &__svg {
+      font-size: 200%;
+      line-height: 1;
+      margin-right: 5%;
+    }
+  }
+}
+
+.account {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-basis: 90%;
+  padding: 2%;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+  background-color: #fafafa;
+  margin: 2% 0 5% 0;
+
+  &__panel {
+    margin-bottom: 10px;
+    color: #5d5cff;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-self: flex-start;
+    flex-basis: 100%;
+    &__title {
+      font-size: 1.5em;
+      flex-basis: 100%;
+    }
+    &__buttons {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: center;
+      align-self: flex-start;
+      margin: 2% 0 0 0;
+      flex-basis: 100%;
+      & button {
+        margin: 0 1% 0 0;
+        flex-basis: 10%;
+      }
+    }
+  }
+
+  &__balance {
+    font-size: 1.2em;
+    color: #5d5cff;
+    font-weight: bold;
+    line-height: 1;
+    display: flex;
+    flex-wrap: no-wrap;
+    justify-content: space-between;
+    align-items: center;
+    align-self: flex-start;
+    &__amount {
+      font-size: 2em;
+      flex-basis: 30%;
+    }
+    &__percentage {
+      font-size: 1.5em;
+      flex-basis: 10%;
+    }
+    &__accountNumber {
+      flex-basis: 60%;
+      display: flex;
+      flex-wrap: wrap;
+      color: #000000;
+      &__number {
+        font-size: 0.8em;
+      }
+      & span {
+        flex-basis: 100%;
+      }
+      font-size: 1em;
+    }
+  }
+
+  &__info {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    width: 100%;
+    box-sizing: border-box;
+    color: #000000;
+  }
+
+  &__info span {
+    font-weight: bold;
+  }
+}

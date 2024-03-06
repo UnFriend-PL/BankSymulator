@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import "./HomeModule.scss";
-import Accounts from "../../Components/AccountComponent/Account";
+import Accounts from "../../Components/AccountComponent/Accounts";
 import { UserContext } from "../../Providers/UserProvider/UserContext";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 function HomeModule() {
