@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import "./Transfer.scss";
 import axios from "axios";
-import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
+import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
 
 function Transfer({ onClose, accountNumber }) {
   const { showNotification } = useContext(NotificationContext);
@@ -41,9 +41,7 @@ function Transfer({ onClose, accountNumber }) {
           return { message: error, type: "error" };
         });
         onClose();
-        // console.log(notifications);
         showNotification(notifications);
-        // showNotification([{ message: "Transfer failed", type: "error" }]);
       }
     }
   };

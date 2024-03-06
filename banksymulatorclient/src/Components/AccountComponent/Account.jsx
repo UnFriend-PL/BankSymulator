@@ -2,16 +2,19 @@ import React, { useState, useEffect, useContext } from "react";
 import "./Accounts.scss";
 import Deposit from "./DepositModalComponent/Deposit";
 import Withdraw from "./WithdrawModalComponent/Withdraw";
-import Transfer from "../TransferComponent/Transfer";
+import Transfer from "./TransferComponent/Transfer";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { RiLuggageDepositFill } from "react-icons/ri";
 import { BiTransfer } from "react-icons/bi";
 import { IoCopy } from "react-icons/io5";
+import { UserContext } from "../../Providers/UserProvider/UserContext";
 
 export default function Account({ account, onSuccess, totalBalance }) {
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
+  const { getUser } = useContext(UserContext);
+  const user = getUser();
   const handleCopy = () => {
     navigator.clipboard.writeText(account.accountNumber);
   };
@@ -61,7 +64,7 @@ export default function Account({ account, onSuccess, totalBalance }) {
             />
           )}
         </div>
-        <div className="account__panel__owner">Account Owner</div>
+        <div className="account__panel__owner">{`${user.name} ${user.surname}`}</div>
       </div>
       <div className="account__balance">
         <div className="account__balance__amount">

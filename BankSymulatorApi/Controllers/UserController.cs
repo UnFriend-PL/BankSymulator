@@ -1,6 +1,7 @@
 ﻿using BankSymulatorApi.Models;
 using BankSymulatorApi.Models.DTO;
 using BankSymulatorApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -55,5 +56,26 @@ public class UserController : ControllerBase
         result.Message = "Invalid login attempt.";
 
         return Unauthorized(result);
+    }
+
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpPatch("editUserData")]
+    public async Task<IActionResult> editUserData([FromBody] EditUserDto model)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return BadRequest(new { Message = "User not found." });
+        }
+        var result = await _userService.EditUserDataAsync(model, userId);
+
+        if (result.Success)
+        {
+            return Ok(result);
+        }
+
+        result.Message = "Edit profile failed.";
+
+        return BadRequest(result);
     }
 }
