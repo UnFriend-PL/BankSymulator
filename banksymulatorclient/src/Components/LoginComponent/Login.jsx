@@ -3,10 +3,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Login.scss";
 import { UserContext } from "../../Providers/UserProvider/UserContext";
-import { getUserEmail } from "../../Services/TokenService";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 function Login() {
-  const { setUser } = useContext(UserContext);
+  const { setUserData } = useContext(UserContext);
   const { showNotification } = useContext(NotificationContext);
   const [formData, setFormData] = useState({
     email: "",
@@ -29,9 +28,18 @@ function Login() {
       if (response.status == 200) {
         var result = response.data;
         localStorage.setItem("token", result.data.token);
-        setUser(getUserEmail());
+        let user = {
+          email: result.data.email,
+          name: result.data.name,
+          surname: result.data.surname,
+          phoneNumber: result.data.phoneNumber,
+          birthDate: result.data.birthDate,
+          address: result.data.address,
+          pesel: result.data.pesel,
+        };
+        setUserData(user);
       }
-      await navigate("/");
+      navigate("/");
       showNotification([{ message: "Logged in successfully", type: "info" }]);
     } catch (err) {
       if (err.response && err.response.data && err.response.data.errors) {

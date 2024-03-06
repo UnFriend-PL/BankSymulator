@@ -13,7 +13,7 @@ function Accounts() {
   const [loading, setLoading] = useState(true);
   const [openNewAccount, setOpenNewAccount] = useState(false);
   const { showNotification } = useContext(NotificationContext);
-
+  const [totalBalance, setTotalBalance] = useState(0);
   const navigate = useNavigate();
   const [refresh, setRefresh] = useState(false);
   useEffect(() => {
@@ -37,6 +37,11 @@ function Accounts() {
         );
         if (response.data.success) {
           setAccounts(response.data.data);
+          let total = 0;
+          response.data.data.forEach((element) => {
+            total += element.balance;
+          });
+          setTotalBalance(total);
         }
       } catch (err) {
         console.error(err);
@@ -73,7 +78,12 @@ function Accounts() {
       {loading && <p>Loading...</p>}
       {accounts &&
         accounts.map((element, index) => (
-          <Account key={index} account={element} onSuccess={setRefresh} />
+          <Account
+            key={index}
+            account={element}
+            totalBalance={totalBalance}
+            onSuccess={setRefresh}
+          />
         ))}
     </div>
   );

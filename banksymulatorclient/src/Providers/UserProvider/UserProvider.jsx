@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
-import { getUserEmail } from "../../Services/TokenService";
 
 export function UserProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(localStorage.getItem("user"));
+
+  const getUser = () => {
+    return JSON.parse(localStorage.getItem("user"));
+  };
+  const setUserData = (userData) => {
+    console.log("setUserData", userData);
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token != null) {
-      setUser(getUserEmail);
+    const userLocal = localStorage.getItem("user");
+    if (userLocal != null) {
+      setUser(JSON.parse(userLocal));
     }
   }, []);
 
   return (
-    <UserContext.Provider value={{ user: user, setUser: setUser }}>
+    <UserContext.Provider value={{ getUser, setUserData }}>
       {children}
     </UserContext.Provider>
   );

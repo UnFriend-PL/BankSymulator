@@ -8,7 +8,7 @@ import { RiLuggageDepositFill } from "react-icons/ri";
 import { BiTransfer } from "react-icons/bi";
 import { IoCopy } from "react-icons/io5";
 
-export default function Account({ account, onSuccess }) {
+export default function Account({ account, onSuccess, totalBalance }) {
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
@@ -16,7 +16,7 @@ export default function Account({ account, onSuccess }) {
     navigator.clipboard.writeText(account.accountNumber);
   };
   function calculatePercentage(num) {
-    return ((num / 3000) * 100).toFixed(2);
+    return ((num / totalBalance) * 100).toFixed(2);
   }
   return (
     <div className="account">
@@ -61,10 +61,11 @@ export default function Account({ account, onSuccess }) {
             />
           )}
         </div>
+        <div className="account__panel__owner">Account Owner</div>
       </div>
       <div className="account__balance">
         <div className="account__balance__amount">
-          {account.balance} {account.currency}
+          {account.balance.toFixed(2)} {account.currency}
         </div>
         <div className="account__balance__accountNumber">
           <span className="account__balance__accountNumber__title">
@@ -77,6 +78,9 @@ export default function Account({ account, onSuccess }) {
         </div>
         <div className="account__balance__percentage">
           {calculatePercentage(account.balance)}%
+          <span className="account__balance__percentage__line">
+            of total balance
+          </span>
         </div>
       </div>
     </div>

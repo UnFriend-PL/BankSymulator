@@ -5,12 +5,12 @@ import { UserContext } from "../../Providers/UserProvider/UserContext";
 import { IoIosLogOut } from "react-icons/io";
 
 function Navbar() {
-  const { user, setUser } = useContext(UserContext);
+  const { getUser, setUserData } = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    setUser(null);
+    setUserData(null);
     navigate("/");
   };
 
@@ -19,7 +19,7 @@ function Navbar() {
       <Link to="/" className="navbar__title">
         Bank Symulator
       </Link>
-      {user == null ? (
+      {getUser() == null ? (
         <div className="navbar__links">
           <Link to="/login">Login</Link>
           <Link to="/register">Register</Link>
@@ -27,7 +27,7 @@ function Navbar() {
       ) : (
         <div className="navbar__links">
           <Link to="/" onClick={handleLogout}>
-            <IoIosLogOut />
+            <IoIosLogOut className="logout" />
           </Link>
         </div>
       )}

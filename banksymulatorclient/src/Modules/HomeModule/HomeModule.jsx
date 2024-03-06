@@ -2,15 +2,9 @@ import React, { useState, useContext, useEffect } from "react";
 import "./HomeModule.scss";
 import Accounts from "../../Components/AccountComponent/Accounts";
 import { UserContext } from "../../Providers/UserProvider/UserContext";
-import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 function HomeModule() {
-  const { user } = useContext(UserContext);
-  const { showNotification } = useContext(NotificationContext);
-
-  const handleTest = () => {
-    showNotification([{ message: "Hello, world!", type: "info" }]);
-  };
-  if (user == null) {
+  const { getUser } = useContext(UserContext);
+  if (getUser() == null) {
     return (
       <div id="Home">
         <h1>Welcome to Bank Symulator</h1>
@@ -25,7 +19,6 @@ function HomeModule() {
   return (
     <div id="Home">
       <Accounts></Accounts>
-      <button onClick={handleTest}> test</button>
     </div>
   );
 }
