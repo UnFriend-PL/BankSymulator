@@ -2,18 +2,16 @@ import { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Login.scss";
-import ErrorNotification from "../ErrorNotificatioComponent/ErrorNotification";
-import { UserContext } from "../../Providers/userContext";
-import { getUserEmail } from "../../Services/tokenService";
+import { UserContext } from "../../Providers/UserProvider/UserContext";
+import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 function Login() {
-  const { setUser } = useContext(UserContext);
+  const { setUserData } = useContext(UserContext);
+  const { showNotification } = useContext(NotificationContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const navigate = useNavigate();
-  const [errors, setErrors] = useState([]);
-
   const handleChange = (e) => {
     setFormData((prev) => {
       return {
@@ -28,13 +26,27 @@ function Login() {
     try {
       const response = await axios.post("/api/User/login", formData);
       if (response.status == 200) {
-        localStorage.setItem("token", response.data.token);
-        setUser(getUserEmail());
+        var result = response.data;
+        localStorage.setItem("token", result.data.token);
+        let user = {
+          email: result.data.email,
+          name: result.data.name,
+          surname: result.data.surname,
+          phoneNumber: result.data.phoneNumber,
+          birthDate: result.data.birthDate,
+          address: result.data.address,
+          pesel: result.data.pesel,
+        };
+        setUserData(user);
       }
-      await navigate("/");
+      navigate("/");
+      showNotification([{ message: "Logged in successfully", type: "info" }]);
     } catch (err) {
       if (err.response && err.response.data && err.response.data.errors) {
-        setErrors(err.response.data.errors);
+        let notifications = err.response.data.errors.map((error) => {
+          return { message: error, type: "error" };
+        });
+        showNotification(notifications);
       }
       console.error(err);
     }
@@ -42,7 +54,6 @@ function Login() {
 
   return (
     <div className="loginWrapper">
-      <ErrorNotification errors={errors} /> {/* add this line */}
       <form onSubmit={handleSubmit} className="loginWrapper__form">
         <label htmlFor="email">Email</label>
         <input

@@ -33,12 +33,13 @@ public class UserController : ControllerBase
     {
         var result = await _userService.CreateUserAsync(model);
 
-        if (result.Succeeded)
+        if (result.Success)
         {
-            return Ok(new { Message = "User registered successfully!" });
+            return Ok(result);
         }
 
-        return BadRequest(new { Message = "Registration failed.", Errors = result.Errors });
+        result.Message = "Registration failed.";
+        return BadRequest(result);
     }
 
     [HttpPost("login")]
@@ -48,9 +49,11 @@ public class UserController : ControllerBase
 
         if (result.Success)
         {
-            return Ok(new { Token = result.Token });
+            return Ok(result);
         }
 
-        return Unauthorized(new { Message = "Invalid login attempt.", Errors = result.Errors });
+        result.Message = "Invalid login attempt.";
+
+        return Unauthorized(result);
     }
 }

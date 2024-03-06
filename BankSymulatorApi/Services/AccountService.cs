@@ -15,8 +15,9 @@ namespace BankSymulatorApi.Services
         }
 
 
-        public async Task<bool> CreateAccountAsync(User user, NewAccountDto model)
+        public async Task<ServiceResponse<bool>> CreateAccountAsync(User user, NewAccountDto model)
         {
+            var serviceResponse = new ServiceResponse<bool>();
             try
             {
                 Account account = new Account
@@ -29,16 +30,19 @@ namespace BankSymulatorApi.Services
                 };
                 await _context.Accounts.AddAsync(account);
                 await _context.SaveChangesAsync();
-                return true;
+                serviceResponse.Success = true;
+                return serviceResponse;
             }
             catch (Exception ex)
             {
-                return false;
+                serviceResponse.Success = false;
+                return serviceResponse;
             }
         }
 
-        public async Task<List<AccountDto>> GetAccountsByUserIdAsync(string userId)
+        public async Task<ServiceResponse<List<AccountDto>>> GetAccountsByUserIdAsync(string userId)
         {
+            var serviceResponse = new ServiceResponse<List<AccountDto>>();
             var accounts = await _context.Accounts
                 .Where(a => a.OwnerId == userId)
                 .Select(a => new AccountDto
@@ -53,22 +57,23 @@ namespace BankSymulatorApi.Services
                     currency = a.Currency
                 })
                 .ToListAsync();
-
-            return accounts;
+                serviceResponse.Data = accounts;
+            return serviceResponse;
         }
 
-        public async Task<bool> DepositAsync(DepositDto model, string AccountNumber)
+        public async Task<ServiceResponse<bool>> DepositAsync(DepositDto model, string AccountNumber)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-
+                var serviceResponse = new ServiceResponse<bool>();
                 try
                 {
                     var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.AccountNumber);
 
                     if (account == null)
                     {
-                        return false;
+                        serviceResponse.Success = false;
+                        return serviceResponse;
                     }
 
                     var contributor = await _context.Contributors.FirstOrDefaultAsync(c => c.Pesel == model.Contributor.Pesel);
@@ -93,13 +98,13 @@ namespace BankSymulatorApi.Services
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    return true;
+                    return serviceResponse;
                 }
                 catch (Exception e)
                 {
                     await transaction.RollbackAsync();
-                    Console.WriteLine(e.Message);
-                    return false;
+                    serviceResponse.Success = false;
+                    return serviceResponse;
                 }
             }
         }
@@ -134,10 +139,11 @@ namespace BankSymulatorApi.Services
             return contributor;
         }
 
-        public async Task<bool> WithdrawAsync(WithdrawDto model, string userId)
+        public async Task<ServiceResponse<bool>> WithdrawAsync(WithdrawDto model, string userId)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
+                var serviceResponse = new ServiceResponse<bool>();
                 try
                 {
                     var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.AccountNumber);
@@ -146,7 +152,9 @@ namespace BankSymulatorApi.Services
                     if (!isUserIdOwnerOfSelectedAccount || account.Balance < model.Amount)
                     {
                         transaction.Rollback();
-                        return false;
+                        serviceResponse.Success = false;
+                        serviceResponse.Errors = new[] { "Insufficient funds" };
+                        return serviceResponse;
                     }
 
                     account.Balance -= model.Amount;
@@ -163,35 +171,44 @@ namespace BankSymulatorApi.Services
 
                     transaction.Commit();
 
-                    return true;
+                    return serviceResponse;
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    return false;
+                    serviceResponse.Success = false;
+                    return serviceResponse;
                 }
             }
         }
 
-        public async Task<bool> TransferAsync(TransferDto model, string userId)
+        public async Task<ServiceResponse<bool>> TransferAsync(TransferDto model, string userId)
         {
+            var serviceResponse = new ServiceResponse<bool>();
             var fromAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.FromAccountNumber);
             if (fromAccount == null)
             {
-                return false;
+                serviceResponse.Success = false;
+                serviceResponse.Errors = new[] { "Account not found" };
+                return serviceResponse;
             }
             if (fromAccount.OwnerId != userId)
             {
-                return false;
+                serviceResponse.Success = false;
+                serviceResponse.Errors = new[] { "You are not the owner of the account" };
+                return serviceResponse;
             }
             if (fromAccount.Balance < model.TransferAmount)
             {
-                return false;
+                serviceResponse.Success = false;
+                serviceResponse.Errors = new[] { "Insufficient funds" };
+                return serviceResponse;
             }
             var toAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.ToAccountNumber);
             if (toAccount == null)
             {
-                return false;
+                serviceResponse.Success = false;
+                return serviceResponse;
             }
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -215,13 +232,14 @@ namespace BankSymulatorApi.Services
                     await _context.SaveChangesAsync();
 
                     transaction.Commit();
-
-                    return true;
+                    return serviceResponse;
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    return false;
+                    serviceResponse.Success = false;
+                    serviceResponse.Errors = new[] { ex.Message };
+                    return serviceResponse;
                 }
             }
         }

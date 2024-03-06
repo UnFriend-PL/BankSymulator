@@ -1,12 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
 import "./HomeModule.scss";
-import Accounts from "../../Components/AccountComponent/Account";
-import { UserContext } from "../../Providers/userContext";
-
+import Accounts from "../../Components/AccountComponent/Accounts";
+import { UserContext } from "../../Providers/UserProvider/UserContext";
 function HomeModule() {
-  const { user } = useContext(UserContext);
-
-  if (user == null) {
+  const { getUser } = useContext(UserContext);
+  if (getUser() == null) {
     return (
       <div id="Home">
         <h1>Welcome to Bank Symulator</h1>
