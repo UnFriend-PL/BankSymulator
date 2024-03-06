@@ -80,7 +80,7 @@
       flex-basis: 100%;
       & button {
         margin: 0 1% 0 0;
-        flex-basis: 10%;
+        flex-basis: fit-content;
       }
     }
   }
@@ -95,6 +95,10 @@
     justify-content: space-between;
     align-items: center;
     align-self: flex-start;
+    flex-basis: 100%;
+    & .copy {
+      cursor: pointer;
+    }
     &__amount {
       font-size: 2em;
       flex-basis: 30%;

@@ -45,8 +45,8 @@ function Withdraw({ onClose, accountNumber }) {
           placeholder="Amount"
           step={0.01}
         />
-        <button type="submit">Submit</button>
-        <button onClick={onClose}> close </button>
+        <button type="submit">Withdraw</button>
+        <button onClick={onClose}>Cancel</button>
       </form>
     </div>
   );

@@ -112,8 +112,8 @@ function Deposit({ onClose, accountNumber }) {
           onChange={handleChange}
           placeholder="Contributor PESEL"
         />
-        <button type="submit">Submit</button>
-        <button onClick={onClose}>Close</button>
+        <button type="submit">Deposit</button>
+        <button onClick={onClose}>Cancel</button>
       </form>
     </div>
   );

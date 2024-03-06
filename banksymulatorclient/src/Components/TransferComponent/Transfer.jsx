@@ -49,7 +49,7 @@ function Transfer({ onClose, accountNumber }) {
   };
 
   return (
-    <div className="transferModal">
+    <div className="modal">
       <form onSubmit={handleSubmit}>
         <label>
           From Account Number:
@@ -96,8 +96,8 @@ function Transfer({ onClose, accountNumber }) {
             onChange={handleChange}
           />
         </label>
-        <button type="submit">Submit</button>
-        <button onClick={onClose}>Close</button>
+        <button type="submit">Transfer</button>
+        <button onClick={onClose}>Cancel</button>
       </form>
     </div>
   );

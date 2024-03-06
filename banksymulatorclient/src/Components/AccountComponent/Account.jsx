@@ -6,11 +6,15 @@ import Transfer from "../TransferComponent/Transfer";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { RiLuggageDepositFill } from "react-icons/ri";
 import { BiTransfer } from "react-icons/bi";
+import { IoCopy } from "react-icons/io5";
 
 export default function Account({ account, onSuccess }) {
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(account.accountNumber);
+  };
   function calculatePercentage(num) {
     return ((num / 3000) * 100).toFixed(2);
   }
@@ -67,7 +71,8 @@ export default function Account({ account, onSuccess }) {
             Account Number:
           </span>
           <span className="account__balance__accountNumber__number">
-            {account.accountNumber}
+            {account.accountNumber}{" "}
+            <IoCopy className="copy" onClick={handleCopy} />
           </span>
         </div>
         <div className="account__balance__percentage">

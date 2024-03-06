@@ -54,7 +54,7 @@ function NewAccount({ refresh, onClose }) {
           required
         />
         <button type="submit">Create Account</button>
-        <button onClick={() => onClose()}>Close</button>
+        <button onClick={() => onClose()}>Cancel</button>
       </form>
     </div>
   );
