@@ -11,6 +11,11 @@
   justify-content: flex-end;
   margin: 10px;
   z-index: 10001;
+  & .ico {
+    color: white;
+    font-size: 1.2em;
+    align-self: center;
+  }
   &__message {
     &__error {
       background-color: rgb(245, 106, 106);

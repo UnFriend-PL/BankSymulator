@@ -56,8 +56,8 @@ export default function EditProfileModal({ user, handleEdit }) {
         <label>Birthday</label>
         <input
           type="date"
-          name="birthday"
-          value={editedUser.birthday}
+          name="birthDate"
+          value={editedUser.birthDate}
           onChange={handleChange}
         ></input>
         <label>Phone:</label>
