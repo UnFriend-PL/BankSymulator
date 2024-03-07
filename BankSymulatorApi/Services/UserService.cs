@@ -96,5 +96,16 @@ namespace BankSymulatorApi.Services
             serviceResponse.Errors = result.Errors.Select(e => e.Description).ToArray();
             return serviceResponse;
         }
+
+        public async Task<ServiceResponse<bool>> ChangePasswordAsync(ChangePasswordDto model, string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var serviceResponse = new ServiceResponse<bool>();
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            serviceResponse.Success = result.Succeeded;
+            serviceResponse.Data = result.Succeeded;
+            serviceResponse.Errors = result.Errors.Select(e => e.Description).ToArray();
+            return serviceResponse;
+        }
     }
 }

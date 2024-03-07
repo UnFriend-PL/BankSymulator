@@ -65,7 +65,9 @@ public class UserController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
         {
-            return BadRequest(new { Message = "User not found." });
+            var response = new BankSymulatorApi.ServiceResponse<bool>();
+            response.Success = false;
+            return BadRequest(response);
         }
         var result = await _userService.EditUserDataAsync(model, userId);
 
@@ -76,6 +78,29 @@ public class UserController : ControllerBase
 
         result.Message = "Edit profile failed.";
 
+        return BadRequest(result);
+    }
+
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpPatch("changePassword")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto model)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+           var response = new BankSymulatorApi.ServiceResponse<bool>();
+            response.Success = false;
+            response.Message = "User not found. Cant identify. Try relogin";
+            return BadRequest(response);
+        }
+        var result = await _userService.ChangePasswordAsync(model, userId);
+
+        if (result.Success)
+        {
+            result.Message = "Password changed successfully!";
+            return Ok(result);
+        }
+        result.Message = "Password change failed.";
         return BadRequest(result);
     }
 }

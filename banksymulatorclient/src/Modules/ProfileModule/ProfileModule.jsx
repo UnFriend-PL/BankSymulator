@@ -3,29 +3,35 @@ import { UserContext } from "../../Providers/UserProvider/UserContext";
 import "./ProfileModule.scss";
 import { MdEditSquare } from "react-icons/md";
 import EditProfileModal from "../../Components/EditProfileComponent/EditProfile";
+import axios from "axios";
+import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
+import ChangePasswordModal from "../../Components/ChangePasswordComponent/ChangePassword";
 
 export function ProfileModule() {
   const { getUser, setUserData } = useContext(UserContext);
   const [user, setUser] = useState(getUser());
-  const [isEditing, setIsEditing] = useState(false);
-
-  const handleEdit = () => {
-    setIsEditing(!isEditing);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const handleEditProfile = () => {
+    setIsEditingProfile(!isEditingProfile);
     const updatedUserData = getUser();
     setUser(updatedUserData);
   };
 
+  const handleChangePassword = () => {
+    setIsChangingPassword(!isChangingPassword);
+  };
   return (
     <div className="profile">
       <div className="profile__section">
         <div className="profile__section__title">
           Personal Data
-          <MdEditSquare className="edit" onClick={handleEdit} />
+          <MdEditSquare className="edit" onClick={handleEditProfile} />
           <div className="profile__section__title__line"></div>
         </div>
         <div className="profile__section__content">
-          {isEditing && (
-            <EditProfileModal user={user} handleEdit={handleEdit} />
+          {isEditingProfile && (
+            <EditProfileModal user={user} handleEdit={handleEditProfile} />
           )}
           <div className="profile__section__content__item">
             <label className="profile__section__content__item__label">
@@ -83,6 +89,17 @@ export function ProfileModule() {
               {user.pesel}
             </span>
           </div>
+        </div>
+      </div>
+      <div className="profile__section">
+        {isChangingPassword && (
+          <ChangePasswordModal onClose={handleChangePassword} />
+        )}
+
+        <div className="profile__section__title">
+          Security
+          <MdEditSquare className="edit" onClick={handleChangePassword} />
+          <div className="profile__section__title__line"></div>
         </div>
       </div>
     </div>
