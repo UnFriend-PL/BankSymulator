@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import "./HomeModule.scss";
 import Accounts from "../../Components/AccountComponent/Accounts";
 import { UserContext } from "../../Providers/UserProvider/UserContext";

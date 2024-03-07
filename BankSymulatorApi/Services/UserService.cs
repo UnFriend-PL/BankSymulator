@@ -78,5 +78,34 @@ namespace BankSymulatorApi.Services
             serviceResponse.Errors = new[] { "Invalid login attempt." };
             return serviceResponse;
         }
+
+        public async Task<ServiceResponse<bool>> EditUserDataAsync(EditUserDto model, string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var serviceResponse = new ServiceResponse<bool>();
+            user.Name = model.Name;
+            user.Surname = model.Surname;
+            user.BirthDate = model.BirthDate;
+            user.Address = model.Address;
+            user.Pesel = model.Pesel;
+            user.PhoneNumber = model.PhoneNumber;
+            user.Email = model.Email;
+            var result = await _userManager.UpdateAsync(user);
+            serviceResponse.Success = result.Succeeded;
+            serviceResponse.Data = result.Succeeded;
+            serviceResponse.Errors = result.Errors.Select(e => e.Description).ToArray();
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<bool>> ChangePasswordAsync(ChangePasswordDto model, string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var serviceResponse = new ServiceResponse<bool>();
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            serviceResponse.Success = result.Succeeded;
+            serviceResponse.Data = result.Succeeded;
+            serviceResponse.Errors = result.Errors.Select(e => e.Description).ToArray();
+            return serviceResponse;
+        }
     }
 }

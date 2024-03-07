@@ -7,6 +7,8 @@ namespace BankSymulatorApi.Services
     {
         Task<ServiceResponse<IdentityResult>> CreateUserAsync(RegisterDto model);
         Task<ServiceResponse<LoginResultDto>> LoginAsync(LoginDto model);
+        Task<ServiceResponse<bool>> EditUserDataAsync(EditUserDto model, string userId);
+        Task<ServiceResponse<bool>> ChangePasswordAsync(ChangePasswordDto model, string userId);
 
     }
 }

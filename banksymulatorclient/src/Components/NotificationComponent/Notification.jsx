@@ -23,7 +23,7 @@ function Notification() {
             onClick={() => handleClose(index)}
             className="notification__close"
           >
-            <FaTrash />
+            <FaTrash className="ico" />
           </div>
         </div>
       ))}
