@@ -21,10 +21,22 @@ function Accounts() {
       try {
         if (localStorage.getItem("token") === null) {
           navigate("/login");
+          showNotification([
+            {
+              message: "Your session has expired.",
+              type: "error",
+            },
+          ]);
           return;
         }
         if (await isTokenExpired()) {
           navigate("/login");
+          showNotification([
+            {
+              message: "Your session has expired.",
+              type: "error",
+            },
+          ]);
           return;
         }
         const response = await axios.get(

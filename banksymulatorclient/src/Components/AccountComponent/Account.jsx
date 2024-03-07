@@ -88,8 +88,10 @@ export default function Account({ account, onSuccess, totalBalance }) {
         </div>
       </div>
       <div className="account__history">
-        <div className="account__history__title">History</div>
-        <AccountHistory accountNumber={account.accountNumber}></AccountHistory>
+        <AccountHistory
+          accountNumber={account.accountNumber}
+          currency={account.currency}
+        ></AccountHistory>
       </div>
     </div>
   );
