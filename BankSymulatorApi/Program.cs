@@ -89,7 +89,7 @@ namespace BankSymulatorApi
             .AddDefaultTokenProviders();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAccountService, AccountService>();
-
+            services.AddHttpClient();
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
