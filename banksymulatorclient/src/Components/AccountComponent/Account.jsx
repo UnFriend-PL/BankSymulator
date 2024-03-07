@@ -8,6 +8,7 @@ import { RiLuggageDepositFill } from "react-icons/ri";
 import { BiTransfer } from "react-icons/bi";
 import { IoCopy } from "react-icons/io5";
 import { UserContext } from "../../Providers/UserProvider/UserContext";
+import AccountHistory from "./AccountHistoryComponent/AccountHistory";
 
 export default function Account({ account, onSuccess, totalBalance }) {
   const [showDepositModal, setShowDepositModal] = useState(false);
@@ -85,6 +86,10 @@ export default function Account({ account, onSuccess, totalBalance }) {
             of total balance
           </span>
         </div>
+      </div>
+      <div className="account__history">
+        <div className="account__history__title">History</div>
+        <AccountHistory accountNumber={account.accountNumber}></AccountHistory>
       </div>
     </div>
   );

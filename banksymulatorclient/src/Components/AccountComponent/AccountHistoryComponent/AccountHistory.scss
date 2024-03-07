@@ -1,0 +1,35 @@
+.accountHistory {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  flex-basis: 100%;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  padding: 2%;
+  &__item {
+    flex-basis: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    align-self: flex-start;
+    margin: 0.5%;
+    &__kindOfTransfer {
+      font-weight: bold;
+      flex-basis: 10%;
+      &.Income {
+        color: green;
+      }
+      &.Outcome {
+        color: red;
+      }
+    }
+    &__date {
+      flex-basis: 20%;
+      
+    }
+  }
+}
