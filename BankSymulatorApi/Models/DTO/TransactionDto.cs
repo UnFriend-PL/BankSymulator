@@ -14,5 +14,7 @@ namespace BankSymulatorApi.Models.DTO
         public string Message { get; set; }
         public bool IsCompleted { get; set; }
         public float BalanceAfterOperation { get; set; }
+        public float SourceCurrencyTransferAmount { get; set; }
+
     }
 }

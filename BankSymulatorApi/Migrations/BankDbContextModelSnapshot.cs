@@ -144,6 +144,9 @@ namespace BankSymulatorApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<float>("SourceCurrencyTransferAmount")
+                        .HasColumnType("real");
+
                     b.Property<string>("ToAccountNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -243,11 +246,9 @@ namespace BankSymulatorApi.Migrations
 
             modelBuilder.Entity("BankSymulatorApi.Models.Withdraw", b =>
                 {
-                    b.Property<int>("WithdrawId")
+                    b.Property<string>("WithdrawId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WithdrawId"));
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AccountNumber")
                         .IsRequired()

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankSymulatorApi.Migrations
 {
     [DbContext(typeof(BankDbContext))]
-    [Migration("20240307145506_historyTransactions")]
-    partial class historyTransactions
+    [Migration("20240308075207_initialCreate")]
+    partial class initialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -246,11 +246,9 @@ namespace BankSymulatorApi.Migrations
 
             modelBuilder.Entity("BankSymulatorApi.Models.Withdraw", b =>
                 {
-                    b.Property<int>("WithdrawId")
+                    b.Property<string>("WithdrawId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WithdrawId"));
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AccountNumber")
                         .IsRequired()

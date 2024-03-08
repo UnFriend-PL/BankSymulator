@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import "./AccountHistory.scss";
 import axios from "axios";
 import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
-export default function AccountHistory({ accountNumber, currency }) {
+export default function AccountHistory({ accountNumber, currency, refresh }) {
   const [history, setHistory] = useState([]);
   const { showNotification } = useContext(NotificationContext);
   const [showHistory, setShowHistory] = useState(false);
@@ -40,7 +40,7 @@ export default function AccountHistory({ accountNumber, currency }) {
       }
     };
     fetchData();
-  }, []);
+  }, [refresh]);
 
   return (
     <>
@@ -77,7 +77,10 @@ export default function AccountHistory({ accountNumber, currency }) {
                 </div>
                 <div className="accountHistory__item__amount">
                   {kindOfTransfer == "Income" ? "+" : "-"}
-                  {item.transferAmount.toFixed(2)} {currency}
+                  {kindOfTransfer == "Income"
+                    ? item.transferAmount.toFixed(2)
+                    : item.sourceCurrencyTransferAmount.toFixed(2)}
+                  {currency}
                 </div>
                 <div className="accountHistory__item__message">
                   {item.message}

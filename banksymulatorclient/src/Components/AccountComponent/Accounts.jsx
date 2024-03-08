@@ -16,6 +16,10 @@ function Accounts() {
   const [totalBalance, setTotalBalance] = useState(0);
   const navigate = useNavigate();
   const [refresh, setRefresh] = useState(false);
+
+  const handleSuccess = () => {
+    setRefresh((prev) => !prev);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -51,7 +55,7 @@ function Accounts() {
           setAccounts(response.data.data);
           let total = 0;
           response.data.data.forEach((element) => {
-            total += element.balance;
+            total += element.balanceInPln;
           });
           setTotalBalance(total);
         }
@@ -89,12 +93,13 @@ function Accounts() {
 
       {loading && <p>Loading...</p>}
       {accounts &&
-        accounts.map((element, index) => (
+        accounts.map((element) => (
           <Account
-            key={index}
+            key={element.accountNumber}
             account={element}
             totalBalance={totalBalance}
-            onSuccess={setRefresh}
+            refresh={refresh}
+            handleSuccess={handleSuccess}
           />
         ))}
     </div>

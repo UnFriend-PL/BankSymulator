@@ -89,7 +89,8 @@ namespace BankSymulatorApi.Migrations
                     ToAccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsCompleted = table.Column<bool>(type: "bit", nullable: false),
-                    BalanceAfterOperation = table.Column<float>(type: "real", nullable: false)
+                    BalanceAfterOperationFromAccount = table.Column<float>(type: "real", nullable: false),
+                    BalanceAfterOperationToAccount = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -130,8 +131,7 @@ namespace BankSymulatorApi.Migrations
                 name: "Withdraws",
                 columns: table => new
                 {
-                    WithdrawId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WithdrawId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Amount = table.Column<float>(type: "real", nullable: false),
                     BalanceAfterOperation = table.Column<float>(type: "real", nullable: false),

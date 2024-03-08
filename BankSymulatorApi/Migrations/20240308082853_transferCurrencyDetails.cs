@@ -5,18 +5,13 @@
 namespace BankSymulatorApi.Migrations
 {
     /// <inheritdoc />
-    public partial class historyTransactions : Migration
+    public partial class transferCurrencyDetails : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "BalanceAfterOperation",
-                table: "Transfers",
-                newName: "BalanceAfterOperationToAccount");
-
             migrationBuilder.AddColumn<float>(
-                name: "BalanceAfterOperationFromAccount",
+                name: "SourceCurrencyTransferAmount",
                 table: "Transfers",
                 type: "real",
                 nullable: false,
@@ -27,13 +22,8 @@ namespace BankSymulatorApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "BalanceAfterOperationFromAccount",
+                name: "SourceCurrencyTransferAmount",
                 table: "Transfers");
-
-            migrationBuilder.RenameColumn(
-                name: "BalanceAfterOperationToAccount",
-                table: "Transfers",
-                newName: "BalanceAfterOperation");
         }
     }
 }

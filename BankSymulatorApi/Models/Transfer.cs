@@ -9,6 +9,7 @@ namespace BankSymulatorApi.Models
         public string TransferId { get; set; }
         public string TransferType { get; set; } = "Standard";
         public float TransferAmount { get; set; }
+        public float SourceCurrencyTransferAmount { get; set; }
         public float TransferFee { get; set; } = 0.5f;
         public DateTime TransferTime { get; set; }
         [ForeignKey("AccountNumber")]
