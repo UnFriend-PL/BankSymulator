@@ -2,41 +2,35 @@ import React, { useContext, useEffect, useState } from "react";
 import "./AccountHistory.scss";
 import axios from "axios";
 import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
+import apiService from "../../../Services/ApiService";
 export default function AccountHistory({ accountNumber, currency, refresh }) {
   const [history, setHistory] = useState([]);
+
   const { showNotification } = useContext(NotificationContext);
   const [showHistory, setShowHistory] = useState(false);
-  const historyElement = document.querySelector(".accountHistory");
-
+  const addThousandsSeparator = (number) => {
+    let numberString = number.toString();
+    numberString = numberString.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return numberString;
+  };
   const handleShowHistory = () => {
     setShowHistory(!showHistory);
   };
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `/api/Accounts/History/${accountNumber}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        const sortedResponse = response.data.data.sort((a, b) => {
+      const result = await apiService(
+        "get",
+        `/api/Accounts/History/${accountNumber}`,
+        undefined,
+        true
+      );
+      if (result.success === true) {
+        const sortedResponse = result.data.sort((a, b) => {
           return new Date(b.transferTime) - new Date(a.transferTime);
         });
         setHistory(sortedResponse);
-      } catch (error) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.errors
-        ) {
-          let notifications = error.response.data.errors.map((error) => {
-            return { message: error, type: "error" };
-          });
-          showNotification(notifications);
-        }
+      } else {
+        showNotification(result);
       }
     };
     fetchData();
@@ -78,8 +72,10 @@ export default function AccountHistory({ accountNumber, currency, refresh }) {
                 <div className="accountHistory__item__amount">
                   {kindOfTransfer == "Income" ? "+" : "-"}
                   {kindOfTransfer == "Income"
-                    ? item.transferAmount.toFixed(2)
-                    : item.sourceCurrencyTransferAmount.toFixed(2)}
+                    ? addThousandsSeparator(item.transferAmount.toFixed(2))
+                    : addThousandsSeparator(
+                        item.sourceCurrencyTransferAmount.toFixed(2)
+                      )}{" "}
                   {currency}
                 </div>
                 <div className="accountHistory__item__message">
