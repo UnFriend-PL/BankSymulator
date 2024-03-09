@@ -10,6 +10,10 @@ export async function isTokenExpired() {
   return false;
 }
 
+export async function clearToken() {
+  localStorage.removeItem("token");
+}
+
 export async function getUserEmail() {
   let token = localStorage.getItem("token");
   let decodedToken = jwtDecode(token);

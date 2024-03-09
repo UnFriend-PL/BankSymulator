@@ -288,6 +288,10 @@ namespace BankSymulatorApi.Services
         private async Task<float> GetExchangeRate(string currency)
         {
             var response = await _httpClient.GetAsync($"http://api.nbp.pl/api/exchangerates/rates/A/{currency}?format=json");
+            if (!response.IsSuccessStatusCode)
+            {
+                return 1f;
+            }
             response.EnsureSuccessStatusCode();
             var jsonString = await response.Content.ReadAsStringAsync();
             var result = await response.Content.ReadAsStringAsync();

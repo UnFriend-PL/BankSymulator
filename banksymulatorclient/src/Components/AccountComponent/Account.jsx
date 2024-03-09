@@ -17,6 +17,12 @@ export default function Account({
   refresh,
   handleSuccess,
 }) {
+  const addThousandsSeparator = (number) => {
+    let numberString = number.toString();
+    numberString = numberString.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return numberString;
+  };
+
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
@@ -47,7 +53,6 @@ export default function Account({
             <Deposit
               onClose={() => {
                 setShowDepositModal(false);
-                // onSuccess((prev) => !prev);
                 handleSuccess();
               }}
               accountNumber={account.accountNumber}
@@ -57,7 +62,6 @@ export default function Account({
             <Withdraw
               onClose={() => {
                 setShowWithdrawModal(false);
-                // onSuccess((prev) => !prev);
                 handleSuccess();
               }}
               accountNumber={account.accountNumber}
@@ -67,7 +71,6 @@ export default function Account({
             <Transfer
               onClose={() => {
                 setShowTransferModal(false);
-                // onSuccess((prev) => !prev);
                 handleSuccess();
               }}
               accountNumber={account.accountNumber}
@@ -78,7 +81,7 @@ export default function Account({
       </div>
       <div className="account__balance">
         <div className="account__balance__amount">
-          {account.balance.toFixed(2)} {account.currency}
+          {addThousandsSeparator(account.balance.toFixed(2))} {account.currency}
         </div>
         <div className="account__balance__accountNumber">
           <span className="account__balance__accountNumber__title">

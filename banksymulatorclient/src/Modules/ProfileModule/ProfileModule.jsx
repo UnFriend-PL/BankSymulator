@@ -4,46 +4,18 @@ import "./ProfileModule.scss";
 import { MdEditSquare } from "react-icons/md";
 import EditProfileModal from "../../Components/EditProfileComponent/EditProfile";
 import ChangePasswordModal from "../../Components/ChangePasswordComponent/ChangePassword";
-import { isTokenExpired } from "../../Services/TokenService";
-import { useNavigate } from "react-router-dom";
-import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
+
 export function ProfileModule() {
   const { getUser, setUserData } = useContext(UserContext);
   const [user, setUser] = useState(getUser());
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const navigate = useNavigate();
-  const { showNotification } = useContext(NotificationContext);
+
   const handleEditProfile = () => {
     setIsEditingProfile(!isEditingProfile);
     const updatedUserData = getUser();
     setUser(updatedUserData);
   };
-  useEffect(() => {
-    const checkUser = async () => {
-      if (localStorage.getItem("token") === null) {
-        navigate("/login");
-        showNotification([
-          {
-            message: "Your session has expired.",
-            type: "error",
-          },
-        ]);
-        return;
-      }
-      if (await isTokenExpired()) {
-        navigate("/login");
-        showNotification([
-          {
-            message: "Your session has expired.",
-            type: "error",
-          },
-        ]);
-        return;
-      }
-    };
-    checkUser();
-  }, []);
 
   const handleChangePassword = () => {
     setIsChangingPassword(!isChangingPassword);

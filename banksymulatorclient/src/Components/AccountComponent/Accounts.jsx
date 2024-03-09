@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import "./Accounts.scss";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { isTokenExpired } from "../../Services/TokenService";
 import NewAccount from "./NewAccountComponent/NewAccount";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 import Account from "./Account";
@@ -16,33 +15,17 @@ function Accounts() {
   const [totalBalance, setTotalBalance] = useState(0);
   const navigate = useNavigate();
   const [refresh, setRefresh] = useState(false);
-
+  const addThousandsSeparator = (number) => {
+    let numberString = number.toString();
+    numberString = numberString.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return numberString;
+  };
   const handleSuccess = () => {
     setRefresh((prev) => !prev);
   };
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (localStorage.getItem("token") === null) {
-          navigate("/login");
-          showNotification([
-            {
-              message: "Your session has expired.",
-              type: "error",
-            },
-          ]);
-          return;
-        }
-        if (await isTokenExpired()) {
-          navigate("/login");
-          showNotification([
-            {
-              message: "Your session has expired.",
-              type: "error",
-            },
-          ]);
-          return;
-        }
         const response = await axios.get(
           "/api/Account/GetAccountsByUserIdAsync",
           {
@@ -78,7 +61,18 @@ function Accounts() {
   return (
     <div className="accountWrap">
       <div className="accountWrap__section">
-        <div className="accountWrap__section__title">Accounts</div>
+        <div className="accountWrap__section__title">
+          <span className="accountWrap__section__title__text">Accounts</span>
+          <div className="accountWrap__section__title__totalBalance">
+            <span className="accountWrap__section__title__totalBalance__text">
+              Total balance:
+            </span>
+            <span className="accountWrap__section__title__totalBalance__balance">
+              {addThousandsSeparator(totalBalance.toFixed(2))} PLN
+            </span>
+          </div>
+        </div>
+
         <button
           className="accountWrap__section__button"
           onClick={() => setOpenNewAccount(true)}
