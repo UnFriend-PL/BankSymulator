@@ -1,20 +1,51 @@
 import { Link, useNavigate } from "react-router-dom";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import "./Navbar.scss";
 import { UserContext } from "../../Providers/UserProvider/UserContext";
 import { IoIosLogOut } from "react-icons/io";
 import { MdManageAccounts } from "react-icons/md";
 import { MdAccountBalance } from "react-icons/md";
-
+import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
+import { isTokenExpired, clearToken } from "../../Services/TokenService";
 function Navbar() {
   const { getUser, setUserData } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = (showNotification = true) => {
     localStorage.removeItem("token");
     setUserData(null);
+    clearToken();
     navigate("/");
+    if (showNotification)
+      showNotification([
+        {
+          message: "You have been logged out.",
+          type: "info",
+        },
+      ]);
   };
+
+  const { showNotification } = useContext(NotificationContext);
+  useEffect(() => {
+    const checkToken = async () => {
+      if (localStorage.getItem("token") !== null && (await isTokenExpired())) {
+        showNotification([
+          {
+            message: "Your session has expired.",
+            type: "error",
+          },
+          {
+            message: "You have been logged out.",
+            type: "info",
+          },
+        ]);
+        handleLogout(false);
+        clearToken();
+        return;
+      }
+    };
+    checkToken();
+  }, []);
 
   return (
     <nav className="navbar">

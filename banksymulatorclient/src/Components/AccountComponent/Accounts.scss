@@ -26,7 +26,29 @@
       font-size: 2.2em;
       line-height: 1.1;
       flex-basis: 25%;
+      display: flex;
+      flex-wrap: wrap;
+      &__text {
+        flex-basis: 100%;
+      }
+      &__totalBalance {
+        flex-basis: 100%;
+        font-size: 0.6em;
+        color: #3f3f3f;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: center;
+        &__text {
+          flex-basis: 100%;
+        }
+        &__balance {
+          flex-basis: 100%;
+          color: #5d5cff;
+        }
+      }
     }
+
     &__button {
       flex-basis: 25%;
       display: flex;
