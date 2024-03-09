@@ -3,6 +3,7 @@ import "./Deposit.scss";
 import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
 import apiService from "../../../Services/ApiService";
 import { UserContext } from "../../../Providers/UserProvider/UserContext";
+import Input, { CheckBox, Label } from "../../InputComponent/Input";
 function Deposit({ onClose, accountNumber }) {
   const { showNotification } = useContext(NotificationContext);
   const [isAccountOwner, setIsAccountOwner] = useState(true);
@@ -55,103 +56,98 @@ function Deposit({ onClose, accountNumber }) {
   return (
     <div className="modal">
       <form onSubmit={handleSubmit}>
-        <label htmlFor="accountNumber">Account Number:</label>
-        <input
-          name="accountNumber"
-          value={accountNumber}
+        <Label inputLabel={"Account Number"} inputValue={accountNumber}></Label>
+        <Input
+          inputLabel={"Amount"}
+          inputName={"amount"}
+          inputPlaceholder={"109.50"}
+          inputValue={formData.amount}
+          inputType="number"
           onChange={handleChange}
-          placeholder="Account Number"
-        />
-        <label htmlFor="amount">Amount:</label>
-        <input
-          name="amount"
-          type="number"
           step={0.01}
-          onChange={handleChange}
-          placeholder="Amount"
           min={0}
+        ></Input>
+        <CheckBox
+          inputName={"accountOwner"}
+          inputLabel={"Contributor is an account owner"}
+          inputValue={isAccountOwner}
+          onChange={() => setIsAccountOwner(!isAccountOwner)}
         />
-        <label htmlFor="accountOwner">
-          <input
-            type="checkbox"
-            id="accountOwner"
-            checked={isAccountOwner}
-            onChange={() => setIsAccountOwner(!isAccountOwner)}
-          />
-          Account Owner
-        </label>
         {!isAccountOwner && (
           <>
-            <label htmlFor="name">Contributor Name:</label>
-            <input
-              name="name"
+            <Input
+              inputLabel={"Contributor Name"}
+              inputName={"name"}
+              inputPlaceholder={"Contributor Name"}
+              inputValue={formData.contributor.name}
               onChange={handleChange}
-              placeholder="Contributor Name"
-              value={formData.contributor.name}
-            />
-            <label htmlFor="surname">Contributor Surname:</label>
-            <input
-              name="surname"
+            ></Input>
+            <Input
+              inputLabel={"Contributor Surname"}
+              inputName={"surname"}
+              inputPlaceholder={"Contributor Surname"}
+              inputValue={formData.contributor.surname}
               onChange={handleChange}
-              placeholder="Contributor Surname"
-              value={formData.contributor.surname}
-            />
-            <label htmlFor="address">Contributor Address:</label>
-            <input
-              name="address"
+            ></Input>
+            <Input
+              inputLabel={"Contributor Address"}
+              inputName={"address"}
+              inputPlaceholder={"Contributor Address"}
+              inputValue={formData.contributor.address}
               onChange={handleChange}
-              placeholder="Contributor Address"
-              value={formData.contributor.address}
-            />
-            <label htmlFor="email">Contributor Email:</label>
-            <input
-              name="email"
+            ></Input>
+            <Input
+              inputLabel={"Contributor Email"}
+              inputName={"email"}
+              inputPlaceholder={"Contributor Email"}
+              inputType="email"
+              inputValue={formData.contributor.email}
               onChange={handleChange}
-              placeholder="Contributor Email"
-              value={formData.contributor.email}
-            />
-            <label htmlFor="phoneNumber">Contributor Phone Number:</label>
-            <input
-              name="phoneNumber"
+            ></Input>
+            <Input
+              inputLabel={"Contributor Phone Number"}
+              inputName={"phoneNumber"}
+              inputType="tel"
+              inputPlaceholder={"Contributor Phone Number"}
+              inputValue={formData.contributor.phoneNumber}
               onChange={handleChange}
-              placeholder="Contributor Phone Number"
-              value={formData.contributor.phoneNumber}
-            />
-            <label htmlFor="pesel">Contributor PESEL:</label>
-            <input
-              name="pesel"
+            ></Input>
+            <Input
+              inputLabel={"Contributor PESEL"}
+              inputName={"pesel"}
+              inputType="number"
+              inputPlaceholder={"Contributor PESEL"}
+              inputValue={formData.contributor.pesel}
               onChange={handleChange}
-              placeholder="Contributor PESEL"
-              value={formData.contributor.pesel}
-            />
+            ></Input>
           </>
         )}
         {isAccountOwner && (
           <>
-            <label htmlFor="name">Contributor Name:</label>
-            <span className="modal__value__noeditable" name="name">
-              {user.name}
-            </span>
-            <label htmlFor="surname">Contributor Surname:</label>
-            <span className="modal__value__noeditable" name="surname">
-              {user.surname}
-            </span>
-            <label htmlFor="address">Contributor Address:</label>
-            <span className="modal__value__noeditable" name="address">
-              {user.address}
-            </span>
-            <label htmlFor="email">Contributor Email:</label>
-            <span className="modal__value__noeditable" name="email">
-              {user.email}
-            </span>
-            <label htmlFor="phoneNumber">Contributor Phone Number:</label>
-            <span className="modal__value__noeditable" name="phoneNumber">
-              {user.phoneNumber}
-            </span>
-            <label htmlFor="pesel">Contributor PESEL:</label>
-            <span className="modal__value__noeditable" name="pesel">
-              {user.pesel}
-            </span>
+            <Label
+              inputLabel={"Contributor Name"}
+              inputValue={user.name}
+            ></Label>
+            <Label
+              inputLabel={"Contributor Surname"}
+              inputValue={user.surname}
+            ></Label>
+            <Label
+              inputLabel={"Contributor Address"}
+              inputValue={user.address}
+            ></Label>
+            <Label
+              inputLabel={"Contributor Email"}
+              inputValue={user.email}
+            ></Label>
+            <Label
+              inputLabel={"Contributor Phone Number"}
+              inputValue={user.phoneNumber}
+            ></Label>
+            <Label
+              inputLabel={"Contributor PESEL"}
+              inputValue={user.pesel}
+            ></Label>
           </>
         )}
         <button type="submit">Deposit</button>

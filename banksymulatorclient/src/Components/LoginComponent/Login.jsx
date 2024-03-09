@@ -4,6 +4,7 @@ import "./Login.scss";
 import { UserContext } from "../../Providers/UserProvider/UserContext";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 import apiService from "../../Services/ApiService";
+import Input from "../InputComponent/Input";
 function Login() {
   const { setUserData } = useContext(UserContext);
   const { showNotification } = useContext(NotificationContext);
@@ -47,21 +48,21 @@ function Login() {
   return (
     <div className="loginWrapper">
       <form onSubmit={handleSubmit} className="loginWrapper__form">
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
+        <Input
+          inputLabel={"Email"}
+          inputType="email"
+          inputPlaceholder={"Email"}
+          inputName={"email"}
+          inputValue={formData.email}
           onChange={handleChange}
-          required
         />
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          name="password"
-          value={formData.password}
+        <Input
+          inputLabel={"Password"}
+          inputPlaceholder={"Password"}
+          inputType="password"
+          inputName={"password"}
+          inputValue={formData.password}
           onChange={handleChange}
-          required
         />
         <button type="submit">Login</button>
       </form>

@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import "./Transfer.scss";
 import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
 import apiService from "../../../Services/ApiService";
+import Input, { Select } from "../../InputComponent/Input";
 
 function Transfer({ onClose, accountNumber }) {
   const { showNotification } = useContext(NotificationContext);
@@ -43,51 +44,47 @@ function Transfer({ onClose, accountNumber }) {
   return (
     <div className="modal">
       <form onSubmit={handleSubmit}>
-        <label>
-          From Account Number:
-          <input
-            type="text"
-            name="fromAccountNumber"
-            value={formData.fromAccountNumber}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          To Account Number:
-          <input
-            type="text"
-            name="toAccountNumber"
-            value={formData.toAccountNumber}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          Transfer Amount:
-          <input
-            type="number"
-            name="transferAmount"
-            value={formData.transferAmount}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          Transfer Type:
-          <input
-            type="text"
-            name="transferType"
-            value={formData.transferType}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          Message:
-          <input
-            type="text"
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-          />
-        </label>
+        <Input
+          inputLabel={"Source Account"}
+          inputPlaceholder={"Source Account"}
+          inputName={"fromAccountNumber"}
+          inputValue={formData.fromAccountNumber}
+          onChange={handleChange}
+        />
+        <Input
+          inputLabel={"Destination Account"}
+          inputPlaceholder={"Destination Account"}
+          inputName={"toAccountNumber"}
+          inputValue={formData.toAccountNumber}
+          onChange={handleChange}
+        />
+        <Input
+          inputLabel={"Transfer Amount"}
+          inputPlaceholder={"Transfer Amount"}
+          inputName={"transferAmount"}
+          inputValue={formData.transferAmount}
+          inputType="number"
+          step={0.01}
+          min={0.01}
+          onChange={handleChange}
+        />
+        <Select
+          inputLabel={"Transfer Type"}
+          inputName={"transferType"}
+          inputValue={formData.transferType}
+          onChange={handleChange}
+          options={[
+            { value: "Standard", label: "Standard" },
+            { value: "Express", label: "Express" },
+          ]}
+        />
+        <Input
+          inputLabel={"Message"}
+          inputPlaceholder={"Message"}
+          inputName={"message"}
+          inputValue={formData.message}
+          onChange={handleChange}
+        />
         <button type="submit">Transfer</button>
         <button onClick={onClose}>Cancel</button>
       </form>

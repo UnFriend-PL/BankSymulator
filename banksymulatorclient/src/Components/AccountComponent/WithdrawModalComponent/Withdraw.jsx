@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import "./Withdraw.scss";
 import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
 import apiService from "../../../Services/ApiService";
+import Input from "../../InputComponent/Input";
 
 function Withdraw({ onClose, accountNumber }) {
   const { showNotification } = useContext(NotificationContext);
@@ -33,12 +34,14 @@ function Withdraw({ onClose, accountNumber }) {
   return (
     <div className="modal">
       <form onSubmit={handleSubmit}>
-        <input
-          name="amount"
-          type="number"
-          onChange={handleChange}
-          placeholder="Amount"
+        <Input
+          inputLabel={"amount"}
+          inputPlaceholder={"Amount"}
           step={0.01}
+          min={0.01}
+          inputName={"amount"}
+          inputValue={formData.amount}
+          onChange={handleChange}
         />
         <button type="submit">Withdraw</button>
         <button onClick={onClose}>Cancel</button>

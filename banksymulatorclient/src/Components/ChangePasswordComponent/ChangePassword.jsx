@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 import apiService from "../../Services/ApiService";
+import Input from "../InputComponent/Input";
 export default function ChangePasswordModal({ onClose }) {
   const { showNotification } = useContext(NotificationContext);
   const [changePasswordModel, setChangePasswordModel] = useState(null);
@@ -40,12 +41,30 @@ export default function ChangePasswordModal({ onClose }) {
   return (
     <div className="modal">
       <form onSubmit={handleChangePassword}>
-        <label>Current Password:</label>
-        <input type="password" name="currentPassword" onChange={handleChange} />
-        <label>New Password:</label>
-        <input type="password" name="newPassword" onChange={handleChange} />
-        <label>Repeat New Password:</label>
-        <input type="password" name="repeatPassword" onChange={handleChange} />
+        <Input
+          inputLabel={"Current Password"}
+          inputType="password"
+          inputName="currentPassword"
+          inputPlaceholder={"Current Password"}
+          inputValue={changePasswordModel?.currentPassword}
+          onChange={handleChange}
+        />
+        <Input
+          inputLabel={"New Password"}
+          inputType="password"
+          inputName="newPassword"
+          inputPlaceholder={"New Password"}
+          inputValue={changePasswordModel?.newPassword}
+          onChange={handleChange}
+        />
+        <Input
+          inputLabel={"Repeat New Password"}
+          inputType="password"
+          inputName="repeatPassword"
+          inputPlaceholder={"Repeat New Password"}
+          inputValue={changePasswordModel?.repeatPassword}
+          onChange={handleChange}
+        />
         <button type="submit">Change Password</button>
         <button onClick={onClose}>Cancel</button>
       </form>

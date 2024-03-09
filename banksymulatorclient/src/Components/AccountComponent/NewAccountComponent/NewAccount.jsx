@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import "./NewAccount.scss";
 import apiService from "../../../Services/ApiService";
 import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
+import Input, { Select } from "../../InputComponent/Input";
 function NewAccount({ refresh, onClose }) {
   const { showNotification } = useContext(NotificationContext);
   const [formData, setFormData] = useState({
@@ -39,7 +40,18 @@ function NewAccount({ refresh, onClose }) {
   return (
     <div className="modal">
       <form onSubmit={handleSubmit}>
-        <label>
+        <Select
+          options={[
+            { value: "PLN", label: "PLN" },
+            { value: "EUR", label: "EUR" },
+            { value: "USD", label: "USD" },
+          ]}
+          inputLabel={"Currency"}
+          inputName={"currency"}
+          inputValue={formData.currency}
+          onChange={handleChange}
+        />
+        {/* <label>
           Currency:
           <input
             type="text"
@@ -48,14 +60,13 @@ function NewAccount({ refresh, onClose }) {
             value={formData.currency}
             onChange={handleChange}
           />
-        </label>
-        <label htmlFor="name">Name:</label>
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
+        </label> */}
+        <Input
+          inputLabel={"Name"}
+          inputPlaceholder={"Name"}
+          inputName={"name"}
+          inputValue={formData.name}
           onChange={handleChange}
-          required
         />
         <button type="submit">Create Account</button>
         <button onClick={() => onClose()}>Cancel</button>
