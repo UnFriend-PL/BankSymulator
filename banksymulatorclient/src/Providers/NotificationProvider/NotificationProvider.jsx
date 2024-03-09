@@ -6,7 +6,6 @@ export const NotificationProvider = ({ children }) => {
   const [notification, setNotification] = useState(null);
 
   const showNotification = (notifications) => {
-    console.log("showNotification", notifications);
     setNotification(notifications);
     setTimeout(() => setNotification(null), 10000);
   };

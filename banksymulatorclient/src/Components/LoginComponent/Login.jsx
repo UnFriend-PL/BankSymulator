@@ -1,5 +1,4 @@
 import { useState, useContext } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Login.scss";
 import { UserContext } from "../../Providers/UserProvider/UserContext";
@@ -24,32 +23,24 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("/api/Users/Login", formData);
-      if (response.status == 200) {
-        var result = response.data;
-        localStorage.setItem("token", result.data.token);
-        let user = {
-          email: result.data.email,
-          name: result.data.name,
-          surname: result.data.surname,
-          phoneNumber: result.data.phoneNumber,
-          birthDate: result.data.birthDate,
-          address: result.data.address,
-          pesel: result.data.pesel,
-        };
-        setUserData(user);
-      }
+
+    const result = await apiService("post", "/api/Users/Login", formData);
+    if (result.success === true) {
+      localStorage.setItem("token", result.data.token);
+      let user = {
+        email: result.data.email,
+        name: result.data.name,
+        surname: result.data.surname,
+        phoneNumber: result.data.phoneNumber,
+        birthDate: result.data.birthDate,
+        address: result.data.address,
+        pesel: result.data.pesel,
+      };
+      setUserData(user);
       navigate("/");
       showNotification([{ message: "Logged in successfully", type: "info" }]);
-    } catch (err) {
-      if (err.response && err.response.data && err.response.data.errors) {
-        let notifications = err.response.data.errors.map((error) => {
-          return { message: error, type: "error" };
-        });
-        showNotification(notifications);
-      }
-      console.error(err);
+    } else {
+      showNotification(result);
     }
   };
 

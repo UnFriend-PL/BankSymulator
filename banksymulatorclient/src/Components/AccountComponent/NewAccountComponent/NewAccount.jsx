@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useContext, useState } from "react";
 import "./NewAccount.scss";
+import apiService from "../../../Services/ApiService";
+import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
 function NewAccount({ refresh, onClose }) {
+  const { showNotification } = useContext(NotificationContext);
   const [formData, setFormData] = useState({
     currency: "PLN",
     name: "Additional Account",
@@ -14,21 +16,23 @@ function NewAccount({ refresh, onClose }) {
         [e.target.name]: e.target.value,
       };
     });
-    console.log(formData);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await axios.post("/api/Accounts/Create", formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+    const result = await apiService(
+      "post",
+      "/api/Accounts/Create",
+      formData,
+      true
+    );
+    if (result.success === true) {
+      showNotification([{ message: "Account created", type: "info" }]);
       refresh((prev) => !prev);
       onClose();
-    } catch (err) {
-      console.error(err);
+    } else {
+      showNotification(result);
+      onClose();
     }
   };
 

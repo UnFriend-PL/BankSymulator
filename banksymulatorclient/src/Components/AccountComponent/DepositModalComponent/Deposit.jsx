@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
-import axios from "axios";
 import "./Deposit.scss";
 import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
+import apiService from "../../../Services/ApiService";
 
 function Deposit({ onClose, accountNumber }) {
   const { showNotification } = useContext(NotificationContext);
@@ -35,26 +35,18 @@ function Deposit({ onClose, accountNumber }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.put("/api/Accounts/Deposit", formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      console.log(response.data);
-      if (response.data.success) {
-        showNotification([{ message: "Deposit successful", type: "info" }]);
-      }
-      onClose();
-    } catch (err) {
-      if (err.response && err.response.data && err.response.data.errors) {
-        let notifications = err.response.data.errors.map((error) => {
-          return { message: error, type: "error" };
-        });
-        showNotification(notifications);
-      }
-      console.error(err);
+    const result = await apiService(
+      "put",
+      "/api/Accounts/Deposit",
+      formData,
+      true
+    );
+    if (result.success === true) {
+      showNotification([{ message: "Deposit successful", type: "info" }]);
+    } else {
+      showNotification(result);
     }
+    onClose();
   };
 
   return (

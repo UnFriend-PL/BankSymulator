@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import "./Transfer.scss";
-import axios from "axios";
 import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
+import apiService from "../../../Services/ApiService";
 
 function Transfer({ onClose, accountNumber }) {
   const { showNotification } = useContext(NotificationContext);
@@ -25,24 +25,18 @@ function Transfer({ onClose, accountNumber }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.put("/api/Accounts/Transfer", formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      if (response.data.success) {
-        showNotification([{ message: "Transfer successful", type: "info" }]);
-        onClose();
-      }
-    } catch (err) {
-      if (err.response && err.response.data && err.response.data.errors) {
-        let notifications = err.response.data.errors.map((error) => {
-          return { message: error, type: "error" };
-        });
-        onClose();
-        showNotification(notifications);
-      }
+    const result = await apiService(
+      "put",
+      "/api/Accounts/Transfer",
+      formData,
+      true
+    );
+    if (result.success === true) {
+      showNotification([{ message: "Transfer successful", type: "info" }]);
+      onClose();
+    } else {
+      showNotification(result);
+      onClose();
     }
   };
 

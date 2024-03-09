@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Register.scss";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
+import apiService from "../../Services/ApiService";
 
 function Register() {
   const { showNotification } = useContext(NotificationContext);
@@ -47,26 +47,12 @@ function Register() {
       ]);
       return;
     }
-    try {
-      const response = await axios.post("/api/Users/Register", formData);
-      if (response.data.success) {
-        navigate("/login");
-        showNotification([
-          { message: "Registered successfully", type: "info" },
-        ]);
-      } else {
-        let notifications = response.errors.map((error) => {
-          return { message: error, type: "error" };
-        });
-        showNotification(notifications);
-      }
-    } catch (err) {
-      if (err.response && err.response.data && err.response.data.errors) {
-        let notifications = err.response.data.errors.map((error) => {
-          return { message: error, type: "error" };
-        });
-        showNotification(notifications);
-      }
+    const result = await apiService("post", "/api/Users/Register", formData);
+    if (result.success === true) {
+      navigate("/login");
+      showNotification([{ message: "Registered successfully", type: "info" }]);
+    } else {
+      showNotification(result);
     }
   };
   const [confirmPassword, setConfirmPassword] = useState("");

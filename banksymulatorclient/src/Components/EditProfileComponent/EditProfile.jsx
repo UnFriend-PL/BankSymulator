@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { UserContext } from "../../Providers/UserProvider/UserContext";
-import axios from "axios";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
+import apiService from "../../Services/ApiService";
 export default function EditProfileModal({ user, handleEdit }) {
   const [editedUser, setEditedUser] = useState(user);
   const { setUserData } = useContext(UserContext);
@@ -15,28 +15,19 @@ export default function EditProfileModal({ user, handleEdit }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
-
-    try {
-      const response = await axios.patch("/api/Users/Edit", editedUser, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      if (response.data.success) {
-        setUserData(editedUser);
-        showNotification([{ message: "Profile updated", type: "info" }]);
-
-        handleEdit();
-      }
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.errors) {
-        let notifications = error.response.data.errors.map((error) => {
-          return { message: error, type: "error" };
-        });
-        showNotification(notifications);
-        handleEdit();
-      }
+    const result = await apiService(
+      "patch",
+      "/api/Users/Edit",
+      editedUser,
+      true
+    );
+    if (result.success === true) {
+      setUserData(editedUser);
+      showNotification([{ message: "Profile updated", type: "info" }]);
+      handleEdit();
+    } else {
+      showNotification(result);
+      handleEdit();
     }
   };
 
