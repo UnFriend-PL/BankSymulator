@@ -111,5 +111,18 @@ namespace BankSymulatorApi.Controllers
             result.Message = "Transfer failed.";
             return BadRequest(result);
         }
+
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpGet("GetAccountHistoryAsync/{accountNumber}")]
+        public async Task<IActionResult> GetAccountHistoryAsync(string accountNumber)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return BadRequest(new { Message = "User not found." });
+            }
+            var history = await _accountService.GetAccountHistoryAsync(accountNumber, userId);
+            return Ok(history);
+        }
     }
 }

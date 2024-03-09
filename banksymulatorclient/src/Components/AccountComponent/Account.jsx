@@ -8,8 +8,15 @@ import { RiLuggageDepositFill } from "react-icons/ri";
 import { BiTransfer } from "react-icons/bi";
 import { IoCopy } from "react-icons/io5";
 import { UserContext } from "../../Providers/UserProvider/UserContext";
+import AccountHistory from "./AccountHistoryComponent/AccountHistory";
 
-export default function Account({ account, onSuccess, totalBalance }) {
+export default function Account({
+  account,
+  onSuccess,
+  totalBalance,
+  refresh,
+  handleSuccess,
+}) {
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
@@ -40,7 +47,8 @@ export default function Account({ account, onSuccess, totalBalance }) {
             <Deposit
               onClose={() => {
                 setShowDepositModal(false);
-                onSuccess((prev) => !prev);
+                // onSuccess((prev) => !prev);
+                handleSuccess();
               }}
               accountNumber={account.accountNumber}
             />
@@ -49,7 +57,8 @@ export default function Account({ account, onSuccess, totalBalance }) {
             <Withdraw
               onClose={() => {
                 setShowWithdrawModal(false);
-                onSuccess((prev) => !prev);
+                // onSuccess((prev) => !prev);
+                handleSuccess();
               }}
               accountNumber={account.accountNumber}
             />
@@ -58,7 +67,8 @@ export default function Account({ account, onSuccess, totalBalance }) {
             <Transfer
               onClose={() => {
                 setShowTransferModal(false);
-                onSuccess((prev) => !prev);
+                // onSuccess((prev) => !prev);
+                handleSuccess();
               }}
               accountNumber={account.accountNumber}
             />
@@ -80,11 +90,18 @@ export default function Account({ account, onSuccess, totalBalance }) {
           </span>
         </div>
         <div className="account__balance__percentage">
-          {calculatePercentage(account.balance)}%
+          {calculatePercentage(account.balanceInPln)}%
           <span className="account__balance__percentage__line">
             of total balance
           </span>
         </div>
+      </div>
+      <div className="account__history">
+        <AccountHistory
+          accountNumber={account.accountNumber}
+          currency={account.currency}
+          refresh={refresh}
+        ></AccountHistory>
       </div>
     </div>
   );

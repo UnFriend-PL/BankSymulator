@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankSymulatorApi.Migrations
 {
     [DbContext(typeof(BankDbContext))]
-    [Migration("20240305095502_initialCreate")]
-    partial class initialCreate
+    [Migration("20240308082853_transferCurrencyDetails")]
+    partial class transferCurrencyDetails
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -130,7 +130,10 @@ namespace BankSymulatorApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<float>("BalanceAfterOperation")
+                    b.Property<float>("BalanceAfterOperationFromAccount")
+                        .HasColumnType("real");
+
+                    b.Property<float>("BalanceAfterOperationToAccount")
                         .HasColumnType("real");
 
                     b.Property<string>("FromAccountNumber")
@@ -143,6 +146,9 @@ namespace BankSymulatorApi.Migrations
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("SourceCurrencyTransferAmount")
+                        .HasColumnType("real");
 
                     b.Property<string>("ToAccountNumber")
                         .IsRequired()
@@ -243,11 +249,9 @@ namespace BankSymulatorApi.Migrations
 
             modelBuilder.Entity("BankSymulatorApi.Models.Withdraw", b =>
                 {
-                    b.Property<int>("WithdrawId")
+                    b.Property<string>("WithdrawId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WithdrawId"));
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AccountNumber")
                         .IsRequired()

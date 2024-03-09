@@ -1,8 +1,11 @@
-﻿namespace BankSymulatorApi.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BankSymulatorApi.Models
 {
     public class Withdraw
     {
-        public int WithdrawId { get; set; }
+        [Key]
+        public string WithdrawId { get; set; }
         public string AccountNumber { get; set; }
         public float Amount { get; set;}
         public float BalanceAfterOperation { get; set; }

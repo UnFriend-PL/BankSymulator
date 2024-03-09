@@ -16,7 +16,6 @@ namespace BankSymulatorApi.Services
             _httpClient = httpClient;
         }
 
-
         public async Task<ServiceResponse<bool>> CreateAccountAsync(User user, NewAccountDto model)
         {
             var serviceResponse = new ServiceResponse<bool>();
@@ -54,11 +53,20 @@ namespace BankSymulatorApi.Services
                     AccountNumber = a.AccountNumber,
                     Name = a.Name,
                     Balance = a.Balance,
+                    BalanceInPln = a.Balance,
                     IsActive = a.IsActive,
                     IsSaveAccount = a.IsSaveAccount,
                     currency = a.Currency
                 })
                 .ToListAsync();
+            foreach(var account in accounts)
+            {
+                if(account.currency != "PLN")
+                {
+                    var exchangeRate = await GetExchangeRate(account.currency);
+                    account.BalanceInPln = account.Balance * exchangeRate;
+                }
+            }
             serviceResponse.Data = accounts;
             return serviceResponse;
         }
@@ -222,19 +230,21 @@ namespace BankSymulatorApi.Services
                 try
                 {
                     fromAccount.Balance -= model.TransferAmount;
-
-                    toAccount.Balance = await CalculateNewBalance(toAccount, fromAccount, model.TransferAmount, useExchangeRate);
+                    var amount =  await CalculateAmount(toAccount, fromAccount, model.TransferAmount, useExchangeRate);
+                    toAccount.Balance += amount;
 
                     var transfer = new Transfer
                     {
                         TransferType = model.TransferType,
-                        TransferAmount = model.TransferAmount,
+                        SourceCurrencyTransferAmount = model.TransferAmount,
+                        TransferAmount = amount,
                         TransferTime = DateTime.Now,
                         FromAccountNumber = fromAccount.AccountNumber,
                         ToAccountNumber = toAccount.AccountNumber,
                         Message = model.Message,
                         IsCompleted = true,
-                        BalanceAfterOperation = fromAccount.Balance
+                        BalanceAfterOperationFromAccount = fromAccount.Balance,
+                        BalanceAfterOperationToAccount = toAccount.Balance
                     };
 
                     await _context.Transfers.AddAsync(transfer);
@@ -253,7 +263,7 @@ namespace BankSymulatorApi.Services
             }
         }
 
-        private async Task<float> CalculateNewBalance(Account toAccount, Account fromAccount, float transferAmount, bool useExchangeRate)
+        private async Task<float> CalculateAmount(Account toAccount, Account fromAccount, float transferAmount, bool useExchangeRate)
         {
             if (useExchangeRate)
             {
@@ -261,17 +271,17 @@ namespace BankSymulatorApi.Services
                 if (toAccount.Currency == "PLN")
                 {
                     exchangeRate = await GetExchangeRate(fromAccount.Currency);
-                    return toAccount.Balance + transferAmount * exchangeRate;
+                    return transferAmount * exchangeRate;
                 }
                 else
                 {
                     exchangeRate = await GetExchangeRate(toAccount.Currency);
-                    return toAccount.Balance + transferAmount / exchangeRate;
+                    return transferAmount / exchangeRate;
                 }
             }
             else
             {
-                return toAccount.Balance + transferAmount;
+                return transferAmount;
             }
         }
 
@@ -283,6 +293,96 @@ namespace BankSymulatorApi.Services
             var result = await response.Content.ReadAsStringAsync();
             var exchangeRateResponse = JsonConvert.DeserializeObject<ExchangeRateResponse>(jsonString);
             return exchangeRateResponse.Rates[0].Mid;
+        }
+
+        public async Task<ServiceResponse<List<TransactionDto>>> GetAccountHistoryAsync(string accountNumber, string userId)
+        {
+            var serviceResponse = new ServiceResponse<List<TransactionDto>>();
+
+            try
+            {
+                var incomingTransfers = await _context.Transfers
+                    .Where(t => t.ToAccountNumber == accountNumber)
+                    .Select(t => new TransactionDto
+                    {
+                        TransferId = t.TransferId,
+                        TransferType = t.TransferType,
+                        TransferAmount = t.TransferAmount,
+                        TransferFee = t.TransferFee,
+                        TransferTime = t.TransferTime,
+                        FromAccountNumber = t.FromAccountNumber,
+                        ToAccountNumber = t.ToAccountNumber,
+                        Message = t.Message,
+                        IsCompleted = t.IsCompleted,
+                        BalanceAfterOperation = t.BalanceAfterOperationToAccount,
+                        SourceCurrencyTransferAmount = t.SourceCurrencyTransferAmount
+                    })
+                    .ToListAsync();
+
+                var outComingTransfers = await _context.Transfers
+                    .Where(t => t.FromAccountNumber == accountNumber)
+                    .Select(t => new TransactionDto
+                    {
+                        TransferId = t.TransferId,
+                        TransferType = t.TransferType,
+                        TransferAmount = t.TransferAmount,
+                        TransferFee = t.TransferFee,
+                        TransferTime = t.TransferTime,
+                        FromAccountNumber = t.FromAccountNumber,
+                        ToAccountNumber = t.ToAccountNumber,
+                        Message = t.Message,
+                        IsCompleted = t.IsCompleted,
+                        BalanceAfterOperation = t.BalanceAfterOperationFromAccount,
+                        SourceCurrencyTransferAmount = t.SourceCurrencyTransferAmount
+                    })
+                    .ToListAsync();
+                var deposits = await _context.Deposits
+                    .Where(d => d.AccountNumber == accountNumber)
+                    .Select(d => new TransactionDto
+                    {
+                        TransferId = d.DepositId,
+                        TransferAmount = d.Amount,
+                        TransferTime = d.DepositTime,
+                        BalanceAfterOperation = d.BalanceAfterOperation,
+                        Message = "Deposit",
+                        IsCompleted = true,
+                        TransferType = "Deposit",
+                        FromAccountNumber = "ATM",
+                        ToAccountNumber = d.AccountNumber,
+                        SourceCurrencyTransferAmount = d.Amount
+
+                    })
+                    .ToListAsync();
+                var withdraws = await _context.Withdraws
+                    .Where(w => w.AccountNumber == accountNumber)
+                    .Select(w => new TransactionDto
+                    {
+                        TransferId = w.WithdrawId,
+                        TransferAmount = w.Amount,
+                        TransferTime = w.WithdrawTime,
+                        BalanceAfterOperation = w.BalanceAfterOperation,
+                        TransferFee = 0,
+                        Message = "Withdraw",
+                        IsCompleted = true,
+                        TransferType = "Withdraw",
+                        FromAccountNumber = w.AccountNumber,
+                        ToAccountNumber = "ATM",
+                        SourceCurrencyTransferAmount = w.Amount
+                        
+                    })
+                    .ToListAsync(); 
+                var history = incomingTransfers.Concat(outComingTransfers).Concat(deposits).Concat(withdraws).ToList();
+                serviceResponse.Data = history;
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Errors = new[] { ex.Message };
+            }
+
+            return serviceResponse;
+
+
         }
     }
 }
