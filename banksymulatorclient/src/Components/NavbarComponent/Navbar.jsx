@@ -11,11 +11,18 @@ function Navbar() {
   const { getUser, setUserData } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = (showNotification = true) => {
     localStorage.removeItem("token");
     setUserData(null);
     clearToken();
     navigate("/");
+    if (showNotification)
+      showNotification([
+        {
+          message: "You have been logged out.",
+          type: "info",
+        },
+      ]);
   };
 
   const { showNotification } = useContext(NotificationContext);
@@ -27,8 +34,12 @@ function Navbar() {
             message: "Your session has expired.",
             type: "error",
           },
+          {
+            message: "You have been logged out.",
+            type: "info",
+          },
         ]);
-        handleLogout();
+        handleLogout(false);
         clearToken();
         return;
       }
