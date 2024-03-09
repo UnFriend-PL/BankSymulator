@@ -10,10 +10,10 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: pc,
+        target: laptop,
         changeOrigin: false,
         secure: false,
-        // rewrite: (path) => path.replace(/^\/api/, '')
+        // rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
   },

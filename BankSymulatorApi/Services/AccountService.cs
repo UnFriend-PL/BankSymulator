@@ -2,16 +2,18 @@
 using BankSymulatorApi.Models;
 using BankSymulatorApi.Models.DTO;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace BankSymulatorApi.Services
 {
     public class AccountService : IAccountService
     {
         private readonly BankDbContext _context;
-
-        public AccountService(BankDbContext context)
+        private readonly HttpClient _httpClient;
+        public AccountService(BankDbContext context, HttpClient httpClient)
         {
             _context = context;
+            _httpClient = httpClient;
         }
 
 
@@ -57,7 +59,7 @@ namespace BankSymulatorApi.Services
                     currency = a.Currency
                 })
                 .ToListAsync();
-                serviceResponse.Data = accounts;
+            serviceResponse.Data = accounts;
             return serviceResponse;
         }
 
@@ -186,6 +188,7 @@ namespace BankSymulatorApi.Services
         {
             var serviceResponse = new ServiceResponse<bool>();
             var fromAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.FromAccountNumber);
+
             if (fromAccount == null)
             {
                 serviceResponse.Success = false;
@@ -210,12 +213,18 @@ namespace BankSymulatorApi.Services
                 serviceResponse.Success = false;
                 return serviceResponse;
             }
+            bool useExchangeRate = false;
+            if (fromAccount.Currency != toAccount.Currency) useExchangeRate = true;
+
+
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
                     fromAccount.Balance -= model.TransferAmount;
-                    toAccount.Balance += model.TransferAmount;
+
+                    toAccount.Balance = await CalculateNewBalance(toAccount, fromAccount, model.TransferAmount, useExchangeRate);
+
                     var transfer = new Transfer
                     {
                         TransferType = model.TransferType,
@@ -227,7 +236,7 @@ namespace BankSymulatorApi.Services
                         IsCompleted = true,
                         BalanceAfterOperation = fromAccount.Balance
                     };
-                    fromAccount.Balance -= transfer.TransferFee;
+
                     await _context.Transfers.AddAsync(transfer);
                     await _context.SaveChangesAsync();
 
@@ -242,6 +251,38 @@ namespace BankSymulatorApi.Services
                     return serviceResponse;
                 }
             }
+        }
+
+        private async Task<float> CalculateNewBalance(Account toAccount, Account fromAccount, float transferAmount, bool useExchangeRate)
+        {
+            if (useExchangeRate)
+            {
+                float exchangeRate = 1f;
+                if (toAccount.Currency == "PLN")
+                {
+                    exchangeRate = await GetExchangeRate(fromAccount.Currency);
+                    return toAccount.Balance + transferAmount * exchangeRate;
+                }
+                else
+                {
+                    exchangeRate = await GetExchangeRate(toAccount.Currency);
+                    return toAccount.Balance + transferAmount / exchangeRate;
+                }
+            }
+            else
+            {
+                return toAccount.Balance + transferAmount;
+            }
+        }
+
+        private async Task<float> GetExchangeRate(string currency)
+        {
+            var response = await _httpClient.GetAsync($"http://api.nbp.pl/api/exchangerates/rates/A/{currency}?format=json");
+            response.EnsureSuccessStatusCode();
+            var jsonString = await response.Content.ReadAsStringAsync();
+            var result = await response.Content.ReadAsStringAsync();
+            var exchangeRateResponse = JsonConvert.DeserializeObject<ExchangeRateResponse>(jsonString);
+            return exchangeRateResponse.Rates[0].Mid;
         }
     }
 }
