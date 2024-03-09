@@ -15,7 +15,7 @@ export default function AccountHistory({ accountNumber, currency, refresh }) {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `/api/Account/GetAccountHistoryAsync/${accountNumber}`,
+          `/api/Accounts/History/${accountNumber}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

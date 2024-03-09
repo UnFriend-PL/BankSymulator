@@ -48,7 +48,7 @@ function Register() {
       return;
     }
     try {
-      const response = await axios.post("/api/User/register", formData);
+      const response = await axios.post("/api/Users/Register", formData);
       if (response.data.success) {
         navigate("/login");
         showNotification([

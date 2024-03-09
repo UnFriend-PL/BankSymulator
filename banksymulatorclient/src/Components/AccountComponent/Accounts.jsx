@@ -26,14 +26,11 @@ function Accounts() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          "/api/Account/GetAccountsByUserIdAsync",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        const response = await axios.get("/api/Accounts/GetByUserToken", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
         if (response.data.success) {
           setAccounts(response.data.data);
           let total = 0;

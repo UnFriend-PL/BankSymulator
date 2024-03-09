@@ -36,7 +36,7 @@ function Deposit({ onClose, accountNumber }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put("/api/Account/DepositAsync", formData, {
+      const response = await axios.put("/api/Accounts/Deposit", formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

@@ -26,7 +26,7 @@ export default function ChangePasswordModal({ onClose }) {
       const passwordData = { ...changePasswordModel };
       passwordData.repeatPassword = undefined;
       const response = await axios.patch(
-        "/api/User/changePassword",
+        "/api/Users/ChangePassword",
         passwordData,
         {
           headers: {

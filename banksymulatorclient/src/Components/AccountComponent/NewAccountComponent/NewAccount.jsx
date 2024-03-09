@@ -20,7 +20,7 @@ function NewAccount({ refresh, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("/api/Account/CreateAdditionalAccountAsync", formData, {
+      await axios.post("/api/Accounts/Create", formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

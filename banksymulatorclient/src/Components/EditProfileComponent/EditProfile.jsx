@@ -17,7 +17,7 @@ export default function EditProfileModal({ user, handleEdit }) {
     e.preventDefault();
 
     try {
-      const response = await axios.patch("/api/User/editUserData", editedUser, {
+      const response = await axios.patch("/api/Users/Edit", editedUser, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

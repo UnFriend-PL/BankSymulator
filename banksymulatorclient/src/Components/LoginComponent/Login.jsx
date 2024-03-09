@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./Login.scss";
 import { UserContext } from "../../Providers/UserProvider/UserContext";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
+import apiService from "../../Services/ApiService";
 function Login() {
   const { setUserData } = useContext(UserContext);
   const { showNotification } = useContext(NotificationContext);
@@ -24,7 +25,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/api/User/login", formData);
+      const response = await axios.post("/api/Users/Login", formData);
       if (response.status == 200) {
         var result = response.data;
         localStorage.setItem("token", result.data.token);

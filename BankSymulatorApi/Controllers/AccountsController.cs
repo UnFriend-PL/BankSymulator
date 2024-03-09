@@ -9,12 +9,12 @@ using System.Security.Claims;
 namespace BankSymulatorApi.Controllers
 {
     [Route("api/[controller]")]
-    public class AccountController : Controller
+    public class AccountsController : Controller
     {
         private readonly IAccountService _accountService;
         private readonly UserManager<User> _userManager;
         private readonly IUserService _userService;
-        public AccountController(IAccountService accountService, IUserService userService, UserManager<User> userManager)
+        public AccountsController(IAccountService accountService, IUserService userService, UserManager<User> userManager)
         {
             _userManager = userManager;
             _accountService = accountService;
@@ -22,7 +22,7 @@ namespace BankSymulatorApi.Controllers
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpGet("GetAccountsByUserIdAsync")]
+        [HttpGet("GetByUserToken")]
         public async Task<IActionResult> GetAccountsByUserIdAsync()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -35,7 +35,7 @@ namespace BankSymulatorApi.Controllers
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpPost("CreateAdditionalAccountAsync")]
+        [HttpPost("Create")]
         public async Task<IActionResult> CreateAdditionalAccountAsync([FromBody] NewAccountDto model)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -55,7 +55,7 @@ namespace BankSymulatorApi.Controllers
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpPut("DepositAsync")]
+        [HttpPut("Deposit")]
         public async Task<IActionResult> DepositAsync([FromBody] DepositDto model)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -70,7 +70,7 @@ namespace BankSymulatorApi.Controllers
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpPut("WithdrawAsync")]
+        [HttpPut("Withdraw")]
         public async Task<IActionResult> WithdrawAsync([FromBody] WithdrawDto model)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -92,7 +92,7 @@ namespace BankSymulatorApi.Controllers
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpPut("TransferAsync")]
+        [HttpPut("Transfer")]
         public async Task<IActionResult> TransferAsync([FromBody] TransferDto model)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -113,7 +113,7 @@ namespace BankSymulatorApi.Controllers
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpGet("GetAccountHistoryAsync/{accountNumber}")]
+        [HttpGet("History/{accountNumber}")]
         public async Task<IActionResult> GetAccountHistoryAsync(string accountNumber)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
