@@ -1,3 +1,4 @@
+@import "../../colors.scss";
 .notification {
   position: fixed;
   bottom: 0;
@@ -7,27 +8,26 @@
   flex-direction: row;
   flex-wrap: wrap;
   align-items: flex-end;
-  color: pink;
   justify-content: flex-end;
   margin: 10px;
   z-index: 10001;
   & .ico {
-    color: white;
+    color: $lightIcoColor;
     font-size: 1.2em;
     align-self: center;
   }
   &__message {
     &__error {
-      background-color: rgb(245, 106, 106);
-      color: white;
+      background-color: $errorColor;
+      color: $notifyTextColor;
       font-weight: 500;
       padding: 10px;
       margin: 10px;
       border-radius: 15px;
     }
     &__info {
-      background-color: rgb(119, 186, 51);
-      color: white;
+      background-color: $succesColor;
+      color: $notifyTextColor;
       font-weight: 500;
       padding: 10px;
       margin: 10px;
@@ -39,9 +39,8 @@
     float: right;
     background: none;
     border: none;
-    color: white;
+    color: $lightIcoColor;
     cursor: pointer;
     padding-left: 10px;
-    color: #000000;
   }
 }
