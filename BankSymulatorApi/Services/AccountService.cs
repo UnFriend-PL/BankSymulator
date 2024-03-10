@@ -59,9 +59,9 @@ namespace BankSymulatorApi.Services
                     currency = a.Currency
                 })
                 .ToListAsync();
-            foreach(var account in accounts)
+            foreach (var account in accounts)
             {
-                if(account.currency != "PLN")
+                if (account.currency != "PLN")
                 {
                     var exchangeRate = await GetExchangeRate(account.currency);
                     account.BalanceInPln = account.Balance * exchangeRate;
@@ -230,7 +230,7 @@ namespace BankSymulatorApi.Services
                 try
                 {
                     fromAccount.Balance -= model.TransferAmount;
-                    var amount =  await CalculateAmount(toAccount, fromAccount, model.TransferAmount, useExchangeRate);
+                    var amount = await CalculateAmount(toAccount, fromAccount, model.TransferAmount, useExchangeRate);
                     toAccount.Balance += amount;
 
                     var transfer = new Transfer
@@ -299,9 +299,9 @@ namespace BankSymulatorApi.Services
             return exchangeRateResponse.Rates[0].Mid;
         }
 
-        public async Task<ServiceResponse<List<TransactionDto>>> GetAccountHistoryAsync(string accountNumber, string userId)
+        public async Task<ServiceResponse<TransactionsPageDto>> GetAccountHistoryAsync(string accountNumber, string userId, int pageNumber, int pageSize)
         {
-            var serviceResponse = new ServiceResponse<List<TransactionDto>>();
+            var serviceResponse = new ServiceResponse<TransactionsPageDto>();
 
             try
             {
@@ -372,11 +372,23 @@ namespace BankSymulatorApi.Services
                         FromAccountNumber = w.AccountNumber,
                         ToAccountNumber = "ATM",
                         SourceCurrencyTransferAmount = w.Amount
-                        
+
                     })
-                    .ToListAsync(); 
+                    .ToListAsync();
                 var history = incomingTransfers.Concat(outComingTransfers).Concat(deposits).Concat(withdraws).ToList();
-                serviceResponse.Data = history;
+                var totalTransactions = await GetTotalTransactionsCount(accountNumber);
+                var totalPages = (int)Math.Ceiling((double)totalTransactions / pageSize);
+
+
+                var transactionsPageDto = new TransactionsPageDto
+                {
+                    Transactions = history.OrderByDescending(t => t.TransferTime).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
+                    TotalPages = totalPages
+
+                };
+                serviceResponse.Data = transactionsPageDto;
+
+
             }
             catch (Exception ex)
             {
@@ -386,7 +398,33 @@ namespace BankSymulatorApi.Services
 
             return serviceResponse;
 
+        }
+        private async Task<int> GetTotalTransactionsCount(string accountNumber)
+        {
+            int totalTransactionsCount = 0;
 
+            try
+            {
+                totalTransactionsCount = await _context.Transfers
+                    .Where(t => t.ToAccountNumber == accountNumber || t.FromAccountNumber == accountNumber)
+                    .CountAsync();
+
+                totalTransactionsCount += await _context.Deposits
+                    .Where(d => d.AccountNumber == accountNumber)
+                    .CountAsync();
+
+                totalTransactionsCount += await _context.Withdraws
+                    .Where(w => w.AccountNumber == accountNumber)
+                    .CountAsync();
+            }
+            catch (Exception ex)
+            {
+                // Tutaj obsłuż błędy, np. zaloguj lub rzuć odpowiedni wyjątek
+                Console.WriteLine($"cannot get count of all transactions: {ex.Message}");
+                throw;
+            }
+
+            return totalTransactionsCount;
         }
     }
 }

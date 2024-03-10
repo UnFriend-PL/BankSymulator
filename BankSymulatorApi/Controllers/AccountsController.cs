@@ -113,15 +113,15 @@ namespace BankSymulatorApi.Controllers
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpGet("History/{accountNumber}")]
-        public async Task<IActionResult> GetAccountHistoryAsync(string accountNumber)
+        [HttpGet("History/{accountNumber}/{pageNumber}/{pageSize}")]
+        public async Task<IActionResult> GetAccountHistoryAsync(string accountNumber, int pageNumber, int pageSize)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
                 return BadRequest(new { Message = "User not found." });
             }
-            var history = await _accountService.GetAccountHistoryAsync(accountNumber, userId);
+            var history = await _accountService.GetAccountHistoryAsync(accountNumber, userId, pageNumber, pageSize);
             return Ok(history);
         }
     }

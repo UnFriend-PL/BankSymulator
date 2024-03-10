@@ -17,4 +17,9 @@ namespace BankSymulatorApi.Models.DTO
         public float SourceCurrencyTransferAmount { get; set; }
 
     }
+    public class TransactionsPageDto
+    {
+        public List<TransactionDto> Transactions { get; set; }
+        public int TotalPages { get; set; }
+    }
 }
