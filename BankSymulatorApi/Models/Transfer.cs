@@ -12,10 +12,12 @@ namespace BankSymulatorApi.Models
         public float SourceCurrencyTransferAmount { get; set; }
         public float TransferFee { get; set; } = 0.5f;
         public DateTime TransferTime { get; set; }
-        [ForeignKey("AccountNumber")]
+        [ForeignKey("FromAccount")]
         public string FromAccountNumber { get; set; }
-        [ForeignKey("AccountNumber")]
+        public Account FromAccount { get; set; }
+        [ForeignKey("ToAccount")]
         public string ToAccountNumber { get; set; }
+        public Account ToAccount { get; set; }
         public string Message { get; set; }
         public bool IsCompleted { get; set; }
         public float BalanceAfterOperationFromAccount { get; set; }

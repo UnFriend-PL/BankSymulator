@@ -9,8 +9,9 @@ namespace BankSymulatorApi.Models
         public string DepositId { get; set; }
         public float Amount { get; set; }
         public DateTime DepositTime { get; set; }
-        [ForeignKey("AccountNumber")]
+        [ForeignKey("DepositAccountNumber")]
         public string AccountNumber { get; set; }
+        public Account Account { get; set; }
         public float BalanceAfterOperation { get; set; }
         public string ContributorId { get; set; }
 

@@ -27,7 +27,6 @@ namespace BankSymulatorApi.Services
                     OwnerId = user.Id,
                     AccountNumber = Guid.NewGuid().ToString(),
                     Currency = model.Currency,
-
                 };
                 await _context.Accounts.AddAsync(account);
                 await _context.SaveChangesAsync();
@@ -37,6 +36,7 @@ namespace BankSymulatorApi.Services
             catch (Exception ex)
             {
                 serviceResponse.Success = false;
+                serviceResponse.Errors = new[] { ex.Message };
                 return serviceResponse;
             }
         }
@@ -48,7 +48,6 @@ namespace BankSymulatorApi.Services
                 .Where(a => a.OwnerId == userId)
                 .Select(a => new AccountDto
                 {
-                    AccountId = a.AccountId,
                     OwnerId = a.OwnerId,
                     AccountNumber = a.AccountNumber,
                     Name = a.Name,
@@ -90,7 +89,7 @@ namespace BankSymulatorApi.Services
 
                     if (contributor == null)
                     {
-                        contributor = await AddNewContributorAsync(model.Contributor);
+                        contributor = await AddNewContributorAsync(model.Contributor, account);
                     }
                     account.Balance += model.Amount;
 
@@ -100,7 +99,7 @@ namespace BankSymulatorApi.Services
                         Amount = model.Amount,
                         DepositTime = DateTime.Now,
                         ContributorId = contributor.ContributorId,
-                        BalanceAfterOperation = account.Balance
+                        BalanceAfterOperation = account.Balance,                        
                     };
 
                     await _context.Deposits.AddAsync(deposit);
@@ -114,6 +113,7 @@ namespace BankSymulatorApi.Services
                 {
                     await transaction.RollbackAsync();
                     serviceResponse.Success = false;
+                    serviceResponse.Errors = new[] { e.Message };
                     return serviceResponse;
                 }
             }
@@ -129,7 +129,7 @@ namespace BankSymulatorApi.Services
             return account.OwnerId == userId;
         }
 
-        private async Task<Contributor> AddNewContributorAsync(ContributorDto contributorDto)
+        private async Task<Contributor> AddNewContributorAsync(ContributorDto contributorDto, Account  account)
         {
             var contributor = new Contributor
             {
@@ -138,7 +138,8 @@ namespace BankSymulatorApi.Services
                 Surname = contributorDto.Surname,
                 Email = contributorDto.Email,
                 PhoneNumber = contributorDto.PhoneNumber,
-                Address = contributorDto.Address
+                Address = contributorDto.Address,
+                AccountNumber = account.AccountNumber
             };
 
             await _context.Contributors.AddAsync(contributor);

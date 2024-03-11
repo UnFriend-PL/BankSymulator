@@ -61,7 +61,7 @@ function Navbar() {
         </div>
       ) : (
         <div className="navbar__links">
-          <Link to="/mail">
+          <Link to="/applications">
             <IoMailOpenSharp className="ico" />
           </Link>
           <Link to="/">

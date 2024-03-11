@@ -1,0 +1,25 @@
+@import "../../colors.scss";
+.mailWrapper {
+  width: 100vw;
+  padding-top: 10vh;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  align-self: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  &__mails {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    color: $thridTextColor;
+    flex-basis: 100%;
+    $backgorund-color: $darkBackground;
+    &__mail {
+      flex-basis: 100%;
+    }
+  }
+}
