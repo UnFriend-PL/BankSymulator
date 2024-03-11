@@ -27,9 +27,9 @@ namespace BankSymulatorApi.Database
             .IsRequired();
 
             modelBuilder.Entity<Deposit>().Property(d => d.DepositId).ValueGeneratedOnAdd().IsRequired();
-
             modelBuilder.Entity<Contributor>().Property(c => c.ContributorId).ValueGeneratedOnAdd().IsRequired();
             modelBuilder.Entity<Withdraw>().Property(w => w.WithdrawId).ValueGeneratedOnAdd().IsRequired();
+            modelBuilder.Entity<Mail>().Property(m => m.MailId).ValueGeneratedOnAdd().IsRequired();
         }
         public DbSet<User> Users { get; set; }
         public DbSet<IdentityRole> Roles { get; set; }
@@ -38,6 +38,7 @@ namespace BankSymulatorApi.Database
         public DbSet<Deposit> Deposits => Set<Deposit>();
         public DbSet<Contributor> Contributors => Set<Contributor>();
         public DbSet<Withdraw> Withdraws => Set<Withdraw>();
+        public DbSet<Mail> Mails => Set<Mail>();
     }
 
 }

@@ -16,6 +16,8 @@ namespace BankSymulatorApi.Models
         public bool IsActive { get; set; } = true;
         public bool IsSaveAccount { get; set; } = false;
         public string Currency { get; set; } = "PLN";
+        public bool isJointAccount { get; set; } = false;
+        public string JointOwnerId { get; set; } = string.Empty;
         public Account() { }
         public Account(string accountId, string ownerId, string accountNumber, string name, float balance, bool isActive, bool isSaveAccount, string currency)
         {

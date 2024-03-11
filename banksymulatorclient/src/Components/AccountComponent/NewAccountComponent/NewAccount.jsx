@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import "./NewAccount.scss";
 import apiService from "../../../Services/ApiService";
 import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
-import Input, { Select } from "../../InputComponent/Input";
+import Input, { CheckBox, Select } from "../../InputComponent/Input";
 function NewAccount({ refresh, onClose }) {
   const { showNotification } = useContext(NotificationContext);
   const [formData, setFormData] = useState({
@@ -51,16 +51,6 @@ function NewAccount({ refresh, onClose }) {
           inputValue={formData.currency}
           onChange={handleChange}
         />
-        {/* <label>
-          Currency:
-          <input
-            type="text"
-            name="currency"
-            placeholder="Currency PLN, USD, EUR, etc."
-            value={formData.currency}
-            onChange={handleChange}
-          />
-        </label> */}
         <Input
           inputLabel={"Name"}
           inputPlaceholder={"Name"}
@@ -68,6 +58,14 @@ function NewAccount({ refresh, onClose }) {
           inputValue={formData.name}
           onChange={handleChange}
         />
+        <CheckBox
+          inputLabel={"Joint Account"}
+          inputName={"jointAccount"}
+          inputValue={formData.jointAccount}
+          onChange={handleChange}
+        ></CheckBox>
+        {formData.jointAccount ? <>
+        </> : <></>}
         <button type="submit">Create Account</button>
         <button onClick={() => onClose()}>Cancel</button>
       </form>
