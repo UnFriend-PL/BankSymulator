@@ -1,3 +1,4 @@
+@import "../../../colors.scss";
 .accountHistory {
   display: flex;
   flex-direction: row;
@@ -6,15 +7,15 @@
   justify-content: center;
   align-self: center;
   flex-basis: 100%;
-  background-color: #f5f5f5;
+  background-color: $lightAccentBackgorund;
   border-radius: 10px;
   padding: 2%;
   &__button {
     position: absolute;
     right: 50%;
     bottom: -15px;
-    background-color: #5d5cff;
-    color: #ffffff;
+    background-color: $buttonLightBackground;
+    color: $buttonLightTextColor;
     padding: 0.1% 2%;
     font-weight: bold;
     border-radius: 15px;
@@ -40,7 +41,7 @@
       }
       &.amount {
         flex-basis: 15%;
-        color: #5d5cff;
+        color: $primaryTextColor;
       }
       &.message {
         flex-basis: 20%;
@@ -60,10 +61,10 @@
       font-weight: bold;
       flex-basis: 8%;
       &.Income {
-        color: green;
+        color: $succesColor;
       }
       &.Outcome {
-        color: red;
+        color: $errorColor;
       }
     }
     &__amount {
@@ -71,6 +72,7 @@
     }
     &__message {
       flex-basis: 20%;
+      font-weight: 500;
     }
     &__counterparty {
       flex-basis: 30%;
@@ -83,6 +85,31 @@
     }
   }
   &__item:nth-of-type(even) {
-    background-color: #efefef;
+    background-color: $lightAccentBackgorund2;
+  }
+  &__page {
+    flex-basis: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    align-self: center;
+    font-size: 0.7em;
+    &__current {
+      font-size: 1.3em;
+      text-align: right;
+    }
+    &__buttons {
+      flex-basis: 50%;
+      & button {
+        border-radius: 5px;
+        border: none;
+        background-color: $thridTextColor;
+        margin: 1% 1% 1% 0;
+        color: $buttonLightTextColor;
+        cursor: pointer;
+      }
+    }
   }
 }

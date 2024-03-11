@@ -11,6 +11,6 @@ namespace BankSymulatorApi.Services
         public Task<ServiceResponse<bool>> DepositAsync(DepositDto model, string accountNumber);
         public Task<ServiceResponse<bool>> WithdrawAsync(WithdrawDto model, string userId);
         public Task<ServiceResponse<bool>> TransferAsync(TransferDto model, string userId);
-        public Task<ServiceResponse<List<TransactionDto>>> GetAccountHistoryAsync(string accountNumber, string userId);
+        public Task<ServiceResponse<TransactionsPageDto>> GetAccountHistoryAsync(string accountNumber, string userId, int pageNumber,int pageSize);
     }
 }

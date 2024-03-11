@@ -1,3 +1,4 @@
+@import "../../colors.scss";
 .accountWrap {
   display: flex;
   flex-direction: row;
@@ -6,8 +7,8 @@
   align-items: center;
   align-self: flex-start;
   min-height: 100vh;
-  background-color: #ffffff;
-  color: #000000;
+  background-color: $lightBackground;
+  color: $thridTextColor;
   padding: 0 10px;
   flex-basis: 100%;
   padding-top: 10vh;
@@ -34,7 +35,7 @@
       &__totalBalance {
         flex-basis: 100%;
         font-size: 0.6em;
-        color: #3f3f3f;
+        color: $secondaryTextColor;
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-start;
@@ -44,7 +45,7 @@
         }
         &__balance {
           flex-basis: 100%;
-          color: #5d5cff;
+          color: $primaryTextColor;
         }
       }
     }
@@ -73,14 +74,14 @@
   flex-basis: 90%;
   padding: 2%;
   border-radius: 5px;
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
-  background-color: #fafafa;
+  box-shadow: 0px 0px 10px 0px $shadowColor;
+  background-color: $accountBackground;
   margin: 2% 0 5% 0;
   position: relative;
 
   &__panel {
     margin-bottom: 10px;
-    color: #5d5cff;
+    color: $primaryTextColor;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -110,7 +111,7 @@
 
   &__balance {
     font-size: 1.2em;
-    color: #5d5cff;
+    color: $primaryTextColor;
     font-weight: bold;
     line-height: 1;
     display: flex;
@@ -136,7 +137,7 @@
       &__line {
         font-size: 0.4em;
         flex-basis: 100%;
-        color: #3f3f3f;
+        color: $secondaryTextColor;
         text-align: center;
       }
     }
@@ -144,7 +145,7 @@
       flex-basis: 60%;
       display: flex;
       flex-wrap: wrap;
-      color: #000000;
+      color: $thridTextColor;
       &__number {
         font-size: 0.8em;
       }
@@ -162,7 +163,7 @@
     border: 1px solid #ddd;
     width: 100%;
     box-sizing: border-box;
-    color: #000000;
+    color: $thridTextColor;
   }
 
   &__info span {
@@ -174,8 +175,8 @@
       position: absolute;
       right: 50%;
       bottom: -15px;
-      background-color: #5d5cff;
-      color: #ffffff;
+      background-color: $lightBackground;
+      color: $buttonLightTextColor;
       padding: 0.1% 2%;
       font-weight: bold;
       border-radius: 15px;

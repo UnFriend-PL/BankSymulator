@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
-import axios from "axios";
 import "./Withdraw.scss";
 import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
+import apiService from "../../../Services/ApiService";
+import Input from "../../InputComponent/Input";
 
 function Withdraw({ onClose, accountNumber }) {
   const { showNotification } = useContext(NotificationContext);
@@ -15,35 +16,32 @@ function Withdraw({ onClose, accountNumber }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.put("/api/Account/WithdrawAsync", formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      if (response.data.success) {
-        showNotification([{ message: "Withdraw successful", type: "info" }]);
-        onClose();
-      }
-    } catch (err) {
-      if (err.response && err.response.data && err.response.data.errors) {
-        let notifications = err.response.data.errors.map((error) => {
-          return { message: error, type: "error" };
-        });
-        showNotification(notifications);
-      }
+    const result = await apiService(
+      "put",
+      "/api/Accounts/Withdraw",
+      formData,
+      true
+    );
+    if (result.success === true) {
+      showNotification([{ message: "Withdraw successful", type: "info" }]);
+      onClose();
+    } else {
+      showNotification(result);
+      onClose();
     }
   };
 
   return (
     <div className="modal">
       <form onSubmit={handleSubmit}>
-        <input
-          name="amount"
-          type="number"
-          onChange={handleChange}
-          placeholder="Amount"
+        <Input
+          inputLabel={"amount"}
+          inputPlaceholder={"Amount"}
           step={0.01}
+          min={0.01}
+          inputName={"amount"}
+          inputValue={formData.amount}
+          onChange={handleChange}
         />
         <button type="submit">Withdraw</button>
         <button onClick={onClose}>Cancel</button>

@@ -8,7 +8,6 @@ export function UserProvider({ children }) {
     return JSON.parse(localStorage.getItem("user"));
   };
   const setUserData = (userData) => {
-    console.log("setUserData", userData);
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
   };

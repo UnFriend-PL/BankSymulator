@@ -1,8 +1,9 @@
 import { useContext, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Register.scss";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
+import apiService from "../../Services/ApiService";
+import Input from "../InputComponent/Input";
 
 function Register() {
   const { showNotification } = useContext(NotificationContext);
@@ -47,26 +48,12 @@ function Register() {
       ]);
       return;
     }
-    try {
-      const response = await axios.post("/api/User/register", formData);
-      if (response.data.success) {
-        navigate("/login");
-        showNotification([
-          { message: "Registered successfully", type: "info" },
-        ]);
-      } else {
-        let notifications = response.errors.map((error) => {
-          return { message: error, type: "error" };
-        });
-        showNotification(notifications);
-      }
-    } catch (err) {
-      if (err.response && err.response.data && err.response.data.errors) {
-        let notifications = err.response.data.errors.map((error) => {
-          return { message: error, type: "error" };
-        });
-        showNotification(notifications);
-      }
+    const result = await apiService("post", "/api/Users/Register", formData);
+    if (result.success === true) {
+      navigate("/login");
+      showNotification([{ message: "Registered successfully", type: "info" }]);
+    } else {
+      showNotification(result);
     }
   };
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -78,79 +65,76 @@ function Register() {
     <div className="registerWrapper">
       <form onSubmit={handleSubmit} className="registerWrapper__form">
         <div className="registerWrapper__form__formBlock">
-          <label htmlFor="name">Name</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
+          <Input
+            inputLabel={"Name"}
+            inputName={"name"}
+            inputValue={formData.name}
+            inputPlaceholder={"Name"}
             onChange={handleChange}
-            required
           />
-          <label htmlFor="surname">Surname</label>
-          <input
-            type="text"
-            name="surname"
-            value={formData.surname}
+          <Input
+            inputLabel={"Surname"}
+            inputName={"surname"}
+            inputPlaceholder={"Surname"}
+            inputValue={formData.surname}
             onChange={handleChange}
-            required
           />
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
+          <Input
+            inputLabel={"Email"}
+            inputType="email"
+            inputName={"email"}
+            inputPlaceholder={"Email"}
+            inputValue={formData.email}
             onChange={handleChange}
-            required
           />
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
+          <Input
+            inputLabel={"Password"}
+            inputType="password"
+            inputPlaceholder={"Password"}
+            inputName={"password"}
+            inputValue={formData.password}
             onChange={handleChange}
-            required
           />
-          <label htmlFor="confirmPassword">Confirm password</label>
-          <input
-            type="password"
-            name="confirmPassword"
+          <Input
+            inputLabel={"Confirm password"}
+            inputType="password"
+            inputPlaceholder={"Confirm password"}
+            inputName={"confirmPassword"}
+            inputValue={confirmPassword}
             onChange={handleConfirmPassword}
-            required
           />
         </div>
         <div className="registerWrapper__form__formBlock">
-          <label htmlFor="phoneNumber">Phone number</label>
-          <input
-            type="text"
-            name="phoneNumber"
-            value={formData.phoneNumber}
+          <Input
+            inputLabel={"Phone number"}
+            inputPlaceholder={"Phone number"}
+            inputType="tel"
+            inputName={"phoneNumber"}
+            inputValue={formData.phoneNumber}
             onChange={handleChange}
-            required
           />
-          <label htmlFor="birthDate">Birth date</label>
-          <input
-            type="date"
-            name="birthDate"
-            value={formData.birthDate}
+          <Input
+            inputLabel={"Birth date"}
+            inputPlaceholder={"Birth date"}
+            inputType="date"
+            inputName={"birthDate"}
+            inputValue={formData.birthDate}
             onChange={handleChange}
-            required
           />
-          <label htmlFor="address">Address</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
+          <Input
+            inputLabel={"Address"}
+            inputPlaceholder={"Address"}
+            inputName={"address"}
+            inputValue={formData.address}
             onChange={handleChange}
-            required
-          />
-          <label htmlFor="pesel">Pesel</label>
-          <input
-            type="text"
-            name="pesel"
-            value={formData.pesel}
+          ></Input>
+          <Input
+            inputLabel={"Pesel"}
+            inputPlaceholder={"Pesel"}
+            inputName={"pesel"}
+            inputValue={formData.pesel}
             onChange={handleChange}
-            required
-          />
+          ></Input>
         </div>
         <button type="submit">Register</button>
       </form>

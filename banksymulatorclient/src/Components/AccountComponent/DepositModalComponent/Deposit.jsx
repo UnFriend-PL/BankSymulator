@@ -1,23 +1,27 @@
 import React, { useContext, useState } from "react";
-import axios from "axios";
 import "./Deposit.scss";
 import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
-
+import apiService from "../../../Services/ApiService";
+import { UserContext } from "../../../Providers/UserProvider/UserContext";
+import Input, { CheckBox, Label } from "../../InputComponent/Input";
 function Deposit({ onClose, accountNumber }) {
   const { showNotification } = useContext(NotificationContext);
+  const [isAccountOwner, setIsAccountOwner] = useState(true);
+  const { getUser } = useContext(UserContext);
+  const user = getUser();
   const [formData, setFormData] = useState({
     accountNumber: accountNumber,
     amount: 0,
     contributor: {
-      name: "",
-      surname: "",
-      address: "",
-      email: "",
-      phoneNumber: "",
-      pesel: "",
+      name: user.name,
+      surname: user.surname,
+      address: user.address,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      pesel: user.pesel,
     },
   });
-
+  console.log(formData);
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (Object.keys(formData.contributor).includes(name)) {
@@ -35,83 +39,117 @@ function Deposit({ onClose, accountNumber }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.put("/api/Account/DepositAsync", formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      console.log(response.data);
-      if (response.data.success) {
-        showNotification([{ message: "Deposit successful", type: "info" }]);
-      }
-      onClose();
-    } catch (err) {
-      if (err.response && err.response.data && err.response.data.errors) {
-        let notifications = err.response.data.errors.map((error) => {
-          return { message: error, type: "error" };
-        });
-        showNotification(notifications);
-      }
-      console.error(err);
+    const result = await apiService(
+      "put",
+      "/api/Accounts/Deposit",
+      formData,
+      true
+    );
+    if (result.success === true) {
+      showNotification([{ message: "Deposit successful", type: "info" }]);
+    } else {
+      showNotification(result);
     }
+    onClose();
   };
 
   return (
     <div className="modal">
       <form onSubmit={handleSubmit}>
-        <label htmlFor="accountNumber">Account Number:</label>
-        <input
-          name="accountNumber"
-          value={accountNumber}
+        <Label inputLabel={"Account Number"} inputValue={accountNumber}></Label>
+        <Input
+          inputLabel={"Amount"}
+          inputName={"amount"}
+          inputPlaceholder={"109.50"}
+          inputValue={formData.amount}
+          inputType="number"
           onChange={handleChange}
-          placeholder="Account Number"
-        />
-        <label htmlFor="amount">Amount:</label>
-        <input
-          name="amount"
-          type="number"
           step={0.01}
-          onChange={handleChange}
-          placeholder="Amount"
           min={0}
+        ></Input>
+        <CheckBox
+          inputName={"accountOwner"}
+          inputLabel={"Contributor is an account owner"}
+          inputValue={isAccountOwner}
+          onChange={() => setIsAccountOwner(!isAccountOwner)}
         />
-        <label htmlFor="name">Contributor Name:</label>
-        <input
-          name="name"
-          onChange={handleChange}
-          placeholder="Contributor Name"
-        />
-        <label htmlFor="surname">Contributor Surname:</label>
-        <input
-          name="surname"
-          onChange={handleChange}
-          placeholder="Contributor Surname"
-        />
-        <label htmlFor="address">Contributor Address:</label>
-        <input
-          name="address"
-          onChange={handleChange}
-          placeholder="Contributor Address"
-        />
-        <label htmlFor="email">Contributor Email:</label>
-        <input
-          name="email"
-          onChange={handleChange}
-          placeholder="Contributor Email"
-        />
-        <label htmlFor="phoneNumber">Contributor Phone Number:</label>
-        <input
-          name="phoneNumber"
-          onChange={handleChange}
-          placeholder="Contributor Phone Number"
-        />
-        <label htmlFor="pesel">Contributor PESEL:</label>
-        <input
-          name="pesel"
-          onChange={handleChange}
-          placeholder="Contributor PESEL"
-        />
+        {!isAccountOwner && (
+          <>
+            <Input
+              inputLabel={"Contributor Name"}
+              inputName={"name"}
+              inputPlaceholder={"Contributor Name"}
+              inputValue={formData.contributor.name}
+              onChange={handleChange}
+            ></Input>
+            <Input
+              inputLabel={"Contributor Surname"}
+              inputName={"surname"}
+              inputPlaceholder={"Contributor Surname"}
+              inputValue={formData.contributor.surname}
+              onChange={handleChange}
+            ></Input>
+            <Input
+              inputLabel={"Contributor Address"}
+              inputName={"address"}
+              inputPlaceholder={"Contributor Address"}
+              inputValue={formData.contributor.address}
+              onChange={handleChange}
+            ></Input>
+            <Input
+              inputLabel={"Contributor Email"}
+              inputName={"email"}
+              inputPlaceholder={"Contributor Email"}
+              inputType="email"
+              inputValue={formData.contributor.email}
+              onChange={handleChange}
+            ></Input>
+            <Input
+              inputLabel={"Contributor Phone Number"}
+              inputName={"phoneNumber"}
+              inputType="tel"
+              inputPlaceholder={"Contributor Phone Number"}
+              inputValue={formData.contributor.phoneNumber}
+              onChange={handleChange}
+            ></Input>
+            <Input
+              inputLabel={"Contributor PESEL"}
+              inputName={"pesel"}
+              inputType="number"
+              inputPlaceholder={"Contributor PESEL"}
+              inputValue={formData.contributor.pesel}
+              onChange={handleChange}
+            ></Input>
+          </>
+        )}
+        {isAccountOwner && (
+          <>
+            <Label
+              inputLabel={"Contributor Name"}
+              inputValue={user.name}
+            ></Label>
+            <Label
+              inputLabel={"Contributor Surname"}
+              inputValue={user.surname}
+            ></Label>
+            <Label
+              inputLabel={"Contributor Address"}
+              inputValue={user.address}
+            ></Label>
+            <Label
+              inputLabel={"Contributor Email"}
+              inputValue={user.email}
+            ></Label>
+            <Label
+              inputLabel={"Contributor Phone Number"}
+              inputValue={user.phoneNumber}
+            ></Label>
+            <Label
+              inputLabel={"Contributor PESEL"}
+              inputValue={user.pesel}
+            ></Label>
+          </>
+        )}
         <button type="submit">Deposit</button>
         <button onClick={onClose}>Cancel</button>
       </form>

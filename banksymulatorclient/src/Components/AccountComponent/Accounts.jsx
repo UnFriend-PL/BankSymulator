@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./Accounts.scss";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import NewAccount from "./NewAccountComponent/NewAccount";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 import Account from "./Account";
 import { FaWallet } from "react-icons/fa";
+import apiService from "../../Services/ApiService";
 
 function Accounts() {
   const [accounts, setAccounts] = useState(null);
@@ -25,33 +25,22 @@ function Accounts() {
   };
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "/api/Account/GetAccountsByUserIdAsync",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        if (response.data.success) {
-          setAccounts(response.data.data);
-          let total = 0;
-          response.data.data.forEach((element) => {
-            total += element.balanceInPln;
-          });
-          setTotalBalance(total);
-        }
-      } catch (err) {
-        console.error(err);
-        showNotification([
-          {
-            message: "An error occurred while fetching account data.",
-            type: "error",
-          },
-        ]);
-      } finally {
+      const result = await apiService(
+        "get",
+        "/api/Accounts/GetByUserToken",
+        null,
+        true
+      );
+      if (result.success === true) {
+        setAccounts(result.data);
+        let total = 0;
+        result.data.forEach((element) => {
+          total += element.balanceInPln;
+        });
+        setTotalBalance(total);
         setLoading(false);
+      } else {
+        showNotification(result);
       }
     };
 

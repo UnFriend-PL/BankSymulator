@@ -1,0 +1,161 @@
+@import "../../colors.scss";
+$primary: $primaryTextColor;
+$secondary: $secondaryTextColor;
+$gray: $thridTextColor;
+.form__group {
+  position: relative;
+  padding: 15px 0 0;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.form__field {
+  font-family: inherit;
+  width: 100%;
+  border: 0;
+  border-bottom: 2px solid;
+  outline: 0;
+  font-size: 1.3rem;
+  color: $thridTextColor;
+  padding: 7px 0;
+  background: transparent;
+  transition: border-color 0.2s;
+  border-width: 3px;
+  border-image: linear-gradient(to right, $primary, $secondary);
+  border-image-slice: 1;
+  &::placeholder {
+    color: transparent;
+  }
+
+  &:placeholder-shown ~ .form__label {
+    font-size: 1.3rem;
+    cursor: text;
+    top: 20px;
+  }
+}
+
+.form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  transition: 0.2s;
+  font-size: 1rem;
+  color: $gray;
+}
+
+.form__field:focus {
+  ~ .form__label {
+    position: absolute;
+    top: 0;
+    display: block;
+    transition: 0.2s;
+    font-size: 1rem;
+    color: $primary;
+    font-weight: 700;
+  }
+  padding-bottom: 6px;
+  font-weight: 700;
+  border-width: 3px;
+  border-image: linear-gradient(to right, $primary, $secondary);
+  border-image-slice: 1;
+}
+/* reset input */
+.form__field {
+  &:required,
+  &:invalid {
+    box-shadow: none;
+  }
+}
+
+$checkbox-size: 20px;
+$checkbox-border: $secondaryTextColor;
+$checkbox-selected: $primaryTextColor;
+
+.checkbox {
+  position: absolute;
+  opacity: 0;
+  & + label {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    line-height: $checkbox-size;
+    padding-left: $checkbox-size + 10;
+    color: $thridTextColor;
+
+    &:before {
+      position: absolute;
+      display: block;
+      left: 0;
+      top: 0;
+      content: "";
+      background: transparent;
+      width: $checkbox-size;
+      height: $checkbox-size;
+
+      box-shadow: inset 0 0 0 1px $checkbox-border;
+      border-radius: 4px;
+      transition: 200ms ease-in-out all;
+    }
+
+    &:after {
+      position: absolute;
+      display: block;
+      top: 5px;
+      left: 8px;
+      content: "";
+      width: 3px;
+      height: 7px;
+      border-right: 1px solid transparent;
+      border-bottom: 1px solid transparent;
+      transform: rotate(45deg);
+
+      transition: 200ms ease-in-out all;
+    }
+  }
+
+  & + label:hover {
+    color: #333;
+  }
+
+  & + label:focus {
+    outline: none;
+  }
+
+  &:checked {
+    & + label {
+      &:before {
+        background: $checkbox-selected;
+        box-shadow: none;
+      }
+      &:after {
+        border-color: white;
+      }
+    }
+  }
+
+  // Disabled
+  &:disabled {
+    & + label {
+      &:before {
+        background: #f2f2f2; // Disabled colour
+        box-shadow: none;
+      }
+      &:after {
+        border-color: transparent;
+      }
+    }
+  }
+
+  // Disabled Checked
+  &:checked:disabled {
+    & + label {
+      &:before {
+        background: #f2f2f2;
+        box-shadow: none;
+      }
+      &:after {
+        border-color: #cecece;
+      }
+    }
+  }
+}

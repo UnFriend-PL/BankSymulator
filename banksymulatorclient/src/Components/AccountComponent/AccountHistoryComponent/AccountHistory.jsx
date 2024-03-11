@@ -1,46 +1,68 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./AccountHistory.scss";
-import axios from "axios";
 import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
+import apiService from "../../../Services/ApiService";
 export default function AccountHistory({ accountNumber, currency, refresh }) {
   const [history, setHistory] = useState([]);
   const { showNotification } = useContext(NotificationContext);
   const [showHistory, setShowHistory] = useState(false);
-  const historyElement = document.querySelector(".accountHistory");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const handleCurrentPage = (e) => {
+    if (e > totalPages || e < 1) return;
+    setCurrentPage(e);
+  };
+  const pagination = (current, total) => {
+    const center = [
+        current - 2,
+        current - 1,
+        current,
+        current + 1,
+        current + 2,
+      ],
+      filteredCenter = center.filter((p) => p > 1 && p < total),
+      includeThreeLeft = current === 5,
+      includeThreeRight = current === total - 4,
+      includeLeftDots = current > 5,
+      includeRightDots = current < total - 4;
 
+    if (includeThreeLeft) filteredCenter.unshift(2);
+    if (includeThreeRight) filteredCenter.push(total - 1);
+
+    if (includeLeftDots) filteredCenter.unshift("...");
+    if (includeRightDots) filteredCenter.push("...");
+
+    return [1, ...filteredCenter, total];
+  };
+  const addThousandsSeparator = (number) => {
+    let numberString = number.toString();
+    numberString = numberString.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return numberString;
+  };
   const handleShowHistory = () => {
     setShowHistory(!showHistory);
   };
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `/api/Account/GetAccountHistoryAsync/${accountNumber}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        const sortedResponse = response.data.data.sort((a, b) => {
+      const result = await apiService(
+        "get",
+        `/api/Accounts/History/${accountNumber}/${currentPage}/${itemsPerPage}`,
+        undefined,
+        true
+      );
+      if (result.success === true) {
+        const sortedResponse = result.data.transactions.sort((a, b) => {
           return new Date(b.transferTime) - new Date(a.transferTime);
         });
+        setTotalPages(result.data.totalPages);
         setHistory(sortedResponse);
-      } catch (error) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.errors
-        ) {
-          let notifications = error.response.data.errors.map((error) => {
-            return { message: error, type: "error" };
-          });
-          showNotification(notifications);
-        }
+      } else {
+        showNotification(result);
       }
     };
     fetchData();
-  }, [refresh]);
+  }, [refresh, currentPage]);
 
   return (
     <>
@@ -78,8 +100,10 @@ export default function AccountHistory({ accountNumber, currency, refresh }) {
                 <div className="accountHistory__item__amount">
                   {kindOfTransfer == "Income" ? "+" : "-"}
                   {kindOfTransfer == "Income"
-                    ? item.transferAmount.toFixed(2)
-                    : item.sourceCurrencyTransferAmount.toFixed(2)}
+                    ? addThousandsSeparator(item.transferAmount.toFixed(2))
+                    : addThousandsSeparator(
+                        item.sourceCurrencyTransferAmount.toFixed(2)
+                      )}{" "}
                   {currency}
                 </div>
                 <div className="accountHistory__item__message">
@@ -105,6 +129,27 @@ export default function AccountHistory({ accountNumber, currency, refresh }) {
               </div>
             );
           })}
+          <div className="accountHistory__page">
+            <div className="accountHistory__page__buttons">
+              {pagination(currentPage, totalPages).map((item, index) => {
+                return (
+                  <button
+                    key={index}
+                    className={`accountHistory__page__item ${
+                      item === currentPage ? "active" : ""
+                    }`}
+                    disabled={item === currentPage ? true : false}
+                    onClick={() => handleCurrentPage(item)}
+                  >
+                    {item}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="accountHistory__page__current">
+              {currentPage}/{totalPages}
+            </div>
+          </div>
         </div>
       )}
     </>

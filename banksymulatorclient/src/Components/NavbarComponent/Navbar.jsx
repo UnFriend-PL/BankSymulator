@@ -7,6 +7,8 @@ import { MdManageAccounts } from "react-icons/md";
 import { MdAccountBalance } from "react-icons/md";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 import { isTokenExpired, clearToken } from "../../Services/TokenService";
+import { IoMailOpenSharp } from "react-icons/io5";
+
 function Navbar() {
   const { getUser, setUserData } = useContext(UserContext);
   const navigate = useNavigate();
@@ -59,6 +61,9 @@ function Navbar() {
         </div>
       ) : (
         <div className="navbar__links">
+          <Link to="/applications">
+            <IoMailOpenSharp className="ico" />
+          </Link>
           <Link to="/">
             <MdAccountBalance className="ico" />
           </Link>

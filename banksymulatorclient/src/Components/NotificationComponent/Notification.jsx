@@ -15,7 +15,6 @@ function Notification() {
 
   return (
     <div className="notification">
-      {console.log(notification)}
       {notification.map((notify, index) => (
         <div key={index} className={`notification__message__${notify.type}`}>
           {notify.message}

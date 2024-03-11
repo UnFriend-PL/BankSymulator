@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
 import { UserContext } from "../../Providers/UserProvider/UserContext";
-import axios from "axios";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
+import apiService from "../../Services/ApiService";
+import Input from "../InputComponent/Input";
 export default function EditProfileModal({ user, handleEdit }) {
   const [editedUser, setEditedUser] = useState(user);
   const { setUserData } = useContext(UserContext);
@@ -15,65 +16,76 @@ export default function EditProfileModal({ user, handleEdit }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
-
-    try {
-      const response = await axios.patch("/api/User/editUserData", editedUser, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      if (response.data.success) {
-        setUserData(editedUser);
-        showNotification([{ message: "Profile updated", type: "info" }]);
-
-        handleEdit();
-      }
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.errors) {
-        let notifications = error.response.data.errors.map((error) => {
-          return { message: error, type: "error" };
-        });
-        showNotification(notifications);
-        handleEdit();
-      }
+    const result = await apiService(
+      "patch",
+      "/api/Users/Edit",
+      editedUser,
+      true
+    );
+    if (result.success === true) {
+      setUserData(editedUser);
+      showNotification([{ message: "Profile updated", type: "info" }]);
+      handleEdit();
+    } else {
+      showNotification(result);
+      handleEdit();
     }
   };
 
   return (
     <div className="modal">
       <form onSubmit={handleSave}>
-        <label>Email:</label>
-        <input name="email" value={editedUser.email} onChange={handleChange} />
-        <label>First Name:</label>
-        <input name="name" value={editedUser.name} onChange={handleChange} />
-        <label>Last Name:</label>
-        <input
-          name="surname"
-          value={editedUser.surname}
+        <Input
+          inputLabel={"Email"}
+          inputName={"email"}
+          inputValue={editedUser.email}
+          inputPlaceholder={"Email"}
           onChange={handleChange}
         />
-        <label>Birthday</label>
-        <input
-          type="date"
-          name="birthDate"
-          value={editedUser.birthDate}
-          onChange={handleChange}
-        ></input>
-        <label>Phone:</label>
-        <input
-          name="phoneNumber"
-          value={editedUser.phoneNumber}
+        <Input
+          inputLabel={"First Name"}
+          inputName={"name"}
+          inputValue={editedUser.name}
+          inputPlaceholder={"First Name"}
           onChange={handleChange}
         />
-        <label>Address:</label>
-        <input
-          name="address"
-          value={editedUser.address}
+        <Input
+          inputLabel={"Last Name"}
+          inputName={"surname"}
+          inputValue={editedUser.surname}
+          inputPlaceholder={"Last Name"}
           onChange={handleChange}
         />
-        <label>Pesel:</label>
-        <input name="pesel" value={editedUser.pesel} onChange={handleChange} />
+        <Input
+          inputLabel={"Birthday"}
+          inputType={"date"}
+          inputName={"birthDate"}
+          inputValue={editedUser.birthDate}
+          inputPlaceholder={"Birthday"}
+          onChange={handleChange}
+        />
+        <Input
+          inputLabel={"Phone"}
+          inputType="tel"
+          inputName={"phoneNumber"}
+          inputValue={editedUser.phoneNumber}
+          inputPlaceholder={"Phone"}
+          onChange={handleChange}
+        />
+        <Input
+          inputLabel={"Address"}
+          inputName={"address"}
+          inputValue={editedUser.address}
+          inputPlaceholder={"Address"}
+          onChange={handleChange}
+        />
+        <Input
+          inputLabel={"Pesel"}
+          inputName={"pesel"}
+          inputValue={editedUser.pesel}
+          inputPlaceholder={"Pesel"}
+          onChange={handleChange}
+        />
         <button type="submit">Save</button>
         <button onClick={handleEdit}>Cancel</button>
       </form>

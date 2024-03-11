@@ -14,13 +14,13 @@ using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UserController : ControllerBase
+public class UsersController : ControllerBase
 {
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IConfiguration _configuration;
     private readonly IUserService _userService;
-    public UserController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration, IUserService userService)
+    public UsersController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration, IUserService userService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -29,7 +29,7 @@ public class UserController : ControllerBase
 
     }
 
-    [HttpPost("register")]
+    [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto model)
     {
         var result = await _userService.CreateUserAsync(model);
@@ -43,7 +43,7 @@ public class UserController : ControllerBase
         return BadRequest(result);
     }
 
-    [HttpPost("login")]
+    [HttpPost("Login")]
     public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
         var result = await _userService.LoginAsync(model);
@@ -59,7 +59,7 @@ public class UserController : ControllerBase
     }
 
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [HttpPatch("editUserData")]
+    [HttpPatch("Edit")]
     public async Task<IActionResult> editUserData([FromBody] EditUserDto model)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -82,7 +82,7 @@ public class UserController : ControllerBase
     }
 
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [HttpPatch("changePassword")]
+    [HttpPatch("ChangePassword")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto model)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
