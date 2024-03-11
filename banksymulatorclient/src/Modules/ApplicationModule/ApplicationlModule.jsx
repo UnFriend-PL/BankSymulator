@@ -3,7 +3,7 @@ import apiService from "../../Services/ApiService";
 import "./ApplicationModule.scss";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 export default function ApplicationModule() {
-  const [sentApplications, setSentApplications] = useState([null]);
+  const [sentApplications, setSentApplications] = useState([]);
   const { showNotification } = useContext(NotificationContext);
   useEffect(() => {
     const fetchApplications = async () => {
@@ -26,11 +26,11 @@ export default function ApplicationModule() {
   return (
     <div className="mailWrapper">
       <div className="mailWrapper__mails">
-        {sentApplications.map((application, index) => (
-          <div key={index} className="mailWrapper__mails__mail">
-            {sentApplications.map((application, index) => (
-              <div key={index}>
-                <p>Application ID: {application.applicationId}</p>
+        {sentApplications.length > 0 ? (
+          sentApplications.map((application, index) => (
+            <div key={index} className="mailWrapper__mails__mail">
+              <>
+                t<p>Application ID: {application.applicationId}</p>
                 <p>Message: {application.message}</p>
                 <p>Subject: {application.subject}</p>
                 <p>Status: {application.status}</p>
@@ -46,10 +46,12 @@ export default function ApplicationModule() {
                   Requester Phone Number: {application.requesterPhoneNumber}
                 </p>
                 <p>Account Number: {application.accountNumber}</p>
-              </div>
-            ))}
-          </div>
-        ))}
+              </>
+            </div>
+          ))
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );
