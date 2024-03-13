@@ -29,10 +29,10 @@ namespace BankSymulatorApi.Models.DTO
         public string JointSurname { get; set; }
         public string JointEmail { get; set; }
         public string JointPhoneNumber { get; set; }
-        public string RequesterName { get; set; }
-        public string RequesterSurname { get; set; }
-        public string RequesterEmail { get; set; }
-        public string RequesterPhoneNumber { get; set; }
+        public string InquirerName { get; set; }
+        public string InquirerSurname { get; set; }
+        public string InquirerEmail { get; set; }
+        public string InquirerPhoneNumber { get; set; }
         public string AccountNumber { get; set; }
     }
 }

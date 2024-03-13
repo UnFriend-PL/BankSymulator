@@ -32,20 +32,34 @@ export default function Account({
     navigator.clipboard.writeText(account.accountNumber);
   };
   function calculatePercentage(num) {
-    return ((num / totalBalance) * 100).toFixed(2);
+    return totalBalance ? ((num / totalBalance) * 100).toFixed(2) : 100;
   }
   return (
     <div className="account">
       <div className="account__panel">
-        <div className="account__panel__title">{account.name}</div>
+        <div className="account__panel__title">
+          {account.name}{" "}
+          {!account.isActive && (
+            <div className="warning">Account is inactive</div>
+          )}
+        </div>
         <div className="account__panel__buttons">
-          <button onClick={() => setShowDepositModal(true)}>
+          <button
+            disabled={!account.isActive}
+            onClick={() => setShowDepositModal(true)}
+          >
             <RiLuggageDepositFill />
           </button>
-          <button onClick={() => setShowWithdrawModal(true)}>
+          <button
+            disabled={!account.isActive}
+            onClick={() => setShowWithdrawModal(true)}
+          >
             <BiMoneyWithdraw />
           </button>
-          <button onClick={() => setShowTransferModal(true)}>
+          <button
+            disabled={!account.isActive}
+            onClick={() => setShowTransferModal(true)}
+          >
             <BiTransfer />
           </button>
 
@@ -77,7 +91,16 @@ export default function Account({
             />
           )}
         </div>
-        <div className="account__panel__owner">{`${user.name} ${user.surname}`}</div>
+        <div className="account__panel__owners">
+          <div className="account__panel__owners__owner">{`${user.name} ${user.surname}`}</div>
+          {account.isJointAccount ? (
+            <>
+              <div className="account__panel__owners__owner">{`${account.jointOwnerName} ${account.jointOwnerSurnameName}`}</div>
+            </>
+          ) : (
+            <></>
+          )}
+        </div>
       </div>
       <div className="account__balance">
         <div className="account__balance__amount">

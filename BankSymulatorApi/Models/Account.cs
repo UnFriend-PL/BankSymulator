@@ -19,6 +19,8 @@ namespace BankSymulatorApi.Models
         public float Balance { get; set; } = 0f;
         public bool IsActive { get; set; } = true;
         public bool IsSaveAccount { get; set; } = false;
+        public bool isClosed { get; set; } = false;
+        public bool isArchived { get; set; } = false;
         public string Currency { get; set; } = "PLN";
         public bool isJointAccount { get; set; } = false;
         public List<Deposit> Deposits { get; set; }

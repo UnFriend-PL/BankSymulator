@@ -45,9 +45,10 @@ namespace BankSymulatorApi.Services
         {
             var serviceResponse = new ServiceResponse<List<AccountDto>>();
             var accounts = await _context.Accounts
-                .Where(a => a.OwnerId == userId)
+                .Where(a => a.OwnerId == userId || a.JointOwnerId == userId && a.isArchived == false && a.isClosed == false)
                 .Select(a => new AccountDto
                 {
+
                     OwnerId = a.OwnerId,
                     AccountNumber = a.AccountNumber,
                     Name = a.Name,
@@ -55,7 +56,9 @@ namespace BankSymulatorApi.Services
                     BalanceInPln = a.Balance,
                     IsActive = a.IsActive,
                     IsSaveAccount = a.IsSaveAccount,
-                    currency = a.Currency
+                    currency = a.Currency,
+                    isJointAccount = a.isJointAccount,
+                    JointOwnerId = a.JointOwnerId
                 })
                 .ToListAsync();
             foreach (var account in accounts)
@@ -64,6 +67,21 @@ namespace BankSymulatorApi.Services
                 {
                     var exchangeRate = await GetExchangeRate(account.currency);
                     account.BalanceInPln = account.Balance * exchangeRate;
+                }
+                if(account.isJointAccount && account.JointOwnerId != null)
+                {
+                    var jointOwner = await _context.Users.FirstOrDefaultAsync(u => u.Id == account.JointOwnerId);
+                    if (jointOwner.Id == userId)
+                    {
+                        var owner = await _context.Users.FirstOrDefaultAsync(u => u.Id == account.OwnerId);
+                        account.JointOwnerName = owner.Name;
+                        account.JointOwnerSurnameName = owner.Surname;
+                    }
+                    else
+                    {
+                        account.JointOwnerName = jointOwner.Name;
+                        account.JointOwnerSurnameName = jointOwner.Surname;
+                    }
                 }
             }
             serviceResponse.Data = accounts;
@@ -420,7 +438,6 @@ namespace BankSymulatorApi.Services
             }
             catch (Exception ex)
             {
-                // Tutaj obsłuż błędy, np. zaloguj lub rzuć odpowiedni wyjątek
                 Console.WriteLine($"cannot get count of all transactions: {ex.Message}");
                 throw;
             }

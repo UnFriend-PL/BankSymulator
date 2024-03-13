@@ -1,5 +1,5 @@
 @import "../../colors.scss";
-.mailWrapper {
+.applicationWrapper {
   width: 100vw;
   padding-top: 10vh;
   min-height: 100vh;
@@ -9,17 +9,101 @@
   align-self: center;
   flex-direction: row;
   flex-wrap: wrap;
-  &__mails {
+  &__applications {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     color: $thridTextColor;
-    flex-basis: 100%;
-    $backgorund-color: $darkBackground;
-    &__mail {
+    background-color: $accountBackground;
+    flex-basis: 80%;
+    padding: 2%;
+    &__button {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
       flex-basis: 100%;
+      padding: 2%;
+    }
+    &__header {
+      display: flex;
+      flex-basis: 100%;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2%;
+      margin: 2%;
+      font-weight: bold;
+    }
+    &__application {
+      flex-basis: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      padding: 2%;
+      margin: 2%;
+      &__preview {
+        cursor: pointer;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        flex-basis: 100%;
+        &__status {
+          flex-basis: 5%;
+          &.Pending {
+            color: $pendingColor;
+            font-weight: bold;
+          }
+          &.Archived {
+            color: $succesColor;
+          }
+        }
+      }
+      &__content {
+        flex-basis: 100%;
+        padding: 2%;
+        border-radius: 15px;
+        background-color: $lightAccentBackgorund2;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        flex-direction: wrap;
+        &__buttons {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          align-items: center;
+          flex-basis: 100%;
+          & button {
+            margin: 2%;
+          }
+          & .accept {
+            background-color: $succesColor;
+            color: $lightIcoColor;
+            &:hover {
+              background-color: darken($succesColor, 10%);
+            }
+          }
+          & .decline {
+            background-color: $errorColor;
+            color: $lightIcoColor;
+            &:hover {
+              background-color: darken($errorColor, 10%);
+            }
+          }
+        }
+
+        &__message {
+          flex-basis: 100%;
+          text-align: center;
+        }
+      }
     }
   }
 }

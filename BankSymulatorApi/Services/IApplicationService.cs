@@ -6,6 +6,7 @@ namespace BankSymulatorApi.Services
     public interface IApplicationService
     {
         Task<ServiceResponse<bool>> CreateJointAccountApplicationAsync(User user, JointAccountApplicationDto model);
-        Task<ServiceResponse<List<JointApplicationsDto>>> GetSentJointAccountApplicationsByUserIdAsync(string userId);
+        Task<ServiceResponse<List<JointApplicationsDto>>> GetJointAccountApplicationsByUserIdAsync(string userId, string status);
+        Task<ServiceResponse<bool>> AcceptApplicationAsync(string applicationId, string userId, bool isAccepted);
     }
 }

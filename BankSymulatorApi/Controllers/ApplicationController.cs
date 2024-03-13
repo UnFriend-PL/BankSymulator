@@ -41,17 +41,36 @@ namespace BankSymulatorApi.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("SentJointApplications")]
+        [HttpGet("JointApplications/{status}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetJointAccountApplicationsAsync()
+        public async Task<IActionResult> GetJointAccountApplicationsAsync(string status)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
                 return BadRequest(new { Message = "User not found." });
             }
-            var applications = await _applicationervice.GetSentJointAccountApplicationsByUserIdAsync(userId);
+            var applications = await _applicationervice.GetJointAccountApplicationsByUserIdAsync(userId, status);
             return Ok(applications);
+        }
+
+        [HttpPatch("AcceptApplication/{applicationId}/{isAccepted}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AcceptApplicationAsync(string applicationId, bool isAccepted)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return BadRequest(new { Message = "User not found." });
+            }
+            var result = await _applicationervice.AcceptApplicationAsync(applicationId, userId, isAccepted);
+            if (result.Success)
+            {
+                result.Message = "Joint account application accepted successfully!";
+                return Ok(result);
+            }
+            result.Message = "Joint account application acceptance failed.";
+            return BadRequest(result);
         }
     }
 }

@@ -7,7 +7,7 @@
         public string JointName { get; set;}
         public string JointSurname { get; set; }
         public string JointPesel { get; set; }
-        public string jointPhoneNumber { get; set; }
+        public string JointPhoneNumber { get; set; }
         public DateTime JointBirthDate { get; set; }
     }
 }
