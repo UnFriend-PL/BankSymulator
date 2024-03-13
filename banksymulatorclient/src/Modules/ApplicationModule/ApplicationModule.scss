@@ -26,6 +26,17 @@
       align-items: center;
       flex-basis: 100%;
       padding: 2%;
+      & button {
+        flex-basis: 30%;
+        background-color: $buttonLightBackground;
+        height: 100%;
+      }
+      & button:disabled {
+        background-color: $lightBackground;
+        color: $thridTextColor;
+        border-radius: 0;
+        position: relative;
+      }
     }
     &__header {
       display: flex;
@@ -36,6 +47,7 @@
       padding: 2%;
       margin: 2%;
       font-weight: bold;
+      background-color: $lightBackground;
     }
     &__application {
       flex-basis: 100%;
@@ -46,6 +58,9 @@
       align-items: center;
       padding: 2%;
       margin: 2%;
+      &:nth-of-type(odd) {
+        background-color: $lightBackground;
+      }
       &__preview {
         cursor: pointer;
         display: flex;
@@ -67,13 +82,16 @@
       &__content {
         flex-basis: 100%;
         padding: 2%;
-        border-radius: 15px;
-        background-color: $lightAccentBackgorund2;
+        margin-top: 2%;
+        background-color: $lightAccentBackgorund;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
         flex-direction: wrap;
+        &:nth-of-type(odd) {
+          background-color: $lightBackground;
+        }
         &__buttons {
           display: flex;
           flex-wrap: wrap;
