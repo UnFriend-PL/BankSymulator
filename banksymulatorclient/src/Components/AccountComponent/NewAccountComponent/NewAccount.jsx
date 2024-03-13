@@ -9,6 +9,7 @@ function NewAccount({ refresh, onClose }) {
     currency: "PLN",
     name: "Additional Account",
   });
+  const [isJointAccount, setIsJointAccount] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => {
@@ -17,23 +18,54 @@ function NewAccount({ refresh, onClose }) {
         [e.target.name]: e.target.value,
       };
     });
+    console.log(formData);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await apiService(
-      "post",
-      "/api/Accounts/Create",
-      formData,
-      true
-    );
-    if (result.success === true) {
-      showNotification([{ message: "Account created", type: "info" }]);
-      refresh((prev) => !prev);
-      onClose();
+    if (!isJointAccount) {
+      const result = await apiService(
+        "post",
+        "/api/Accounts/Create",
+        formData,
+        true
+      );
+      if (result.success === true) {
+        showNotification([{ message: "Account created", type: "info" }]);
+        refresh((prev) => !prev);
+        onClose();
+      } else {
+        showNotification(result);
+        onClose();
+      }
     } else {
-      showNotification(result);
-      onClose();
+      const modifiedFormData = {
+        accountDetail: {
+          currency: formData.currency,
+          name: formData.name,
+        },
+        jointEmail: formData.jointEmail,
+        jointName: formData.jointName,
+        jointSurname: formData.jointSurname,
+        jointPesel: formData.jointPesel,
+        jointPhoneNumber: formData.jointPhone,
+        jointBirthDate: formData.jointBirthDate,
+      };
+
+      const result = await apiService(
+        "post",
+        "/api/Application/JointAccount",
+        modifiedFormData,
+        true
+      );
+      if (result.success === true) {
+        showNotification([{ message: "Application created", type: "info" }]);
+        refresh((prev) => !prev);
+        onClose();
+      } else {
+        showNotification(result);
+        onClose();
+      }
     }
   };
 
@@ -45,6 +77,9 @@ function NewAccount({ refresh, onClose }) {
             { value: "PLN", label: "PLN" },
             { value: "EUR", label: "EUR" },
             { value: "USD", label: "USD" },
+            { value: "CZK", label: "CZK" },
+            { value: "CHF", label: "CHF" },
+            { value: "NOK", label: "NOK" },
           ]}
           inputLabel={"Currency"}
           inputName={"currency"}
@@ -61,11 +96,59 @@ function NewAccount({ refresh, onClose }) {
         <CheckBox
           inputLabel={"Joint Account"}
           inputName={"jointAccount"}
-          inputValue={formData.jointAccount}
-          onChange={handleChange}
+          inputValue={isJointAccount}
+          onChange={() => {
+            setIsJointAccount(!isJointAccount);
+          }}
         ></CheckBox>
-        {formData.jointAccount ? <>
-        </> : <></>}
+        {isJointAccount ? (
+          <>
+            <Input
+              inputLabel={"Joint Name"}
+              inputName={"jointName"}
+              inputValue={formData.jointName}
+              onChange={handleChange}
+              inputPlaceholder={"Joint Name"}
+            ></Input>
+            <Input
+              inputLabel={"Joint Surname"}
+              inputName={"jointSurname"}
+              inputValue={formData.jointSurname}
+              inputPlaceholder={"Joint Surname"}
+              onChange={handleChange}
+            ></Input>
+            <Input
+              inputType="date"
+              inputLabel={"Joint Birth Date"}
+              inputName={"jointBirthDate"}
+              inputValue={formData.jointBirthDate}
+              onChange={handleChange}
+            ></Input>
+            <Input
+              inputLabel={"Joint Pesel"}
+              inputName={"jointPesel"}
+              inputPlaceholder={"Joint Pesel"}
+              inputValue={formData.jointPesel}
+              onChange={handleChange}
+            ></Input>
+            <Input
+              inputLabel={"Joint Email"}
+              inputName={"jointEmail"}
+              inputPlaceholder={"Joint Email"}
+              inputValue={formData.jointEmail}
+              onChange={handleChange}
+            ></Input>
+            <Input
+              inputLabel={"Joint Phone"}
+              inputName={"jointPhone"}
+              inputPlaceholder={"Joint Phone"}
+              inputValue={formData.jointPhone}
+              onChange={handleChange}
+            ></Input>
+          </>
+        ) : (
+          <></>
+        )}
         <button type="submit">Create Account</button>
         <button onClick={() => onClose()}>Cancel</button>
       </form>

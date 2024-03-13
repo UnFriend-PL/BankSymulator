@@ -12,7 +12,7 @@ function Transfer({ onClose, accountNumber }) {
     toAccountNumber: "",
     transferAmount: 0,
     transferType: "Standard",
-    message: "Przelew Środków",
+    message: "Funds Transfer",
   });
 
   const handleChange = (e) => {

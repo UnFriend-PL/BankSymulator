@@ -33,9 +33,10 @@ namespace BankSymulatorApi.Services
                     bool validName = jointUser.Name != model.JointName;
                     bool validSurname = jointUser.Surname != model.JointSurname;
                     bool validPesel = jointUser.Pesel != model.JointPesel;
-                    bool validPhone = jointUser.PhoneNumber != model.jointPhoneNumber;
+                    bool validPhone = jointUser.PhoneNumber != model.JointPhoneNumber;
+                    bool validBirthDate = jointUser.BirthDate != model.JointBirthDate;
 
-                    if (validName || validSurname || validPesel || validPhone)
+                    if (validName || validSurname || validPesel || validPhone || validBirthDate)
                     {
                         return new ServiceResponse<bool>
                         {
@@ -64,18 +65,19 @@ namespace BankSymulatorApi.Services
                     {
                         AccountNumber = account.AccountNumber,
                         InquirerId = user.Id,
-                        JointInquirerId = jointUser.Id,
+                        JointInquirerId = user.Id,
                         ApproverId = jointUser.Id,
-                        JointApproverId = user.Id,
+                        JointApproverId = jointUser.Id,
+                        SendTime = DateTime.Now,
                         Status = "Pending",
-                        Message = $"request for a joint account from {user.Name} {user.Surname}.\r\n Account name:{account.Name}\r\n Currency:{account.Currency}",
+                        Message = $"request for a joint account in {account.Currency} from {user.Name} {user.Surname}",
                         Subject = "Joint account application"
                     };
 
                     _context.JointAccountApplications.Add(application);
                     await _context.SaveChangesAsync();
 
-                    transaction.Commit(); 
+                    transaction.Commit();
 
                     return new ServiceResponse<bool>
                     {
@@ -89,38 +91,24 @@ namespace BankSymulatorApi.Services
                     return new ServiceResponse<bool>
                     {
                         Success = false,
-                        Errors = new [] { ex.Message },
+                        Errors = new[] { ex.Message },
                         Message = $"Error with requesting for a joint account."
                     };
                 }
             }
         }
-
-        public async Task<ServiceResponse<List<JointApplicationsDto>>> GetSentJointAccountApplicationsByUserIdAsync(string userId)
+        private async Task<User> GetUserAsync(string id)
         {
-            var serviceResponse = new ServiceResponse<List<JointApplicationsDto>>();
-            var applications = await _context.JointAccountApplications.Where(a => a.InquirerId == userId).ToListAsync();
-            if(applications.Count == 0)
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        }
+        private async Task<List<JointApplicationsDto>> FormatJointApplicationResponseList(List<JointAccountApplication> jointApplications)
+        {
+            List<JointApplicationsDto> result = new List<JointApplicationsDto>();
+            foreach (var application in jointApplications)
             {
-                serviceResponse.Success = true;
-                serviceResponse.Data = new List<JointApplicationsDto>();
-                serviceResponse.Message = "No sent joint account applications found.";
-                return serviceResponse;
-            }
-            List<JointApplicationsDto> jointApplications = new List<JointApplicationsDto>();
-
-            foreach(var application in applications)
-            {
-                var JointUser = _context.Users.FirstOrDefault(u => u.Id == application.JointApproverId);
-                var user = _context.Users.FirstOrDefault(u => u.Id == application.JointInquirerId);
-                if(JointUser == null || user == null)
-                {
-                    serviceResponse.Success = false;
-                    serviceResponse.Message = "Error with getting joint account applications.";
-                    serviceResponse.Errors = new[] { "One of the joints account not found." };
-                    return serviceResponse;
-                }
-                JointApplicationsDto jointApplication = new JointApplicationsDto
+                var approver = await GetUserAsync(application.JointApproverId);
+                var inquirer = await GetUserAsync(application.JointInquirerId);
+                var jointApplication = new JointApplicationsDto
                 {
                     ApplicationId = application.ApplicationId,
                     AccountNumber = application.AccountNumber,
@@ -135,44 +123,142 @@ namespace BankSymulatorApi.Services
                     IsExpired = application.IsExpired,
                     NoExpirationDate = application.NoExpirationDate,
                     ExpireTime = application.ExpireTime,
-                    JointName = JointUser.Name,
-                    JointSurname = JointUser.Surname,
-                    JointEmail = JointUser.Email,
-                    JointPhoneNumber = JointUser.PhoneNumber,
-                    RequesterName = user.Name,
-                    RequesterSurname = user.Surname,
-                    RequesterEmail = user.Email,
-                    RequesterPhoneNumber = user.PhoneNumber
+                    JointName = approver.Name,
+                    JointSurname = approver.Surname,
+                    JointEmail = approver.Email,
+                    JointPhoneNumber = approver.PhoneNumber,
+                    InquirerEmail = inquirer.Email,
+                    InquirerName = inquirer.Name,
+                    InquirerSurname = inquirer.Surname,
+                    InquirerPhoneNumber = inquirer.PhoneNumber
                 };
-                jointApplications.Add(jointApplication);
+                result.Add(jointApplication);
+            }
+            return result;
             }
 
-            jointApplications = applications.Select(a => new JointApplicationsDto
+        private async Task<List<JointApplicationsDto>> GetSentApplicationsAsync(string userId)
+        {
+            var sentApplications = await _context.JointAccountApplications.Where(a => a.JointInquirerId == userId && a.Status == "Pending").ToListAsync();
+            var result = await FormatJointApplicationResponseList(sentApplications);
+            return result;
+        }
+
+        private async Task<List<JointApplicationsDto>> GetPendingApplicationsAsync(string userId)
+        {
+            var pendingApplications = await _context.JointAccountApplications.Where(a => a.JointApproverId == userId && a.Status == "Pending").ToListAsync();
+            var result = await FormatJointApplicationResponseList(pendingApplications);
+            return result;
+        }
+
+        private async Task<List<JointApplicationsDto>> GetArchiveApplicationsAsync(string userId)
+        {
+            var archiveApplications = await _context.JointAccountApplications.Where(a => a.Status == "Archived" && ( a.JointInquirerId == userId || a.JointApproverId == userId)).ToListAsync();
+            var result = await FormatJointApplicationResponseList(archiveApplications);
+            return result;
+        }
+
+        public async Task<ServiceResponse<List<JointApplicationsDto>>> GetJointAccountApplicationsByUserIdAsync(string userId, string status)
+        {
+            var serviceResponse = new ServiceResponse<List<JointApplicationsDto>>();
+            List<JointApplicationsDto> jointApplications = new List<JointApplicationsDto>();
+            List<JointAccountApplication> applicationList = null;
+            switch (status)
             {
-                ApplicationId = a.ApplicationId,
-                AccountNumber = a.AccountNumber,
-                Status = a.Status,
-                Message = a.Message,
-                Subject = a.Subject,
-                SendTime = a.SendTime,
-                ReceiveTime = a.ReceiveTime,
-                IsRead = a.IsRead,
-                IsAccepted = a.IsAccepted,
-                IsRejected = a.IsRejected,
-                IsExpired = a.IsExpired,
-                NoExpirationDate = a.NoExpirationDate,
-                ExpireTime = a.ExpireTime,
-                JointName = a.JointInquirer.Name,
-                JointSurname = a.JointInquirer.Surname,
-                JointEmail = a.JointInquirer.Email,
-                JointPhoneNumber = a.JointInquirer.PhoneNumber,
-                RequesterName = a.Inquirer.Name,
-                RequesterSurname = a.Inquirer.Surname,
-                RequesterEmail = a.Inquirer.Email,
-                RequesterPhoneNumber = a.Inquirer.PhoneNumber
-            }).ToList();
+                case "Sent":
+                    jointApplications = await GetSentApplicationsAsync(userId);
+
+                    break;
+                case "Pending":
+                    jointApplications = await GetPendingApplicationsAsync(userId);
+                    break;
+                case "Archived":
+                    jointApplications = await GetArchiveApplicationsAsync(userId);
+                    break;
+            }
+            if (jointApplications.Count == 0)
+            {
+                serviceResponse.Success = true;
+                serviceResponse.Data = new List<JointApplicationsDto>();
+                serviceResponse.Message = "Joint applications not founded.";
+                return serviceResponse;
+
+            }
             serviceResponse.Data = jointApplications;
             return serviceResponse;
+
+        }
+
+        public async Task<ServiceResponse<bool>> AcceptApplicationAsync(string applicationId, string userId, bool isAccepted)
+        {
+            try
+            {
+                using (var transaction = _context.Database.BeginTransaction())
+                {
+                    var application = await _context.JointAccountApplications.FirstOrDefaultAsync(a => a.ApplicationId == applicationId);
+                    if (application == null)
+                    {
+                        return new ServiceResponse<bool>
+                        {
+                            Success = false,
+                            Message = "Application not found.",
+                            Errors = new[] { "Application not found." }
+                        };
+                    }
+                    if (application.JointApproverId != userId)
+                    {
+                        return new ServiceResponse<bool>
+                        {
+                            Success = false,
+                            Message = "You are not the approver of this application.",
+                            Errors = new[] { "You are not the approver of this application." }
+                        };
+                    }
+                    application.Status = "Archived";
+                    application.IsAccepted = isAccepted;
+                    application.ReceiveTime = DateTime.Now;
+                    var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == application.AccountNumber);
+                    if (account == null)
+                    {
+                        return new ServiceResponse<bool>
+                        {
+                            Success = false,
+                            Message = "Account not found.",
+                            Errors = new[] { "Account not found." }
+                        };
+                    }
+                    if (!isAccepted)
+                    {
+                        account.IsActive = false;
+                        account.isArchived = true;
+                    }
+                    else
+                    {
+                        account.IsActive = true;
+                    }
+                    _context.Accounts.Update(account);
+
+                    _context.JointAccountApplications.Update(application);
+                    await _context.SaveChangesAsync();
+
+                    transaction.Commit();
+
+                    return new ServiceResponse<bool>
+                    {
+                        Data = true,
+                        Message = "Joint account application accepted successfully!"
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResponse<bool>
+                {
+                    Success = false,
+                    Errors = new[] { ex.Message },
+                    Message = $"Error with accepting joint account application."
+                };
+            }
 
         }
     }
