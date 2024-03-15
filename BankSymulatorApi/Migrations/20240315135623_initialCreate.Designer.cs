@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankSymulatorApi.Migrations
 {
     [DbContext(typeof(BankDbContext))]
-    [Migration("20240313150143_ArchiveAndDeleteAccountPossible")]
-    partial class ArchiveAndDeleteAccountPossible
+    [Migration("20240315135623_initialCreate")]
+    partial class initialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -435,7 +435,7 @@ namespace BankSymulatorApi.Migrations
                     b.HasOne("BankSymulatorApi.Models.User", "Approver")
                         .WithMany("ApproverApplications")
                         .HasForeignKey("ApproverId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BankSymulatorApi.Models.User", "Inquirer")
@@ -454,7 +454,7 @@ namespace BankSymulatorApi.Migrations
                     b.HasOne("BankSymulatorApi.Models.Account", "Account")
                         .WithMany("Contrubitors")
                         .HasForeignKey("AccountNumber")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Account");
@@ -465,7 +465,7 @@ namespace BankSymulatorApi.Migrations
                     b.HasOne("BankSymulatorApi.Models.Account", "Account")
                         .WithMany("Deposits")
                         .HasForeignKey("AccountNumber")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Account");
@@ -495,7 +495,7 @@ namespace BankSymulatorApi.Migrations
                     b.HasOne("BankSymulatorApi.Models.Account", "Account")
                         .WithMany("Withdraws")
                         .HasForeignKey("AccountNumber")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Account");

@@ -8,11 +8,10 @@ namespace BankSymulatorApi.Models
         public string AccountId { get; set; }
         [Key]
         public string AccountNumber { get; set; }
-        [ForeignKey("Owner")]
+        [ForeignKey("OwnerId")]
         public string OwnerId { get; set; }
         public User Owner { get; set; }
-
-        [ForeignKey("JointOwner")]
+        [ForeignKey("JointOwnerId")]
         public string? JointOwnerId { get; set; }
         public User? JointOwner { get; set; }
         public string Name { get; set; }

@@ -432,7 +432,7 @@ namespace BankSymulatorApi.Migrations
                     b.HasOne("BankSymulatorApi.Models.User", "Approver")
                         .WithMany("ApproverApplications")
                         .HasForeignKey("ApproverId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BankSymulatorApi.Models.User", "Inquirer")
@@ -451,7 +451,7 @@ namespace BankSymulatorApi.Migrations
                     b.HasOne("BankSymulatorApi.Models.Account", "Account")
                         .WithMany("Contrubitors")
                         .HasForeignKey("AccountNumber")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Account");
@@ -462,7 +462,7 @@ namespace BankSymulatorApi.Migrations
                     b.HasOne("BankSymulatorApi.Models.Account", "Account")
                         .WithMany("Deposits")
                         .HasForeignKey("AccountNumber")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Account");
@@ -492,7 +492,7 @@ namespace BankSymulatorApi.Migrations
                     b.HasOne("BankSymulatorApi.Models.Account", "Account")
                         .WithMany("Withdraws")
                         .HasForeignKey("AccountNumber")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Account");

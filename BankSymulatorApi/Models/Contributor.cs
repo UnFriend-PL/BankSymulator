@@ -15,7 +15,7 @@ namespace BankSymulatorApi.Models
         public string Pesel { get; set; }
         [ForeignKey("AccountNumber")]
         public string AccountNumber { get; set; }
-        public Account Account { get; set; }    
+        public virtual Account Account { get; set; }    
 
     }
 }

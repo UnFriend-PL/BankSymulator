@@ -21,6 +21,13 @@ namespace BankSymulatorApi.Controllers
             _userService = userService;
         }
 
+        [HttpGet("GetAccountOwnerName/{accountNumber}")]
+        public async Task<IActionResult> GetAccountOwnerName(string accountNumber)
+        {
+            var ownerName = await _accountService.GetAccountOwnerName(accountNumber);
+            return Ok(ownerName);
+        }
+
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("GetByUserToken")]
         public async Task<IActionResult> GetAccountsByUserIdAsync()

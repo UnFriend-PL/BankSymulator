@@ -52,37 +52,48 @@ namespace BankSymulatorApi.Database
             .IsRequired();
 
             // --------- relationships ------------
-
-            modelBuilder.Entity<Transfer>()
-            .HasOne(p => p.FromAccount)
-            .WithMany(b => b.FromTransfers)
-            .HasForeignKey(t => t.FromAccountNumber)
-            .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Transfer>()
-                .HasOne(p => p.ToAccount)
-                .WithMany(b => b.ToTransfers)
-                .HasForeignKey(t => t.ToAccountNumber)
+            modelBuilder.Entity<Account>()
+                .HasOne(a => a.Owner)
+                .WithMany(u => u.Accounts)
+                .HasForeignKey(a => a.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Deposit>()
-                .HasOne(d => d.Account)
-                .WithMany(a => a.Deposits)
-                .HasForeignKey(d => d.AccountNumber)
+            modelBuilder.Entity<Account>()
+                .HasOne(a => a.JointOwner)
+                .WithMany(u => u.JointOwnedAccounts)
+                .HasForeignKey(a => a.JointOwnerId);
+
+            modelBuilder.Entity<Transfer>()
+                .HasOne(t => t.FromAccount)
+                .WithMany(a => a.FromTransfers)
+                .HasForeignKey(t => t.FromAccountNumber)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Transfer>()
+                .HasOne(t => t.ToAccount)
+                .WithMany(a => a.ToTransfers)
+                .HasForeignKey(t => t.ToAccountNumber)
+                .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Withdraw>()
                 .HasOne(w => w.Account)
                 .WithMany(a => a.Withdraws)
                 .HasForeignKey(w => w.AccountNumber)
-                .OnDelete(DeleteBehavior.Restrict);
+                .IsRequired();
 
+            modelBuilder.Entity<Deposit>()
+                .HasOne(d => d.Account)
+                .WithMany(a => a.Deposits)
+                .HasForeignKey(d => d.AccountNumber)
+                .IsRequired();
 
             modelBuilder.Entity<Contributor>()
-                .HasOne(a => a.Account)
+                .HasOne(c => c.Account)
                 .WithMany(a => a.Contrubitors)
                 .HasForeignKey(c => c.AccountNumber)
-                .OnDelete(DeleteBehavior.Restrict);
+                .IsRequired();
 
             modelBuilder.Entity<User>()
                  .HasMany(u => u.Accounts)
@@ -96,38 +107,11 @@ namespace BankSymulatorApi.Database
                 .HasForeignKey(a => a.JointOwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Account>()
-                .HasOne(a => a.JointOwner)
-                .WithMany(u => u.JointOwnedAccounts)
-                .HasForeignKey(a => a.JointOwnerId)
+             modelBuilder.Entity<Application>()
+                .HasOne(p => p.Inquirer)
+                .WithMany(b => b.InquirerApplications)
+                .HasForeignKey(t => t.InquirerId)
                 .OnDelete(DeleteBehavior.Restrict);
-           
-            modelBuilder.Entity<Account>()
-                .HasOne(a => a.Owner)
-                .WithMany(u => u.Accounts)
-                .HasForeignKey(a => a.OwnerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-
-
-
-            modelBuilder.Entity<JointAccountApplication>()
-                 .HasOne(a => a.JointInquirer)
-                 .WithMany(u => u.JointInquirerApplications)
-                 .HasForeignKey(a => a.InquirerId)
-                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<JointAccountApplication>()
-                .HasOne(a => a.JointApprover)
-                .WithMany(u => u.JointApproverApplications)
-                .HasForeignKey(a => a.ApproverId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Application>()
-            .HasOne(p => p.Approver)
-            .WithMany(b => b.ApproverApplications)
-            .HasForeignKey(t => t.ApproverId)
-            .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Application>()
                 .HasOne(p => p.Inquirer)
@@ -140,6 +124,7 @@ namespace BankSymulatorApi.Database
                 .WithMany(b => b.JointApproverApplications)
                 .HasForeignKey(t => t.JointApproverId)
                 .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<JointAccountApplication>()
                 .HasOne(p => p.JointInquirer)
                 .WithMany(b => b.JointInquirerApplications)

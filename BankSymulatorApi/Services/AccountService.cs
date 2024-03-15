@@ -15,7 +15,7 @@ namespace BankSymulatorApi.Services
             _context = context;
             _httpClient = httpClient;
         }
-
+ 
         public async Task<ServiceResponse<bool>> CreateAccountAsync(User user, NewAccountDto model)
         {
             var serviceResponse = new ServiceResponse<bool>();
