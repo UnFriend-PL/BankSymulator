@@ -15,7 +15,7 @@ namespace BankSymulatorApi.Services
             _context = context;
             _httpClient = httpClient;
         }
- 
+  
         public async Task<ServiceResponse<bool>> CreateAccountAsync(User user, NewAccountDto model)
         {
             var serviceResponse = new ServiceResponse<bool>();
@@ -95,7 +95,8 @@ namespace BankSymulatorApi.Services
                 var serviceResponse = new ServiceResponse<bool>();
                 try
                 {
-                    var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.AccountNumber);
+                    var account = await _context.Accounts
+                        .FirstOrDefaultAsync(a => a.AccountNumber == model.AccountNumber);
 
                     if (account == null)
                     {
