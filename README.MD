@@ -24,7 +24,7 @@ dotnet run
 
 The API will start on https://localhost:44397/.
 
-## banksymulatorclient
+## Banksymulatorclient
 
 This is the frontend of the application, built with React and Vite.
 
