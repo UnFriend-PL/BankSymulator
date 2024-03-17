@@ -36,13 +36,21 @@ namespace BankSymulatorApi.Services
                 Name = model.Name,
                 Pesel = model.Pesel,
             };
+
             var result = await _userManager.CreateAsync(user, model.Password);
             serviceResponse.Success = result.Succeeded;
             serviceResponse.Errors = result.Errors.Select(e => e.Description).ToArray();
 
             if (result.Succeeded)
             {
-                await _accountService.CreateAccountAsync(user, new NewAccountDto { Name = "Default Account", Currency = "PLN"});
+                var accountCreationResponse = await _accountService.CreateAccountAsync(user, new NewAccountDto { Name = "Default Account", Currency = "PLN" });
+
+                if (!accountCreationResponse.Success)
+                {
+                    await _userManager.DeleteAsync(user);
+                    serviceResponse.Success = false;
+                    serviceResponse.Errors = new[] { "Failed to create user account." };
+                }
             }
             return serviceResponse;
         }
@@ -50,17 +58,16 @@ namespace BankSymulatorApi.Services
         public async Task<ServiceResponse<LoginResultDto>> LoginAsync(LoginDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
-
             var serviceResponse = new ServiceResponse<LoginResultDto>();
 
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var claims = new[]
                 {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email)
-            };
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email)
+        };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -71,10 +78,13 @@ namespace BankSymulatorApi.Services
                     signingCredentials: creds
                 );
                 var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-                serviceResponse.Data = new LoginResultDto(jwt, user) ;
+
+                serviceResponse.Success = true;
+                serviceResponse.Data = new LoginResultDto(jwt, user);
                 return serviceResponse;
             }
-             serviceResponse.Success = false;
+
+            serviceResponse.Success = false;
             serviceResponse.Errors = new[] { "Invalid login attempt." };
             return serviceResponse;
         }
@@ -83,6 +93,14 @@ namespace BankSymulatorApi.Services
         {
             var user = await _userManager.FindByIdAsync(userId);
             var serviceResponse = new ServiceResponse<bool>();
+
+            if (user == null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Errors = new[] { "User not found." };
+                return serviceResponse;
+            }
+
             user.Name = model.Name;
             user.Surname = model.Surname;
             user.BirthDate = model.BirthDate;
@@ -90,10 +108,18 @@ namespace BankSymulatorApi.Services
             user.Pesel = model.Pesel;
             user.PhoneNumber = model.PhoneNumber;
             user.Email = model.Email;
+
             var result = await _userManager.UpdateAsync(user);
-            serviceResponse.Success = result.Succeeded;
-            serviceResponse.Data = result.Succeeded;
-            serviceResponse.Errors = result.Errors.Select(e => e.Description).ToArray();
+
+            if (!result.Succeeded)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Errors = result.Errors.Select(e => e.Description).ToArray();
+                return serviceResponse;
+            }
+
+            serviceResponse.Success = true;
+            serviceResponse.Data = true;
             return serviceResponse;
         }
 
@@ -101,10 +127,25 @@ namespace BankSymulatorApi.Services
         {
             var user = await _userManager.FindByIdAsync(userId);
             var serviceResponse = new ServiceResponse<bool>();
+
+            if (user == null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Errors = new[] { "User not found." };
+                return serviceResponse;
+            }
+
             var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
-            serviceResponse.Success = result.Succeeded;
-            serviceResponse.Data = result.Succeeded;
-            serviceResponse.Errors = result.Errors.Select(e => e.Description).ToArray();
+
+            if (!result.Succeeded)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Errors = result.Errors.Select(e => e.Description).ToArray();
+                return serviceResponse;
+            }
+
+            serviceResponse.Success = true;
+            serviceResponse.Data = true;
             return serviceResponse;
         }
     }

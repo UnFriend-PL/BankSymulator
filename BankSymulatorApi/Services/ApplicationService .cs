@@ -15,11 +15,11 @@ namespace BankSymulatorApi.Services
 
         public async Task<ServiceResponse<bool>> CreateJointAccountApplicationAsync(User user, JointAccountApplicationDto model)
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var jointUser = _context.Users.FirstOrDefault(u => u.Email == model.JointEmail);
+                    var jointUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.JointEmail);
                     if (jointUser == null)
                     {
                         return new ServiceResponse<bool>
@@ -77,7 +77,7 @@ namespace BankSymulatorApi.Services
                     _context.JointAccountApplications.Add(application);
                     await _context.SaveChangesAsync();
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
 
                     return new ServiceResponse<bool>
                     {
@@ -87,7 +87,7 @@ namespace BankSymulatorApi.Services
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback(); // Rollback the transaction in case of an exception
+                    await transaction.RollbackAsync(); 
                     return new ServiceResponse<bool>
                     {
                         Success = false,
@@ -162,7 +162,6 @@ namespace BankSymulatorApi.Services
         {
             var serviceResponse = new ServiceResponse<List<JointApplicationsDto>>();
             List<JointApplicationsDto> jointApplications = new List<JointApplicationsDto>();
-            List<JointAccountApplication> applicationList = null;
             switch (status)
             {
                 case "Sent":
@@ -175,6 +174,10 @@ namespace BankSymulatorApi.Services
                 case "Archived":
                     jointApplications = await GetArchiveApplicationsAsync(userId);
                     break;
+                default:
+                    serviceResponse.Success = false;
+                    serviceResponse.Errors = new[] { "Invalid status provided." };
+                    return serviceResponse;
             }
             if (jointApplications.Count == 0)
             {
@@ -193,7 +196,7 @@ namespace BankSymulatorApi.Services
         {
             try
             {
-                using (var transaction = _context.Database.BeginTransaction())
+                using (var transaction = await _context.Database.BeginTransactionAsync())
                 {
                     var application = await _context.JointAccountApplications.FirstOrDefaultAsync(a => a.ApplicationId == applicationId);
                     if (application == null)
@@ -205,6 +208,7 @@ namespace BankSymulatorApi.Services
                             Errors = new[] { "Application not found." }
                         };
                     }
+
                     if (application.JointApproverId != userId)
                     {
                         return new ServiceResponse<bool>
@@ -214,9 +218,11 @@ namespace BankSymulatorApi.Services
                             Errors = new[] { "You are not the approver of this application." }
                         };
                     }
+
                     application.Status = "Archived";
                     application.IsAccepted = isAccepted;
                     application.ReceiveTime = DateTime.Now;
+
                     var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == application.AccountNumber);
                     if (account == null)
                     {
@@ -227,21 +233,15 @@ namespace BankSymulatorApi.Services
                             Errors = new[] { "Account not found." }
                         };
                     }
-                    if (!isAccepted)
-                    {
-                        account.IsActive = false;
-                        account.isArchived = true;
-                    }
-                    else
-                    {
-                        account.IsActive = true;
-                    }
-                    _context.Accounts.Update(account);
 
+                    account.IsActive = isAccepted;
+                    account.isArchived = !isAccepted;
+
+                    _context.Accounts.Update(account);
                     _context.JointAccountApplications.Update(application);
                     await _context.SaveChangesAsync();
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
 
                     return new ServiceResponse<bool>
                     {
@@ -259,7 +259,6 @@ namespace BankSymulatorApi.Services
                     Message = $"Error with accepting joint account application."
                 };
             }
-
         }
     }
 }

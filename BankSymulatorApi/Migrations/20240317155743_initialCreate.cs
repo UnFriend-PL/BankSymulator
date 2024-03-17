@@ -67,6 +67,8 @@ namespace BankSymulatorApi.Migrations
                     Balance = table.Column<float>(type: "real", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsSaveAccount = table.Column<bool>(type: "bit", nullable: false),
+                    isClosed = table.Column<bool>(type: "bit", nullable: false),
+                    isArchived = table.Column<bool>(type: "bit", nullable: false),
                     Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     isJointAccount = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -119,7 +121,7 @@ namespace BankSymulatorApi.Migrations
                         column: x => x.ApproverId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Application_Users_InquirerId",
                         column: x => x.InquirerId,
@@ -161,7 +163,7 @@ namespace BankSymulatorApi.Migrations
                         column: x => x.AccountNumber,
                         principalTable: "Accounts",
                         principalColumn: "AccountNumber",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -183,7 +185,7 @@ namespace BankSymulatorApi.Migrations
                         column: x => x.AccountNumber,
                         principalTable: "Accounts",
                         principalColumn: "AccountNumber",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -238,7 +240,7 @@ namespace BankSymulatorApi.Migrations
                         column: x => x.AccountNumber,
                         principalTable: "Accounts",
                         principalColumn: "AccountNumber",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

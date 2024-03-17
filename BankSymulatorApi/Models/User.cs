@@ -11,6 +11,7 @@ namespace BankSymulatorApi.Models
         public string Address { get; set; }
         public string Pesel { get; set; }
         public ICollection<Account> Accounts { get; set; } = new List<Account>();
+        [InverseProperty("JointOwner")]
         public ICollection<Account> JointOwnedAccounts { get; set; } = new List<Account>();
         [InverseProperty("Approver")]
         public ICollection<Application> ApproverApplications { get; set; } = new List<Application>();

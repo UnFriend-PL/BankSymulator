@@ -21,6 +21,7 @@ namespace BankSymulatorApi.Controllers
             _userService = userService;
         }
 
+
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("GetByUserToken")]
         public async Task<IActionResult> GetAccountsByUserIdAsync()

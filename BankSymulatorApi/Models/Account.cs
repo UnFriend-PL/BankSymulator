@@ -8,11 +8,10 @@ namespace BankSymulatorApi.Models
         public string AccountId { get; set; }
         [Key]
         public string AccountNumber { get; set; }
-        [ForeignKey("Owner")]
+        [ForeignKey("OwnerId")]
         public string OwnerId { get; set; }
         public User Owner { get; set; }
-
-        [ForeignKey("JointOwner")]
+        [ForeignKey("JointOwnerId")]
         public string? JointOwnerId { get; set; }
         public User? JointOwner { get; set; }
         public string Name { get; set; }
@@ -27,7 +26,7 @@ namespace BankSymulatorApi.Models
         public List<Withdraw> Withdraws { get; set; }
         public List<Transfer> FromTransfers { get; set; }
         public List<Transfer> ToTransfers { get; set; }
-        public List<Contributor> Contrubitors { get; set; }
+        public List<Contributor> Contributors { get; set; }
         public Account() { }
         public Account(string ownerId, string accountNumber, string name, float balance, bool isActive, bool isSaveAccount, string currency)
         {
