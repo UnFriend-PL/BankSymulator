@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankSymulatorApi.Migrations
 {
     [DbContext(typeof(BankDbContext))]
-    [Migration("20240315135623_initialCreate")]
+    [Migration("20240317155743_initialCreate")]
     partial class initialCreate
     {
         /// <inheritdoc />

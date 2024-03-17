@@ -46,6 +46,8 @@ namespace BankSymulatorApi.Services
             var serviceResponse = new ServiceResponse<List<AccountDto>>();
             var accounts = await _context.Accounts
                 .Where(a => a.OwnerId == userId || a.JointOwnerId == userId && a.isArchived == false && a.isClosed == false)
+                .Include(a => a.Owner)
+                .Include(a => a.JointOwner)
                 .Select(a => new AccountDto
                 {
 
@@ -90,12 +92,14 @@ namespace BankSymulatorApi.Services
 
         public async Task<ServiceResponse<bool>> DepositAsync(DepositDto model, string AccountNumber)
         {
+            var serviceResponse = new ServiceResponse<bool>();
+
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                var serviceResponse = new ServiceResponse<bool>();
                 try
                 {
                     var account = await _context.Accounts
+                        .Include(a => a.Contributors)
                         .FirstOrDefaultAsync(a => a.AccountNumber == model.AccountNumber);
 
                     if (account == null)
@@ -104,12 +108,13 @@ namespace BankSymulatorApi.Services
                         return serviceResponse;
                     }
 
-                    var contributor = await _context.Contributors.FirstOrDefaultAsync(c => c.Pesel == model.Contributor.Pesel);
+                    var contributor = account.Contributors.FirstOrDefault(c => c.Pesel == model.Contributor.Pesel);
 
                     if (contributor == null)
                     {
                         contributor = await AddNewContributorAsync(model.Contributor, account);
                     }
+
                     account.Balance += model.Amount;
 
                     var deposit = new Deposit
@@ -118,11 +123,10 @@ namespace BankSymulatorApi.Services
                         Amount = model.Amount,
                         DepositTime = DateTime.Now,
                         ContributorId = contributor.ContributorId,
-                        BalanceAfterOperation = account.Balance,                        
+                        BalanceAfterOperation = account.Balance,
                     };
 
                     await _context.Deposits.AddAsync(deposit);
-
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
@@ -171,15 +175,30 @@ namespace BankSymulatorApi.Services
 
         public async Task<ServiceResponse<bool>> WithdrawAsync(WithdrawDto model, string userId)
         {
+            var serviceResponse = new ServiceResponse<bool>();
+
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                var serviceResponse = new ServiceResponse<bool>();
                 try
                 {
                     var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.AccountNumber);
-                    var isUserIdOwnerOfSelectedAccount = await CheckAccountOwner(userId, model.AccountNumber);
+                    if (account == null)
+                    {
+                        serviceResponse.Success = false;
+                        serviceResponse.Errors = new[] { "Account not found" };
+                        return serviceResponse;
+                    }
 
-                    if (!isUserIdOwnerOfSelectedAccount || account.Balance < model.Amount)
+                    var isUserIdOwnerOfSelectedAccount = await CheckAccountOwner(userId, model.AccountNumber);
+                    if (!isUserIdOwnerOfSelectedAccount)
+                    {
+                        transaction.Rollback();
+                        serviceResponse.Success = false;
+                        serviceResponse.Errors = new[] { "You are not the owner of the selected account" };
+                        return serviceResponse;
+                    }
+
+                    if (account.Balance < model.Amount)
                     {
                         transaction.Rollback();
                         serviceResponse.Success = false;
@@ -196,54 +215,59 @@ namespace BankSymulatorApi.Services
                         WithdrawTime = DateTime.Now,
                         BalanceAfterOperation = account.Balance
                     };
+
                     await _context.Withdraws.AddAsync(withdraw);
                     await _context.SaveChangesAsync();
-
-                    transaction.Commit();
+                    await transaction.CommitAsync();
 
                     return serviceResponse;
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
+                    await transaction.RollbackAsync();
                     serviceResponse.Success = false;
+                    serviceResponse.Errors = new[] { ex.Message };
                     return serviceResponse;
                 }
             }
         }
 
+
         public async Task<ServiceResponse<bool>> TransferAsync(TransferDto model, string userId)
         {
             var serviceResponse = new ServiceResponse<bool>();
-            var fromAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.FromAccountNumber);
 
+            var fromAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.FromAccountNumber);
             if (fromAccount == null)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Errors = new[] { "Account not found" };
                 return serviceResponse;
             }
+
             if (fromAccount.OwnerId != userId)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Errors = new[] { "You are not the owner of the account" };
                 return serviceResponse;
             }
+
             if (fromAccount.Balance < model.TransferAmount)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Errors = new[] { "Insufficient funds" };
                 return serviceResponse;
             }
+
             var toAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == model.ToAccountNumber);
             if (toAccount == null)
             {
                 serviceResponse.Success = false;
+                serviceResponse.Errors = new[] { "Destination account not found" };
                 return serviceResponse;
             }
-            bool useExchangeRate = false;
-            if (fromAccount.Currency != toAccount.Currency) useExchangeRate = true;
 
+            bool useExchangeRate = fromAccount.Currency != toAccount.Currency;
 
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -270,12 +294,12 @@ namespace BankSymulatorApi.Services
                     await _context.Transfers.AddAsync(transfer);
                     await _context.SaveChangesAsync();
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                     return serviceResponse;
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
+                    await transaction.RollbackAsync();
                     serviceResponse.Success = false;
                     serviceResponse.Errors = new[] { ex.Message };
                     return serviceResponse;
@@ -325,8 +349,8 @@ namespace BankSymulatorApi.Services
 
             try
             {
-                var incomingTransfers = await _context.Transfers
-                    .Where(t => t.ToAccountNumber == accountNumber)
+                var transfers = await _context.Transfers
+                    .Where(t => t.ToAccountNumber == accountNumber || t.FromAccountNumber == accountNumber)
                     .Select(t => new TransactionDto
                     {
                         TransferId = t.TransferId,
@@ -338,28 +362,11 @@ namespace BankSymulatorApi.Services
                         ToAccountNumber = t.ToAccountNumber,
                         Message = t.Message,
                         IsCompleted = t.IsCompleted,
-                        BalanceAfterOperation = t.BalanceAfterOperationToAccount,
+                        BalanceAfterOperation = t.FromAccountNumber == accountNumber ? t.BalanceAfterOperationFromAccount : t.BalanceAfterOperationToAccount,
                         SourceCurrencyTransferAmount = t.SourceCurrencyTransferAmount
                     })
                     .ToListAsync();
 
-                var outComingTransfers = await _context.Transfers
-                    .Where(t => t.FromAccountNumber == accountNumber)
-                    .Select(t => new TransactionDto
-                    {
-                        TransferId = t.TransferId,
-                        TransferType = t.TransferType,
-                        TransferAmount = t.TransferAmount,
-                        TransferFee = t.TransferFee,
-                        TransferTime = t.TransferTime,
-                        FromAccountNumber = t.FromAccountNumber,
-                        ToAccountNumber = t.ToAccountNumber,
-                        Message = t.Message,
-                        IsCompleted = t.IsCompleted,
-                        BalanceAfterOperation = t.BalanceAfterOperationFromAccount,
-                        SourceCurrencyTransferAmount = t.SourceCurrencyTransferAmount
-                    })
-                    .ToListAsync();
                 var deposits = await _context.Deposits
                     .Where(d => d.AccountNumber == accountNumber)
                     .Select(d => new TransactionDto
@@ -377,6 +384,7 @@ namespace BankSymulatorApi.Services
 
                     })
                     .ToListAsync();
+
                 var withdraws = await _context.Withdraws
                     .Where(w => w.AccountNumber == accountNumber)
                     .Select(w => new TransactionDto
@@ -395,20 +403,18 @@ namespace BankSymulatorApi.Services
 
                     })
                     .ToListAsync();
-                var history = incomingTransfers.Concat(outComingTransfers).Concat(deposits).Concat(withdraws).ToList();
+
+                var history = transfers.Concat(deposits).Concat(withdraws).ToList();
                 var totalTransactions = await GetTotalTransactionsCount(accountNumber);
                 var totalPages = (int)Math.Ceiling((double)totalTransactions / pageSize);
-
 
                 var transactionsPageDto = new TransactionsPageDto
                 {
                     Transactions = history.OrderByDescending(t => t.TransferTime).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
                     TotalPages = totalPages
-
                 };
+
                 serviceResponse.Data = transactionsPageDto;
-
-
             }
             catch (Exception ex)
             {
@@ -417,8 +423,8 @@ namespace BankSymulatorApi.Services
             }
 
             return serviceResponse;
-
         }
+
         private async Task<int> GetTotalTransactionsCount(string accountNumber)
         {
             int totalTransactionsCount = 0;

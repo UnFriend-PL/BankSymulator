@@ -26,7 +26,7 @@ namespace BankSymulatorApi.Models
         public List<Withdraw> Withdraws { get; set; }
         public List<Transfer> FromTransfers { get; set; }
         public List<Transfer> ToTransfers { get; set; }
-        public List<Contributor> Contrubitors { get; set; }
+        public List<Contributor> Contributors { get; set; }
         public Account() { }
         public Account(string ownerId, string accountNumber, string name, float balance, bool isActive, bool isSaveAccount, string currency)
         {

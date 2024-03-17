@@ -91,7 +91,7 @@ namespace BankSymulatorApi.Database
 
             modelBuilder.Entity<Contributor>()
                 .HasOne(c => c.Account)
-                .WithMany(a => a.Contrubitors)
+                .WithMany(a => a.Contributors)
                 .HasForeignKey(c => c.AccountNumber)
                 .IsRequired();
 
