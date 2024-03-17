@@ -14,7 +14,7 @@ namespace BankSymulatorApi
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +28,9 @@ namespace BankSymulatorApi
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
-
+            builder.Services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<BankDbContext>()
+            .AddDefaultTokenProviders();
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -37,6 +39,7 @@ namespace BankSymulatorApi
 
             }).AddJwtBearer(options =>
              {
+                 options.SaveToken = true;
                  options.TokenValidationParameters = new TokenValidationParameters
                  {
                      ValidateIssuer = false,
@@ -47,6 +50,8 @@ namespace BankSymulatorApi
                      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                  };
              });
+            builder.Services.AddAuthorization();
+
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -74,7 +79,7 @@ namespace BankSymulatorApi
                             new string[] {}
                         }
                     });
-                });
+            });
 
             builder.Services.AddCors(options =>
             {
@@ -84,30 +89,46 @@ namespace BankSymulatorApi
                         .AllowAnyHeader());
             });
 
-            builder.Services.AddIdentity<User, IdentityRole>()
-            .AddEntityFrameworkStores<BankDbContext>()
-            .AddDefaultTokenProviders();
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IApplicationService, ApplicationService>();
             services.AddHttpClient();
             var app = builder.Build();
-
-            if (app.Environment.IsDevelopment())
+            using (var scope = app.Services.CreateScope())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                if (!await roleManager.RoleExistsAsync("Admin"))
+                {
+                    var adminRole = new IdentityRole("Admin");
+                    await roleManager.CreateAsync(adminRole);
+                }
+
+                if (!await roleManager.RoleExistsAsync("User"))
+                {
+                    var userRole = new IdentityRole("User");
+                    await roleManager.CreateAsync(userRole);
+                }
             }
 
-            app.UseCors("CorsPolicy");
+                if (app.Environment.IsDevelopment())
+                {
+                    app.UseSwagger();
+                    app.UseSwaggerUI();
+                }
 
-            app.UseHttpsRedirection();
+                app.UseCors("CorsPolicy");
 
-            app.UseAuthorization();
+                app.UseHttpsRedirection();
 
-            app.MapControllers();
+                app.UseAuthorization();
 
-            app.Run();
+                app.MapControllers();
+
+                app.Run();
+            }
+
         }
-    }
+    
 }

@@ -58,6 +58,7 @@ public class UsersController : ControllerBase
         return Unauthorized(result);
     }
 
+    
     [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpPatch("Edit")]
     public async Task<IActionResult> editUserData([FromBody] EditUserDto model)

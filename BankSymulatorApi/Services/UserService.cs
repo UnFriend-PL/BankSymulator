@@ -42,7 +42,10 @@ namespace BankSymulatorApi.Services
 
             if (result.Succeeded)
             {
-                await _accountService.CreateAccountAsync(user, new NewAccountDto { Name = "Default Account", Currency = "PLN"});
+                await _accountService.CreateAccountAsync(user, new NewAccountDto { Name = "Default Account", Currency = "PLN" });
+
+                await  _userManager.AddToRoleAsync(user, "User");
+
             }
             return serviceResponse;
         }
@@ -60,7 +63,13 @@ namespace BankSymulatorApi.Services
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email)
+
             };
+                var roles = await _userManager.GetRolesAsync(user);
+                foreach (var role in roles)
+                {
+                    claims.Append(new Claim(ClaimTypes.Role, role));
+                }
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -71,10 +80,10 @@ namespace BankSymulatorApi.Services
                     signingCredentials: creds
                 );
                 var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-                serviceResponse.Data = new LoginResultDto(jwt, user) ;
+                serviceResponse.Data = new LoginResultDto(jwt, user);
                 return serviceResponse;
             }
-             serviceResponse.Success = false;
+            serviceResponse.Success = false;
             serviceResponse.Errors = new[] { "Invalid login attempt." };
             return serviceResponse;
         }
