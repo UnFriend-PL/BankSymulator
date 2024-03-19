@@ -7,21 +7,24 @@ import { NotificationProvider } from "./Providers/NotificationProvider/Notificat
 import Notification from "./Components/NotificationComponent/Notification";
 import { ProfileModule } from "./Modules/ProfileModule/ProfileModule";
 import ApplicationModule from "./Modules/ApplicationModule/ApplicationlModule";
+import { AdminProvider } from "./Providers/AdminProvider/AdminProvider";
 
 function App() {
   return (
     <Router id="root">
-      <NotificationProvider>
-        <Notification />
-        <Navbar />
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/" element={<HomeModule />} />
-          <Route path="/profile" element={<ProfileModule />} />
-          <Route path="/applications" element={<ApplicationModule />} />
-        </Routes>
-      </NotificationProvider>
+      <AdminProvider>
+        <NotificationProvider>
+          <Notification />
+          <Navbar />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={<HomeModule />} />
+            <Route path="/profile" element={<ProfileModule />} />
+            <Route path="/applications" element={<ApplicationModule />} />
+          </Routes>
+        </NotificationProvider>
+      </AdminProvider>
     </Router>
   );
 }

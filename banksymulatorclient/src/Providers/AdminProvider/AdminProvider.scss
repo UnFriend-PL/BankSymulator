@@ -1,0 +1,27 @@
+.admin-module {
+  display: flex;
+  height: 100vh;
+  position: fixed;
+  bottom: 0;
+  z-index: 9999;
+
+  .menu {
+    width: 75%;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    overflow: auto;
+    transition: all 0.3s ease-in-out;
+
+    &.closed {
+      width: 0;
+      overflow: hidden;
+    }
+  }
+
+  button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+  }
+}

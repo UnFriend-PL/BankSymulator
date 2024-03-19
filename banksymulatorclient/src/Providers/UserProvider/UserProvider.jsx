@@ -3,7 +3,6 @@ import { UserContext } from "./UserContext";
 
 export function UserProvider({ children }) {
   const [user, setUser] = useState(localStorage.getItem("user"));
-
   const getUser = () => {
     return JSON.parse(localStorage.getItem("user"));
   };

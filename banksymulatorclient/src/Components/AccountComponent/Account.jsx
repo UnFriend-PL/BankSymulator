@@ -1,3 +1,16 @@
+
+
+/**
+ * Represents an individual account component.
+ * @component
+ * @param {Object} props - The component props.
+ * @param {Object} props.account - The account object.
+ * @param {Function} props.onSuccess - The success callback function.
+ * @param {number} props.totalBalance - The total balance of all accounts.
+ * @param {Function} props.refresh - The refresh callback function.
+ * @param {Function} props.handleSuccess - The success handler function.
+ * @returns {JSX.Element} - The account component.
+ */
 import React, { useState, useEffect, useContext } from "react";
 import "./Accounts.scss";
 import Deposit from "./DepositModalComponent/Deposit";
@@ -17,6 +30,11 @@ export default function Account({
   refresh,
   handleSuccess,
 }) {
+  /**
+   * Adds thousands separator to a number.
+   * @param {number} number - The number to format.
+   * @returns {string} - The formatted number with thousands separator.
+   */
   const addThousandsSeparator = (number) => {
     let numberString = number.toString();
     numberString = numberString.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -28,12 +46,23 @@ export default function Account({
   const [showTransferModal, setShowTransferModal] = useState(false);
   const { getUser } = useContext(UserContext);
   const user = getUser();
+
+  /**
+   * Copies the account number to the clipboard.
+   */
   const handleCopy = () => {
     navigator.clipboard.writeText(account.accountNumber);
   };
+
+  /**
+   * Calculates the percentage of the account balance compared to the total balance.
+   * @param {number} num - The account balance.
+   * @returns {number} - The percentage value.
+   */
   function calculatePercentage(num) {
     return totalBalance ? ((num / totalBalance) * 100).toFixed(2) : 100;
   }
+
   return (
     <div className="account">
       <div className="account__panel">

@@ -20,4 +20,14 @@ export async function getUserEmail() {
   return decodedToken.email;
 }
 
+export async function getUserRole() {
+  const token = localStorage.getItem("token");
+  if (token) {
+    const decodedToken = jwtDecode(token);
+    return decodedToken[
+      "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+    ];
+  }
+}
+
 // export async function refreshToken() {}
