@@ -93,6 +93,7 @@ namespace BankSymulatorApi
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IApplicationService, ApplicationService>();
+            services.AddScoped<IAdminService, AdminService>();
             services.AddHttpClient();
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())

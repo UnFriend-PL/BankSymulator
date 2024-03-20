@@ -6,6 +6,7 @@ export function UserProvider({ children }) {
   const getUser = () => {
     return JSON.parse(localStorage.getItem("user"));
   };
+
   const setUserData = (userData) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));

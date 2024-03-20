@@ -30,4 +30,3 @@ export async function getUserRole() {
   }
 }
 
-// export async function refreshToken() {}
