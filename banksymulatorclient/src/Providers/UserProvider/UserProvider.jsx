@@ -25,3 +25,7 @@ export function UserProvider({ children }) {
     </UserContext.Provider>
   );
 }
+
+export function useUserContext() {
+  return React.useContext(UserContext);
+}

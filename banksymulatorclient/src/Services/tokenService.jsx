@@ -12,6 +12,10 @@ export async function isTokenExpired() {
 
 export async function clearToken() {
   localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("admin");
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("searchedUser");
 }
 
 export async function getUserEmail() {
@@ -29,4 +33,3 @@ export async function getUserRole() {
     ];
   }
 }
-

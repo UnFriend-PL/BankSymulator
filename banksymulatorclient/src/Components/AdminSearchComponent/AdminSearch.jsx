@@ -14,6 +14,8 @@ export default function AdminSearch() {
     getAdminData,
     setAdminData,
     getAdminToken,
+    getSearchedUser,
+    setSearchedUser,
   } = useAdminContext();
   const { getUser, setUserData } = useContext(UserContext);
   const [searchValue, setSearchValue] = useState("");
@@ -27,7 +29,10 @@ export default function AdminSearch() {
       null,
       getAdminToken()
     );
-    console.log(result);
+    if (result.success) {
+      setSearchedUser(result.data);
+      setUserData(result.data);
+    }
   };
 
   const handleLoginAsAdmin = () => {
@@ -50,12 +55,14 @@ export default function AdminSearch() {
               onChange={hancdleOnChange}
               onSubmit={handleSubmit}
             ></SearchField>
-            <button
-              className="adminSearch__panel__content__button"
-              onClick={handleAdminLogout}
-            >
-              Logout from admin session
-            </button>
+            {
+              <button
+                className="adminSearch__panel__content__button"
+                onClick={handleAdminLogout}
+              >
+                Logout from admin session
+              </button>
+            }
           </div>
         </>
       ) : (

@@ -7,38 +7,46 @@ import { NotificationProvider } from "./Providers/NotificationProvider/Notificat
 import Notification from "./Components/NotificationComponent/Notification";
 import { ProfileModule } from "./Modules/ProfileModule/ProfileModule";
 import ApplicationModule from "./Modules/ApplicationModule/ApplicationlModule";
-import { AdminProvider } from "./Providers/AdminProvider/AdminProvider";
+import { useAdminContext } from "./Providers/AdminProvider/AdminProvider";
 import AdminSearch from "./Components/AdminSearchComponent/AdminSearch";
 import { useEffect, useState } from "react";
 import { getUserRole } from "./Services/TokenService";
+import { useUserContext } from "./Providers/UserProvider/UserProvider";
 
 function App() {
   const [userRole, setUserRole] = useState();
+  const { getUser, setUserData } = useUserContext();
+  const {
+    isLoginAsAdmin,
+    setIsLoginAsAdmin,
+    isSearchVisible,
+    setIsSearchVisible,
+    setAdminData,
+    getAdminToken,
+  } = useAdminContext();
 
   useEffect(() => {
     const checkUserRole = async () => {
       const role = await getUserRole();
       setUserRole(role);
+      if (role === "Admin") setAdminData(getUser());
     };
     checkUserRole();
   }, []);
-
   return (
     <Router id="root">
-      <AdminProvider>
-        <NotificationProvider>
-          <Notification />
-          <Navbar />
-          {userRole === "Admin" && <AdminSearch />}
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={<HomeModule />} />
-            <Route path="/profile" element={<ProfileModule />} />
-            <Route path="/applications" element={<ApplicationModule />} />
-          </Routes>
-        </NotificationProvider>
-      </AdminProvider>
+      <NotificationProvider>
+        <Notification />
+        <Navbar />
+        {getAdminToken() && <AdminSearch />}
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<HomeModule />} />
+          <Route path="/profile" element={<ProfileModule />} />
+          <Route path="/applications" element={<ApplicationModule />} />
+        </Routes>
+      </NotificationProvider>
     </Router>
   );
 }

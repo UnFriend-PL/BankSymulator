@@ -6,6 +6,7 @@ import { NotificationContext } from "../../Providers/NotificationProvider/Notifi
 import Account from "./Account";
 import { FaWallet } from "react-icons/fa";
 import apiService from "../../Services/ApiService";
+import { useAdminContext } from "../../Providers/AdminProvider/AdminProvider";
 
 function Accounts() {
   const [accounts, setAccounts] = useState(null);
@@ -15,6 +16,17 @@ function Accounts() {
   const [totalBalance, setTotalBalance] = useState(0);
   const navigate = useNavigate();
   const [refresh, setRefresh] = useState(false);
+  const {
+    isSearchVisible,
+    toggleSearchVisibility,
+    isLoginAsAdmin,
+    setIsLoginAsAdmin,
+    getAdminData,
+    setAdminData,
+    getAdminToken,
+    getSearchedUser,
+    setSearchedUser,
+  } = useAdminContext();
   const addThousandsSeparator = (number) => {
     let numberString = number.toString();
     numberString = numberString.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -23,14 +35,14 @@ function Accounts() {
   const handleSuccess = () => {
     setRefresh((prev) => !prev);
   };
+
   useEffect(() => {
     const fetchData = async () => {
-      const result = await apiService(
-        "get",
-        "/api/Accounts/GetByUserToken",
-        null,
-        true
-      );
+      const endpoint = isLoginAsAdmin
+        ? "/api/Admin/Accounts/GetByUser"
+        : "/api/Accounts/GetByUserToken";
+      const result = await apiService("get", endpoint, null, true);
+
       if (result.success === true) {
         setAccounts(result.data);
         let total = 0;
@@ -45,7 +57,7 @@ function Accounts() {
     };
 
     fetchData();
-  }, [navigate, refresh]);
+  }, [navigate, refresh, isLoginAsAdmin]);
 
   return (
     <div className="accountWrap">

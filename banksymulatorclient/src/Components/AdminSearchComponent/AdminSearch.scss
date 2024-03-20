@@ -1,5 +1,5 @@
 @import "../../colors.scss";
-$panel-width: 75vw;
+$panel-width: 55vw;
 $panel-width-offset: 65vw;
 @mixin vertical-align($position) {
   position: $position;
@@ -40,7 +40,7 @@ $panel-width-offset: 65vw;
     top: 50%;
     @include vertical-align(absolute);
     transform: rotate(270deg);
-    right: -6vw;
+    left: $panel-width - 1;
     font-weight: 800;
     font-size: 15px;
   }
