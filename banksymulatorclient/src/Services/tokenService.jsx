@@ -16,6 +16,8 @@ export async function clearToken() {
   localStorage.removeItem("admin");
   localStorage.removeItem("adminToken");
   localStorage.removeItem("searchedUser");
+  localStorage.removeItem("isSearchVisible");
+  localStorage.removeItem("isLoginAsAdmin");
 }
 
 export async function getUserEmail() {

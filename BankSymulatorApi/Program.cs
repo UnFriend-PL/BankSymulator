@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using BankSymulatorApi.Models;
 using BankSymulatorApi.Services;
 using Microsoft.OpenApi.Models;

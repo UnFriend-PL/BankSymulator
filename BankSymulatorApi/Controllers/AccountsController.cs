@@ -55,7 +55,7 @@ namespace BankSymulatorApi.Controllers
             return BadRequest(result);
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles ="Admin")]
         [HttpPut("Deposit")]
         public async Task<IActionResult> DepositAsync([FromBody] DepositDto model)
         {
@@ -70,7 +70,7 @@ namespace BankSymulatorApi.Controllers
             return BadRequest(result);
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
         [HttpPut("Withdraw")]
         public async Task<IActionResult> WithdrawAsync([FromBody] WithdrawDto model)
         {

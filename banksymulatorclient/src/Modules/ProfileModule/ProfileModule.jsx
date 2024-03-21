@@ -4,12 +4,18 @@ import "./ProfileModule.scss";
 import { MdEditSquare } from "react-icons/md";
 import EditProfileModal from "../../Components/EditProfileComponent/EditProfile";
 import ChangePasswordModal from "../../Components/ChangePasswordComponent/ChangePassword";
+import { useAdminContext } from "../../Providers/AdminProvider/AdminProvider";
 
 export function ProfileModule() {
   const { getUser, setUserData } = useContext(UserContext);
+  const { getSearchedUser, isLoginAsAdmin, searchedUser } = useAdminContext();
   const [user, setUser] = useState(getUser());
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  useEffect(() => {
+    isLoginAsAdmin && searchedUser ? setUser(searchedUser) : setUser(getUser());
+  }, [searchedUser, isLoginAsAdmin]);
 
   const handleEditProfile = () => {
     setIsEditingProfile(!isEditingProfile);

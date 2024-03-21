@@ -8,6 +8,12 @@ function NewAccount({ refresh, onClose }) {
   const [formData, setFormData] = useState({
     currency: "PLN",
     name: "Additional Account",
+    jointEmail: "",
+    jointName: "",
+    jointSurname: "",
+    jointPesel: "",
+    jointPhoneNumber: "",
+    jointBirthDate: "",
   });
   const [isJointAccount, setIsJointAccount] = useState(false);
 

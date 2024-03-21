@@ -16,17 +16,7 @@ function Accounts() {
   const [totalBalance, setTotalBalance] = useState(0);
   const navigate = useNavigate();
   const [refresh, setRefresh] = useState(false);
-  const {
-    isSearchVisible,
-    toggleSearchVisibility,
-    isLoginAsAdmin,
-    setIsLoginAsAdmin,
-    getAdminData,
-    setAdminData,
-    getAdminToken,
-    getSearchedUser,
-    setSearchedUser,
-  } = useAdminContext();
+  const { isLoginAsAdmin, searchedUser, getSearchedUser } = useAdminContext();
   const addThousandsSeparator = (number) => {
     let numberString = number.toString();
     numberString = numberString.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -38,11 +28,10 @@ function Accounts() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const endpoint = isLoginAsAdmin
-        ? "/api/Admin/Accounts/GetByUser"
+      const endpoint = searchedUser
+        ? `/api/Admin/Accounts/${getSearchedUser() ? getSearchedUser().id : ""}`
         : "/api/Accounts/GetByUserToken";
       const result = await apiService("get", endpoint, null, true);
-
       if (result.success === true) {
         setAccounts(result.data);
         let total = 0;
@@ -57,7 +46,7 @@ function Accounts() {
     };
 
     fetchData();
-  }, [navigate, refresh, isLoginAsAdmin]);
+  }, [navigate, refresh, searchedUser]);
 
   return (
     <div className="accountWrap">

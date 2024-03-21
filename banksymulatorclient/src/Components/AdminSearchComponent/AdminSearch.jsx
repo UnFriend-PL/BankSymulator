@@ -1,9 +1,10 @@
 import { useContext, useState } from "react";
 import { useAdminContext } from "../../Providers/AdminProvider/AdminProvider";
 import "./AdminSearch.scss";
-import { SearchField } from "../InputComponent/Input";
+import { Label, SearchField, SwitchButton } from "../InputComponent/Input";
 import { UserContext } from "../../Providers/UserProvider/UserContext";
 import apiService from "../../Services/ApiService";
+import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 
 export default function AdminSearch() {
   const {
@@ -15,8 +16,11 @@ export default function AdminSearch() {
     setAdminData,
     getAdminToken,
     getSearchedUser,
+    searchedUser,
     setSearchedUser,
   } = useAdminContext();
+  const { showNotification } = useContext(NotificationContext);
+
   const { getUser, setUserData } = useContext(UserContext);
   const [searchValue, setSearchValue] = useState("");
   const hancdleOnChange = (e) => {
@@ -25,29 +29,44 @@ export default function AdminSearch() {
   const handleSubmit = async (e) => {
     const result = await apiService(
       "get",
-      `/api/Admin/GetUserInfo/${searchValue}`,
+      `/api/Admin/User/${searchValue}`,
       null,
       getAdminToken()
     );
     if (result.success) {
       setSearchedUser(result.data);
-      setUserData(result.data);
+      toggleSearchVisibility(false);
+    } else {
+      showNotification(result);
     }
   };
 
-  const handleLoginAsAdmin = () => {
-    setIsLoginAsAdmin(true);
-    setAdminData(getUser());
+  const handleAdminMode = () => {
+    isLoginAsAdmin ? setIsLoginAsAdmin(false) : setIsLoginAsAdmin(true);
+    if (isLoginAsAdmin) {
+      if (getAdminData() == null) setAdminData(getUser());
+    } else {
+      setUserData(getAdminData());
+      setSearchedUser(null);
+      setAdminData(null);
+    }
   };
-  const handleAdminLogout = () => {
-    setIsLoginAsAdmin(false);
-    setAdminData(null);
+
+  const handleClearSearch = () => {
+    setSearchedUser(null);
+    setSearchValue("");
   };
+
   return (
     <div className={`adminSearch ${isSearchVisible ? "open" : ""}`}>
-      {isLoginAsAdmin ? (
-        <>
-          <div className="adminSearch__panel__content">
+      <div className="adminSearch__panel__content">
+        <SwitchButton
+          isChecked={isLoginAsAdmin}
+          onChange={handleAdminMode}
+          label="Admin Mode"
+        />
+        {isLoginAsAdmin && (
+          <>
             <SearchField
               inputName={"SearchUser"}
               inputLabel={"Search user"}
@@ -55,34 +74,47 @@ export default function AdminSearch() {
               onChange={hancdleOnChange}
               onSubmit={handleSubmit}
             ></SearchField>
-            {
-              <button
-                className="adminSearch__panel__content__button"
-                onClick={handleAdminLogout}
-              >
-                Logout from admin session
-              </button>
-            }
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="adminSearch__panel__content">
-            <button
-              className={`adminSearch__panel__content__button`}
-              onClick={handleLoginAsAdmin}
-            >
-              Login as admin first
-            </button>
-          </div>
-        </>
-      )}
-
+            {searchedUser && (
+              <>
+                {searchedUser && (
+                  <div className="adminSearch__panel__content__buttons">
+                    <button
+                      className="adminSearch__panel__content__buttons__clear"
+                      onClick={handleClearSearch}
+                    >
+                      clear
+                    </button>
+                  </div>
+                )}
+                <div className="adminSearch__panel__content__title">
+                  Found user Details:
+                </div>
+                <div
+                  key={searchedUser.id}
+                  className="adminSearch__panel__content__user"
+                >
+                  <Label inputLabel={"Name"} inputValue={searchedUser.name} />
+                  <Label
+                    inputLabel={"Surname"}
+                    inputValue={searchedUser.surname}
+                  />
+                  <Label
+                    inputLabel={"Address"}
+                    inputValue={searchedUser.address}
+                  />
+                  <Label inputLabel={"Email"} inputValue={searchedUser.email} />
+                  <Label inputLabel={"Pesel"} inputValue={searchedUser.pesel} />
+                </div>
+              </>
+            )}
+          </>
+        )}
+      </div>
       <button
         className={`adminSearch__panel__title`}
         onClick={toggleSearchVisibility}
       >
-        {isSearchVisible ? "Close" : "Search"}
+        {isSearchVisible ? "Close" : "Admin"}
       </button>
     </div>
   );

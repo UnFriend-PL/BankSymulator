@@ -3,10 +3,12 @@ import { UserContext } from "../../Providers/UserProvider/UserContext";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 import apiService from "../../Services/ApiService";
 import Input from "../InputComponent/Input";
+import { useAdminContext } from "../../Providers/AdminProvider/AdminProvider";
 export default function EditProfileModal({ user, handleEdit }) {
   const [editedUser, setEditedUser] = useState(user);
   const { setUserData } = useContext(UserContext);
   const { showNotification } = useContext(NotificationContext);
+  const { searchedUser } = useAdminContext();
   const handleChange = (e) => {
     setEditedUser({
       ...editedUser,
@@ -16,12 +18,10 @@ export default function EditProfileModal({ user, handleEdit }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    const result = await apiService(
-      "patch",
-      "/api/Users/Edit",
-      editedUser,
-      true
-    );
+    const endpoint = searchedUser
+      ? `/api/Admin/Users/Edit`
+      : `/api/Users/Edit/${searchedUser.id}`;
+    const result = await apiService("patch", endpoint, editedUser, true);
     if (result.success === true) {
       setUserData(editedUser);
       showNotification([{ message: "Profile updated", type: "info" }]);

@@ -29,6 +29,7 @@ $panel-width-offset: 65vw;
   justify-content: center;
   align-items: flex-start;
   @include all-transition(0.3s);
+  background-color: $lightAccentBackgorund2;
   color: #222;
   &.open {
     transform: translate3d($panel-width, 0, 0);
@@ -43,6 +44,7 @@ $panel-width-offset: 65vw;
     left: $panel-width - 1;
     font-weight: 800;
     font-size: 15px;
+    background-color: $adminColor;
   }
   &__panel__content {
     margin-top: 10vh;
@@ -51,7 +53,29 @@ $panel-width-offset: 65vw;
     flex-wrap: wrap;
     justify-content: space-around;
     align-items: flex-start;
-    &__button {
+    &__buttons {
+      display: flex;
+      flex-basis: 100%;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: 2%;
+      &__clear {
+        background-color: $buttonLightBackground;
+      }
+    }
+    &__title {
+      font-size: 1.3em;
+      font-weight: 800;
+      margin: 1% 0;
+      flex-basis: 100%;
+    }
+    &__user {
+      display: flex;
+      flex-basis: 100%;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
     }
   }
 }

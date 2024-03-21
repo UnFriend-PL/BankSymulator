@@ -122,7 +122,21 @@ export function SearchField({
       <label htmlFor={inputName} className="form__label">
         {inputLabel}
       </label>
-      <FaSearch className="searchIcon" onClick={onSubmit} />
+      <button className="searchIcon" onClick={onSubmit}>
+        <FaSearch></FaSearch>
+      </button>
+    </div>
+  );
+}
+
+export function SwitchButton({ isChecked, onChange, label }) {
+  return (
+    <div className="switch-container">
+      {label && <span className="switch-label">{label}</span>}
+      <label className="switch">
+        <input type="checkbox" checked={isChecked} onChange={onChange} />
+        <span className="slider round"></span>
+      </label>
     </div>
   );
 }

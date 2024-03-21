@@ -1,5 +1,3 @@
-
-
 /**
  * Represents an individual account component.
  * @component
@@ -22,6 +20,7 @@ import { BiTransfer } from "react-icons/bi";
 import { IoCopy } from "react-icons/io5";
 import { UserContext } from "../../Providers/UserProvider/UserContext";
 import AccountHistory from "./AccountHistoryComponent/AccountHistory";
+import { useAdminContext } from "../../Providers/AdminProvider/AdminProvider";
 
 export default function Account({
   account,
@@ -40,7 +39,7 @@ export default function Account({
     numberString = numberString.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
     return numberString;
   };
-
+  const { isLoginAsAdmin } = useAdminContext();
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
@@ -73,18 +72,22 @@ export default function Account({
           )}
         </div>
         <div className="account__panel__buttons">
-          <button
-            disabled={!account.isActive}
-            onClick={() => setShowDepositModal(true)}
-          >
-            <RiLuggageDepositFill />
-          </button>
-          <button
-            disabled={!account.isActive}
-            onClick={() => setShowWithdrawModal(true)}
-          >
-            <BiMoneyWithdraw />
-          </button>
+          {isLoginAsAdmin && (
+            <button
+              disabled={!account.isActive}
+              onClick={() => setShowDepositModal(true)}
+            >
+              <RiLuggageDepositFill />
+            </button>
+          )}
+          {isLoginAsAdmin && (
+            <button
+              disabled={!account.isActive}
+              onClick={() => setShowWithdrawModal(true)}
+            >
+              <BiMoneyWithdraw />
+            </button>
+          )}
           <button
             disabled={!account.isActive}
             onClick={() => setShowTransferModal(true)}
@@ -121,10 +124,10 @@ export default function Account({
           )}
         </div>
         <div className="account__panel__owners">
-          <div className="account__panel__owners__owner">{`${user.name} ${user.surname}`}</div>
+          <div className="account__panel__owners__owner">{`${account.ownerName} ${account.ownerSurname}`}</div>
           {account.isJointAccount ? (
             <>
-              <div className="account__panel__owners__owner">{`${account.jointOwnerName} ${account.jointOwnerSurnameName}`}</div>
+              <div className="account__panel__owners__owner">{`${account.jointOwnerName} ${account.jointOwnerSurname}`}</div>
             </>
           ) : (
             <></>

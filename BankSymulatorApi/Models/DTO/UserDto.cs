@@ -2,6 +2,7 @@
 {
     public class UserDto
     {
+        public string Id { get; set; } = "";
         public string Name { get; set; }
         public string Surname { get; set; }
         public DateTime BirthDate { get; set; }
@@ -13,6 +14,7 @@
 
         public UserDto(User user)
         {
+            Id = user.Id;
             Name = user.Name;
             Surname = user.Surname;
             BirthDate = user.BirthDate;

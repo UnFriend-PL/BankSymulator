@@ -10,6 +10,10 @@ export function AdminProvider({ children }) {
     JSON.parse(localStorage.getItem("isLoginAsAdmin")) || false
   );
   const [admin, setAdmin] = useState(localStorage.getItem("admin"));
+  const [searchedUser, setSearchedUserState] = useState(
+    JSON.parse(localStorage.getItem("searchedUser")) || null
+  );
+
   const toggleSearchVisibility = () => {
     const newVisibility = !isSearchVisible;
     setIsSearchVisible(newVisibility);
@@ -31,10 +35,11 @@ export function AdminProvider({ children }) {
     return localStorage.getItem("adminToken");
   };
   const getSearchedUser = () => {
-    return localStorage.getItem("searchedUser");
+    return searchedUser;
   };
   const setSearchedUser = (user) => {
-    localStorage.setItem("searchedUser", user);
+    localStorage.setItem("searchedUser", JSON.stringify(user));
+    setSearchedUserState(user);
   };
   useEffect(() => {
     const adminLocal = localStorage.getItem("admin");
@@ -49,6 +54,10 @@ export function AdminProvider({ children }) {
     if (isLoginAsAdminLocal != null) {
       setIsLoginAsAdmin(JSON.parse(isLoginAsAdminLocal));
     }
+    const searchedUserLocal = localStorage.getItem("searchedUser");
+    if (searchedUserLocal != null) {
+      setSearchedUserState(JSON.parse(searchedUserLocal));
+    }
   }, []);
   return (
     <AdminContext.Provider
@@ -60,8 +69,9 @@ export function AdminProvider({ children }) {
         getAdminData,
         setAdminData,
         getAdminToken,
-        getSearchedUser,
+        searchedUser,
         setSearchedUser,
+        getSearchedUser,
       }}
     >
       {children}
