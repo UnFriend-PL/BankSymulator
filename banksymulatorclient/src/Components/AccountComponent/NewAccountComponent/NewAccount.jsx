@@ -3,8 +3,10 @@ import "./NewAccount.scss";
 import apiService from "../../../Services/ApiService";
 import { NotificationContext } from "../../../Providers/NotificationProvider/NotificationProvider";
 import Input, { CheckBox, Select } from "../../InputComponent/Input";
+import { useAdminContext } from "../../../Providers/AdminProvider/AdminProvider";
 function NewAccount({ refresh, onClose }) {
   const { showNotification } = useContext(NotificationContext);
+  const { searchedUser, isLoginAsAdmin } = useAdminContext();
   const [formData, setFormData] = useState({
     currency: "PLN",
     name: "Additional Account",
@@ -30,12 +32,11 @@ function NewAccount({ refresh, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isJointAccount) {
-      const result = await apiService(
-        "post",
-        "/api/Accounts/Create",
-        formData,
-        true
-      );
+      const endpoint =
+        searchedUser && isLoginAsAdmin
+          ? `/api/Admin/Accounts/Create/${searchedUser.id}`
+          : "/api/Accounts/Create";
+      const result = await apiService("post", endpoint, formData, true);
       if (result.success === true) {
         showNotification([{ message: "Account created", type: "info" }]);
         refresh((prev) => !prev);
@@ -58,12 +59,11 @@ function NewAccount({ refresh, onClose }) {
         jointBirthDate: formData.jointBirthDate,
       };
 
-      const result = await apiService(
-        "post",
-        "/api/Application/JointAccount",
-        modifiedFormData,
-        true
-      );
+      const endpoint =
+        searchedUser && isLoginAsAdmin
+          ? `/api/Admin/Applications/JointApplications/${searchedUser.id}`
+          : "/api/Application/JointAccount";
+      const result = await apiService("post", endpoint, modifiedFormData, true);
       if (result.success === true) {
         showNotification([{ message: "Application created", type: "info" }]);
         refresh((prev) => !prev);

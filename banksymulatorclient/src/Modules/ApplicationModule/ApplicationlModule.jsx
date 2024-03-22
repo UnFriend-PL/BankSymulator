@@ -92,6 +92,7 @@ export default function ApplicationModule() {
             key={index}
             application={application}
             display={fetchStatus}
+            refetch={handleChangeApplicationsView}
           ></Application>
         ))}
       </div>

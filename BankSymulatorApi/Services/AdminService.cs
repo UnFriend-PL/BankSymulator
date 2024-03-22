@@ -23,21 +23,43 @@ namespace BankSymulatorApi.Services
             _userManager = userManager;
         }
 
-        public Task<ServiceResponse<bool>> EditUserDataAsync(EditUserDto model, string userId)
+        public Task<ServiceResponse<bool>> CreateAdditionalAccountAsync(NewAccountDto model, string userId)
         {
-            var result = _userService.EditUserDataAsync(model, userId);
+            var user = _context.Users.Where(u => u.Id == userId).FirstOrDefault();
+            if(user == null)
+            {
+                var serviceResponse = new ServiceResponse<bool>();
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User not found";
+                return Task.FromResult(serviceResponse);
+            }
+            var result = _accountService.CreateAccountAsync(user, model);
             return result;
         }
 
-        public async Task<ServiceResponse<List<AccountDto>>> GetUserAccounts(string userId)
+        public async Task<ServiceResponse<bool>> CreateJointAccountApplicationAsync(string userId, JointAccountApplicationDto model)
         {
-            var result = _accountService.GetAccountsByUserIdAsync(userId);
-            return await result;
+            var user = await _userManager.FindByIdAsync(userId);
+            var result = await _applicationService.CreateJointAccountApplicationAsync(user, model);
+            return result;
         }
 
-        public Task<ServiceResponse<List<JointApplicationsDto>>> GetUserApplications(string userId, string status)
+        public async Task<ServiceResponse<bool>> EditUserDataAsync(EditUserDto model, string userId)
         {
-           var result = _applicationService.GetJointAccountApplicationsByUserIdAsync(userId, status);
+            var result = await _userService.EditUserDataAsync(model, userId);
+            return result;
+        }
+
+
+        public async Task<ServiceResponse<List<AccountDto>>> GetUserAccounts(string userId)
+        {
+            var result = await _accountService.GetAccountsByUserIdAsync(userId);
+            return result;
+        }
+
+        public async Task<ServiceResponse<List<JointApplicationsDto>>> GetUserApplications(string userId, string status)
+        {
+           var result = await _applicationService.GetJointAccountApplicationsByUserIdAsync(userId, status);
             return result;
         }
 

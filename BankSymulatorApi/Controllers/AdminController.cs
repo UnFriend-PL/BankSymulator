@@ -72,5 +72,29 @@ namespace BankSymulatorApi.Controllers
             }
             return BadRequest(result);
         }
+
+        [Authorize(AuthenticationSchemes = "Bearer", Roles="Admin")]
+        [HttpPost("Accounts/Create/{userId}")]
+        public async Task<IActionResult> CreateAdditionalAccount([FromBody] NewAccountDto model, string userId)
+        {
+            var result = await _adminService.CreateAdditionalAccountAsync(model, userId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
+        [HttpPost("Applications/JointApplications/{userId}")]
+        public async Task<IActionResult> CreateJointAccountApplication(string userId, [FromBody] JointAccountApplicationDto model)
+        {
+            var result = await _adminService.CreateJointAccountApplicationAsync(userId, model);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }
