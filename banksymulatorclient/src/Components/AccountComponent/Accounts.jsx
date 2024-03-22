@@ -28,9 +28,12 @@ function Accounts() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const endpoint = searchedUser
-        ? `/api/Admin/Accounts/${getSearchedUser() ? getSearchedUser().id : ""}`
-        : "/api/Accounts/GetByUserToken";
+      const endpoint =
+        searchedUser && isLoginAsAdmin
+          ? `/api/Admin/Accounts/${
+              getSearchedUser() ? getSearchedUser().id : ""
+            }`
+          : "/api/Accounts/GetByUserToken";
       const result = await apiService("get", endpoint, null, true);
       if (result.success === true) {
         setAccounts(result.data);
@@ -46,7 +49,7 @@ function Accounts() {
     };
 
     fetchData();
-  }, [navigate, refresh, searchedUser]);
+  }, [navigate, refresh, searchedUser, isLoginAsAdmin]);
 
   return (
     <div className="accountWrap">

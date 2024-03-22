@@ -19,7 +19,8 @@ export function ProfileModule() {
 
   const handleEditProfile = () => {
     setIsEditingProfile(!isEditingProfile);
-    const updatedUserData = getUser();
+    const updatedUserData =
+      isLoginAsAdmin && searchedUser ? searchedUser : getUser();
     setUser(updatedUserData);
   };
 
@@ -96,17 +97,19 @@ export function ProfileModule() {
           </div>
         </div>
       </div>
-      <div className="profile__section">
-        {isChangingPassword && (
-          <ChangePasswordModal onClose={handleChangePassword} />
-        )}
+      {!isLoginAsAdmin && (
+        <div className="profile__section">
+          {isChangingPassword && (
+            <ChangePasswordModal onClose={handleChangePassword} />
+          )}
 
-        <div className="profile__section__title">
-          Security
-          <MdEditSquare className="edit" onClick={handleChangePassword} />
-          <div className="profile__section__title__line"></div>
+          <div className="profile__section__title">
+            Security
+            <MdEditSquare className="edit" onClick={handleChangePassword} />
+            <div className="profile__section__title__line"></div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
