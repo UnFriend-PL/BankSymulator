@@ -38,7 +38,7 @@ function App() {
       <NotificationProvider>
         <Notification />
         <Navbar />
-        {getAdminToken() && <AdminSearch />}
+        {userRole == "Admin" && <AdminSearch />}
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

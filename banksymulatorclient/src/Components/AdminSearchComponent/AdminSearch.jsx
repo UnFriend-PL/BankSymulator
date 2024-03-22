@@ -44,11 +44,15 @@ export default function AdminSearch() {
   const handleAdminMode = () => {
     isLoginAsAdmin ? setIsLoginAsAdmin(false) : setIsLoginAsAdmin(true);
     if (isLoginAsAdmin) {
-      if (getAdminData() == null) setAdminData(getUser());
+      if (getAdminData() == null) {
+        setAdminData(getUser());
+      }
     } else {
-      setUserData(getAdminData());
-      setSearchedUser(null);
-      setAdminData(null);
+      if (getAdminData() != null) {
+        setUserData(getAdminData());
+        setSearchedUser(null);
+        setAdminData(null);
+      }
     }
   };
 
