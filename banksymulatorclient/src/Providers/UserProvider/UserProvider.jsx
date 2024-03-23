@@ -3,10 +3,10 @@ import { UserContext } from "./UserContext";
 
 export function UserProvider({ children }) {
   const [user, setUser] = useState(localStorage.getItem("user"));
-
   const getUser = () => {
     return JSON.parse(localStorage.getItem("user"));
   };
+
   const setUserData = (userData) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
@@ -24,4 +24,8 @@ export function UserProvider({ children }) {
       {children}
     </UserContext.Provider>
   );
+}
+
+export function useUserContext() {
+  return React.useContext(UserContext);
 }

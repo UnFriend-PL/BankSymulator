@@ -12,6 +12,12 @@ export async function isTokenExpired() {
 
 export async function clearToken() {
   localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("admin");
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("searchedUser");
+  localStorage.removeItem("isSearchVisible");
+  localStorage.removeItem("isLoginAsAdmin");
 }
 
 export async function getUserEmail() {
@@ -20,4 +26,12 @@ export async function getUserEmail() {
   return decodedToken.email;
 }
 
-// export async function refreshToken() {}
+export async function getUserRole() {
+  const token = localStorage.getItem("token");
+  if (token) {
+    const decodedToken = jwtDecode(token);
+    return decodedToken[
+      "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+    ];
+  }
+}

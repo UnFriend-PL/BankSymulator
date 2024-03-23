@@ -1,12 +1,14 @@
-import React, { useContext, useState } from "react";
-import { UserContext } from "../../Providers/UserProvider/UserContext";
+import React, { useContext, useEffect, useState } from "react";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 import apiService from "../../Services/ApiService";
 import Input from "../InputComponent/Input";
+import { useAdminContext } from "../../Providers/AdminProvider/AdminProvider";
+import { useUserContext } from "../../Providers/UserProvider/UserProvider";
 export default function EditProfileModal({ user, handleEdit }) {
   const [editedUser, setEditedUser] = useState(user);
-  const { setUserData } = useContext(UserContext);
+  const { setUserData, getUser } = useUserContext();
   const { showNotification } = useContext(NotificationContext);
+  const { searchedUser, isLoginAsAdmin } = useAdminContext();
   const handleChange = (e) => {
     setEditedUser({
       ...editedUser,
@@ -14,14 +16,18 @@ export default function EditProfileModal({ user, handleEdit }) {
     });
   };
 
+  useEffect(() => {
+    searchedUser && isLoginAsAdmin
+      ? setEditedUser(searchedUser)
+      : setEditedUser(getUser());
+  }, [user, searchedUser, isLoginAsAdmin]);
+
   const handleSave = async (e) => {
     e.preventDefault();
-    const result = await apiService(
-      "patch",
-      "/api/Users/Edit",
-      editedUser,
-      true
-    );
+    const endpoint = searchedUser
+      ? `/api/Admin/User/Edit/${searchedUser.id}`
+      : `/api/Users/Edit`;
+    const result = await apiService("patch", endpoint, editedUser, true);
     if (result.success === true) {
       setUserData(editedUser);
       showNotification([{ message: "Profile updated", type: "info" }]);

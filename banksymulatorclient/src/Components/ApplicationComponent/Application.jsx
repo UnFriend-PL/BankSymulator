@@ -1,10 +1,11 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 import apiService from "../../Services/ApiService";
 
-export function Application({ application, display }) {
+export function Application({ application, display, refetch }) {
   const [showContent, setShowContent] = useState(false);
   const { showNotification } = useContext(NotificationContext);
+  const [refresh, setRefresh] = useState(false);
   const handleAccept = async (e) => {
     const response = await apiService(
       "patch",
@@ -13,7 +14,8 @@ export function Application({ application, display }) {
       true
     );
     if (response.success === true) {
-      showNotification(response);
+      showNotification([{ message: "Application accepted", type: "info" }]);
+      refetch("Archived");
     } else {
       showNotification(response);
     }

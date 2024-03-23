@@ -15,8 +15,10 @@ namespace BankSymulatorApi.Models.DTO
         public bool IsSaveAccount { get; set; } = false;
         public string currency { get; set; }
         public bool isJointAccount { get; set; } = false;
+        public string OwnerName { get; set; }
+        public string OwnerSurname { get; set; }
         public string JointOwnerName { get; set; }
-        public string JointOwnerSurnameName { get; set; }
+        public string JointOwnerSurname { get; set; }
         public string JointOwnerId { get; set; }
 
     }

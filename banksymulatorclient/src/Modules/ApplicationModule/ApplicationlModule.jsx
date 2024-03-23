@@ -3,10 +3,12 @@ import apiService from "../../Services/ApiService";
 import "./ApplicationModule.scss";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
 import { Application } from "../../Components/ApplicationComponent/Application";
+import { useAdminContext } from "../../Providers/AdminProvider/AdminProvider";
 export default function ApplicationModule() {
   const [sentApplications, setSentApplications] = useState([]);
   const { showNotification } = useContext(NotificationContext);
   const [fetchStatus, setFetchStatus] = useState("Pending");
+  const { isLoginAsAdmin, getSearchedUser, searchedUser } = useAdminContext();
   const handleChangeApplicationsView = (e) => {
     switch (e) {
       case "Pending":
@@ -25,12 +27,13 @@ export default function ApplicationModule() {
 
   useEffect(() => {
     const fetchApplications = async () => {
-      const response = await apiService(
-        "get",
-        `/api/Application/JointApplications/${fetchStatus}`,
-        undefined,
-        true
-      );
+      const endpoint =
+        isLoginAsAdmin && searchedUser
+          ? `/api/Admin/Applications/JointApplications/${
+              getSearchedUser() ? getSearchedUser().id : ""
+            }/${fetchStatus}`
+          : `/api/Application/JointApplications/${fetchStatus}`;
+      const response = await apiService("get", endpoint, undefined, true);
       if (response.success === true) {
         setSentApplications(response.data);
         console.log(response.data);
@@ -39,7 +42,7 @@ export default function ApplicationModule() {
       }
     };
     fetchApplications();
-  }, [fetchStatus]);
+  }, [fetchStatus, isLoginAsAdmin, searchedUser]);
 
   return (
     <div className="applicationWrapper">
@@ -89,6 +92,7 @@ export default function ApplicationModule() {
             key={index}
             application={application}
             display={fetchStatus}
+            refetch={handleChangeApplicationsView}
           ></Application>
         ))}
       </div>

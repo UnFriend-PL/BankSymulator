@@ -60,7 +60,10 @@ namespace BankSymulatorApi.Services
                     IsSaveAccount = a.IsSaveAccount,
                     currency = a.Currency,
                     isJointAccount = a.isJointAccount,
-                    JointOwnerId = a.JointOwnerId
+                    JointOwnerId = a.JointOwnerId,
+                    OwnerName = a.Owner.Name,
+                    OwnerSurname = a.Owner.Surname,
+                   
                 })
                 .ToListAsync();
             foreach (var account in accounts)
@@ -77,12 +80,16 @@ namespace BankSymulatorApi.Services
                     {
                         var owner = await _context.Users.FirstOrDefaultAsync(u => u.Id == account.OwnerId);
                         account.JointOwnerName = owner.Name;
-                        account.JointOwnerSurnameName = owner.Surname;
+                        account.JointOwnerSurname = owner.Surname;
+                        account.OwnerName = jointOwner.Name;
+                        account.OwnerSurname = jointOwner.Surname;
                     }
                     else
                     {
                         account.JointOwnerName = jointOwner.Name;
-                        account.JointOwnerSurnameName = jointOwner.Surname;
+                        account.JointOwnerSurname = jointOwner.Surname;
+                        account.OwnerName = account.OwnerName;
+                        account.OwnerSurname = account.OwnerSurname;
                     }
                 }
             }

@@ -1,0 +1,81 @@
+@import "../../colors.scss";
+$panel-width: 55vw;
+$panel-width-offset: 65vw;
+@mixin vertical-align($position) {
+  position: $position;
+  top: 50%;
+  -webkit-transform: translateY(50%);
+  -ms-transform: translateY(50%);
+  transform: translateY(50%);
+}
+
+@mixin all-transition($time) {
+  transition: all $time;
+  -webkit-transition: all $time;
+}
+
+.adminSearch {
+  z-index: 9999;
+  font-weight: 100;
+  width: $panel-width;
+  height: 100%;
+  position: fixed;
+  z-index: 100;
+  -webkit-box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
+  left: -$panel-width;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  @include all-transition(0.3s);
+  background-color: $lightAccentBackgorund2;
+  color: #222;
+  &.open {
+    transform: translate3d($panel-width, 0, 0);
+    animation-timing-function: 1s ease-in;
+    background-color: $lightAccentBackgorund2;
+  }
+  &__panel__title {
+    margin: 0;
+    top: 50%;
+    @include vertical-align(absolute);
+    transform: rotate(270deg);
+    left: $panel-width - 1;
+    font-weight: 800;
+    font-size: 15px;
+    background-color: $adminColor;
+  }
+  &__panel__content {
+    margin-top: 10vh;
+    flex-basis: 90%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: flex-start;
+    &__buttons {
+      display: flex;
+      flex-basis: 100%;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: 2%;
+      &__clear {
+        background-color: $buttonLightBackground;
+      }
+    }
+    &__title {
+      font-size: 1.3em;
+      font-weight: 800;
+      margin: 1% 0;
+      flex-basis: 100%;
+    }
+    &__user {
+      display: flex;
+      flex-basis: 100%;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+  }
+}

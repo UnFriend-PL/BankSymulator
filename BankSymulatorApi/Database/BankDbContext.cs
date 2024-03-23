@@ -2,10 +2,11 @@
 using BankSymulatorApi.Models;
 using System.Security.Cryptography.Xml;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace BankSymulatorApi.Database
 {
-    public class BankDbContext : DbContext
+    public class BankDbContext : IdentityDbContext<User>
     {
         public BankDbContext(DbContextOptions<BankDbContext> options) : base(options)
         {
@@ -13,6 +14,8 @@ namespace BankSymulatorApi.Database
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<User>()
              .HasIndex(u => u.Email)
              .IsUnique();
@@ -132,7 +135,7 @@ namespace BankSymulatorApi.Database
                 .OnDelete(DeleteBehavior.Restrict);
         }
         public DbSet<User> Users { get; set; }
-        public DbSet<IdentityRole> Roles { get; set; }
+        public DbSet<IdentityRole> IdentityRoles { get; set; }
         public DbSet<Account> Accounts => Set<Account>();
         public DbSet<Transfer> Transfers => Set<Transfer>();
         public DbSet<Deposit> Deposits => Set<Deposit>();

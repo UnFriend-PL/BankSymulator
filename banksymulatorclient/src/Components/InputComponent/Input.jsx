@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Input.scss";
+import { FaSearch } from "react-icons/fa";
+
 export default function Input({
   inputType = "text",
   inputLabel,
@@ -88,6 +90,52 @@ export function Label({ inputLabel, inputValue, inputType = "text" }) {
       />
       <label htmlFor={inputValue} className="form__label">
         {inputLabel}
+      </label>
+    </div>
+  );
+}
+
+export function SearchField({
+  inputValue,
+  inputName,
+  onChange,
+  inputLabel,
+  onSubmit,
+}) {
+  return (
+    <div className="form__group field search">
+      <input
+        type="text"
+        label={inputLabel}
+        className="form__field"
+        placeholder={inputLabel}
+        name={inputName}
+        value={inputValue}
+        onChange={onChange}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            onSubmit();
+          }
+        }}
+        required
+      />
+      <label htmlFor={inputName} className="form__label">
+        {inputLabel}
+      </label>
+      <button className="searchIcon" onClick={onSubmit}>
+        <FaSearch></FaSearch>
+      </button>
+    </div>
+  );
+}
+
+export function SwitchButton({ isChecked, onChange, label }) {
+  return (
+    <div className="switch-container">
+      {label && <span className="switch-label">{label}</span>}
+      <label className="switch">
+        <input type="checkbox" checked={isChecked} onChange={onChange} />
+        <span className="slider round"></span>
       </label>
     </div>
   );
