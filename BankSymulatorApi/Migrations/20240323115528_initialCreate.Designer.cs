@@ -12,11 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankSymulatorApi.Migrations
 {
     [DbContext(typeof(BankDbContext))]
-<<<<<<<< HEAD:BankSymulatorApi/Migrations/20240317155743_initialCreate.Designer.cs
-    [Migration("20240317155743_initialCreate")]
-========
-    [Migration("20240316124228_initialCreate")]
->>>>>>>> AdminPanel:BankSymulatorApi/Migrations/20240316124228_initialCreate.Designer.cs
+    [Migration("20240323115528_initialCreate")]
     partial class initialCreate
     {
         /// <inheritdoc />
@@ -583,7 +579,7 @@ namespace BankSymulatorApi.Migrations
             modelBuilder.Entity("BankSymulatorApi.Models.Contributor", b =>
                 {
                     b.HasOne("BankSymulatorApi.Models.Account", "Account")
-                        .WithMany("Contrubitors")
+                        .WithMany("Contributors")
                         .HasForeignKey("AccountNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -704,7 +700,7 @@ namespace BankSymulatorApi.Migrations
 
             modelBuilder.Entity("BankSymulatorApi.Models.Account", b =>
                 {
-                    b.Navigation("Contrubitors");
+                    b.Navigation("Contributors");
 
                     b.Navigation("Deposits");
 

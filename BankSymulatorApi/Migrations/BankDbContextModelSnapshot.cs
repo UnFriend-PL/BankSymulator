@@ -576,7 +576,7 @@ namespace BankSymulatorApi.Migrations
             modelBuilder.Entity("BankSymulatorApi.Models.Contributor", b =>
                 {
                     b.HasOne("BankSymulatorApi.Models.Account", "Account")
-                        .WithMany("Contrubitors")
+                        .WithMany("Contributors")
                         .HasForeignKey("AccountNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -697,7 +697,7 @@ namespace BankSymulatorApi.Migrations
 
             modelBuilder.Entity("BankSymulatorApi.Models.Account", b =>
                 {
-                    b.Navigation("Contrubitors");
+                    b.Navigation("Contributors");
 
                     b.Navigation("Deposits");
 
