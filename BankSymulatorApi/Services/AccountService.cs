@@ -149,14 +149,20 @@ namespace BankSymulatorApi.Services
             }
         }
 
-        private async Task<bool> CheckAccountOwner(string userId, string accountNumber)
+        private async Task<bool> CheckWithdrawer(string userId, string accountNumber)
         {
             var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == accountNumber);
             if (account == null)
             {
                 return false;
             }
-            return account.OwnerId == userId;
+            var isOwner = account.OwnerId == userId;
+            var isJointOwner = account.JointOwnerId == userId;
+            var adminRoleId = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
+            var isAdmin = await _context.UserRoles.AnyAsync(ur => ur.UserId == userId && ur.RoleId == adminRoleId.Id);
+            var isPermitedToWithdraw = isOwner || isJointOwner || isAdmin;
+
+            return isPermitedToWithdraw;
         }
 
         private async Task<Contributor> AddNewContributorAsync(ContributorDto contributorDto, Account  account)
@@ -196,12 +202,12 @@ namespace BankSymulatorApi.Services
                         return serviceResponse;
                     }
 
-                    var isUserIdOwnerOfSelectedAccount = await CheckAccountOwner(userId, model.AccountNumber);
-                    if (!isUserIdOwnerOfSelectedAccount)
+                    var isUserPermitedToWithdraw = await CheckWithdrawer(userId, model.AccountNumber);
+                    if (!isUserPermitedToWithdraw)
                     {
                         transaction.Rollback();
                         serviceResponse.Success = false;
-                        serviceResponse.Errors = new[] { "You are not the owner of the selected account" };
+                        serviceResponse.Errors = new[] { "You are not permited to withdraw from selected account" };
                         return serviceResponse;
                     }
 

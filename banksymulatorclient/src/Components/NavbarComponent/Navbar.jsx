@@ -6,10 +6,7 @@ import { IoIosLogOut } from "react-icons/io";
 import { MdManageAccounts } from "react-icons/md";
 import { MdAccountBalance } from "react-icons/md";
 import { NotificationContext } from "../../Providers/NotificationProvider/NotificationProvider";
-import {
-  isTokenExpired,
-  clearToken,
-} from "../../Services/TokenService";
+import { isTokenExpired, clearToken } from "../../Services/TokenService";
 import { IoMailOpenSharp } from "react-icons/io5";
 
 function Navbar() {
@@ -58,7 +55,7 @@ function Navbar() {
       </Link>
       {getUser() == null ? (
         <div className="navbar__links">
-          <Link to="/login">Login</Link>
+          <Link to="/login">Log In</Link>
           <Link to="/register">Sing Up</Link>
         </div>
       ) : (
