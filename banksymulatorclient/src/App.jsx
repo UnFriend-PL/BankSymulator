@@ -12,18 +12,12 @@ import AdminSearch from "./Components/AdminSearchComponent/AdminSearch";
 import { useEffect, useState } from "react";
 import { getUserRole } from "./Services/TokenService";
 import { useUserContext } from "./Providers/UserProvider/UserProvider";
+import LoansModule from "./Modules/LoansModule/LoansModule";
 
 function App() {
   const [userRole, setUserRole] = useState();
   const { getUser, setUserData } = useUserContext();
-  const {
-    isLoginAsAdmin,
-    setIsLoginAsAdmin,
-    isSearchVisible,
-    setIsSearchVisible,
-    setAdminData,
-    getAdminToken,
-  } = useAdminContext();
+  const { setAdminData } = useAdminContext();
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -45,6 +39,7 @@ function App() {
           <Route path="/" element={<HomeModule />} />
           <Route path="/profile" element={<ProfileModule />} />
           <Route path="/applications" element={<ApplicationModule />} />
+          <Route path="/loans" element={<LoansModule />} />
         </Routes>
       </NotificationProvider>
     </Router>
