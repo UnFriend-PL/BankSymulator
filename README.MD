@@ -63,9 +63,9 @@ Insert a new record in the `AspNetUserRoles` table with the user's ID and the ad
 
 ## Admin Mode Activation Requires Page Refresh
 
-**Issue:** After registering as an admin, the admin privileges may not immediately reflect without refreshing the page.
+**Issue:** After logging as an admin, the admin privileges may not immediately reflect without refreshing the page.
 
-**Solution:** If you've registered as an admin but cannot access admin features, try refreshing the page. This action should update the user's role and grant admin privileges.
+**Solution:** If you've logged as an admin but cannot access admin features, try refreshing the page. This action should update the user's role and grant admin privileges.
 
 ### Work in Progress
 
