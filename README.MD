@@ -42,9 +42,9 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 License
 GNU GPLv3
 
-### How to use?
+# How to use?
 
-## User
+## As user
 
 Navigate to the client application running on http://localhost:5173/.
 Click on the "Register" button on navbar.
@@ -52,7 +52,7 @@ Fill in the registration form with your details. This typically includes fields 
 Click on the "Register" button to submit the form.
 Now you can log in and use application as user.
 
-## As Admin
+## As admin
 
 Register a user following the normal registration process.
 Identify the user's ID in the `AspNetUsers` table.
