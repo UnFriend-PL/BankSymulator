@@ -54,6 +54,20 @@ namespace BankSymulatorApi.Controllers
             return Ok(applications);
         }
 
+        [HttpGet("Applications/{status}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetApplicationsAsync(string status)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return BadRequest(new { Message = "User not found." });
+            }
+            var applications = await _applicationervice.GetApplicationsByUserIdAsync(userId, status);
+            return Ok(applications);
+        }
+
+
         [HttpPatch("AcceptApplication/{applicationId}/{isAccepted}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AcceptApplicationAsync(string applicationId, bool isAccepted)

@@ -9,6 +9,7 @@ using System.Text;
 using BankSymulatorApi.Models;
 using BankSymulatorApi.Services;
 using Microsoft.OpenApi.Models;
+using BankSymulatorApi.Services.LoanService;
 namespace BankSymulatorApi
 {
     public class Program
@@ -93,6 +94,7 @@ namespace BankSymulatorApi
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IApplicationService, ApplicationService>();
             services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<ILoanService, LoanService>();    
             services.AddHttpClient();
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())
@@ -126,9 +128,10 @@ namespace BankSymulatorApi
 
                 app.MapControllers();
 
-                app.Run();
-            }
+                await app.RunAsync();
 
         }
+
+    }
     
 }

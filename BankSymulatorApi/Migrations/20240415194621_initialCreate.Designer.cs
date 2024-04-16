@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankSymulatorApi.Migrations
 {
     [DbContext(typeof(BankDbContext))]
-    [Migration("20240323115528_initialCreate")]
+    [Migration("20240415194621_initialCreate")]
     partial class initialCreate
     {
         /// <inheritdoc />
@@ -215,6 +215,94 @@ namespace BankSymulatorApi.Migrations
                     b.HasIndex("AccountNumber");
 
                     b.ToTable("Deposits");
+                });
+
+            modelBuilder.Entity("BankSymulatorApi.Models.Loans.Installment", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<float>("InstallmentAmount")
+                        .HasColumnType("real");
+
+                    b.Property<DateTime>("InstallmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LoanId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LoanId");
+
+                    b.ToTable("Installments");
+                });
+
+            modelBuilder.Entity("BankSymulatorApi.Models.Loans.Loan", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccountNumberToRepayment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccountNumberToTransfer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("InterestRate")
+                        .HasColumnType("real");
+
+                    b.Property<DateTime>("LoanEndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LoanStartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LoanType")
+                        .HasColumnType("int");
+
+                    b.Property<float>("MonthlyInstallment")
+                        .HasColumnType("real");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("RemainingAmount")
+                        .HasColumnType("real");
+
+                    b.Property<float>("TotalAmountOfLoan")
+                        .HasColumnType("real");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountNumberToRepayment");
+
+                    b.HasIndex("AccountNumberToTransfer");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Loans");
                 });
 
             modelBuilder.Entity("BankSymulatorApi.Models.Transfer", b =>
@@ -539,6 +627,37 @@ namespace BankSymulatorApi.Migrations
                     b.HasDiscriminator().HasValue("JointAccountApplication");
                 });
 
+            modelBuilder.Entity("BankSymulatorApi.Models.Loans.LoanApplication", b =>
+                {
+                    b.HasBaseType("BankSymulatorApi.Models.Application");
+
+                    b.Property<string>("AccountNumberToTransfer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AccountToTransferAccountNumber")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<float>("InterestRate")
+                        .HasColumnType("real");
+
+                    b.Property<DateTime>("LoanEndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LoanStartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<float>("MonthlyInstallment")
+                        .HasColumnType("real");
+
+                    b.Property<float>("TotalAmountOfLoan")
+                        .HasColumnType("real");
+
+                    b.HasIndex("AccountToTransferAccountNumber");
+
+                    b.HasDiscriminator().HasValue("LoanApplication");
+                });
+
             modelBuilder.Entity("BankSymulatorApi.Models.Account", b =>
                 {
                     b.HasOne("BankSymulatorApi.Models.User", "JointOwner")
@@ -596,6 +715,46 @@ namespace BankSymulatorApi.Migrations
                         .IsRequired();
 
                     b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("BankSymulatorApi.Models.Loans.Installment", b =>
+                {
+                    b.HasOne("BankSymulatorApi.Models.Loans.Loan", "Loan")
+                        .WithMany("Installments")
+                        .HasForeignKey("LoanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Loan");
+                });
+
+            modelBuilder.Entity("BankSymulatorApi.Models.Loans.Loan", b =>
+                {
+                    b.HasOne("BankSymulatorApi.Models.Account", "AccountToRepayment")
+                        .WithMany("LoansToRepayment")
+                        .HasForeignKey("AccountNumberToRepayment")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Loan_AccountToRepayment");
+
+                    b.HasOne("BankSymulatorApi.Models.Account", "AccountToTransfer")
+                        .WithMany("LoansToTransfer")
+                        .HasForeignKey("AccountNumberToTransfer")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Loan_AccountToTransfer");
+
+                    b.HasOne("BankSymulatorApi.Models.User", "User")
+                        .WithMany("Loans")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AccountToRepayment");
+
+                    b.Navigation("AccountToTransfer");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BankSymulatorApi.Models.Transfer", b =>
@@ -698,6 +857,15 @@ namespace BankSymulatorApi.Migrations
                     b.Navigation("JointInquirer");
                 });
 
+            modelBuilder.Entity("BankSymulatorApi.Models.Loans.LoanApplication", b =>
+                {
+                    b.HasOne("BankSymulatorApi.Models.Account", "AccountToTransfer")
+                        .WithMany()
+                        .HasForeignKey("AccountToTransferAccountNumber");
+
+                    b.Navigation("AccountToTransfer");
+                });
+
             modelBuilder.Entity("BankSymulatorApi.Models.Account", b =>
                 {
                     b.Navigation("Contributors");
@@ -706,9 +874,18 @@ namespace BankSymulatorApi.Migrations
 
                     b.Navigation("FromTransfers");
 
+                    b.Navigation("LoansToRepayment");
+
+                    b.Navigation("LoansToTransfer");
+
                     b.Navigation("ToTransfers");
 
                     b.Navigation("Withdraws");
+                });
+
+            modelBuilder.Entity("BankSymulatorApi.Models.Loans.Loan", b =>
+                {
+                    b.Navigation("Installments");
                 });
 
             modelBuilder.Entity("BankSymulatorApi.Models.User", b =>
@@ -724,6 +901,8 @@ namespace BankSymulatorApi.Migrations
                     b.Navigation("JointInquirerApplications");
 
                     b.Navigation("JointOwnedAccounts");
+
+                    b.Navigation("Loans");
                 });
 #pragma warning restore 612, 618
         }

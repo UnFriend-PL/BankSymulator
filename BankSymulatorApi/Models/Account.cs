@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BankSymulatorApi.Models.Loans;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BankSymulatorApi.Models
@@ -22,6 +23,8 @@ namespace BankSymulatorApi.Models
         public bool isArchived { get; set; } = false;
         public string Currency { get; set; } = "PLN";
         public bool isJointAccount { get; set; } = false;
+        public List<Loan> LoansToTransfer { get; set; }
+        public List<Loan> LoansToRepayment { get; set; }
         public List<Deposit> Deposits { get; set; }
         public List<Withdraw> Withdraws { get; set; }
         public List<Transfer> FromTransfers { get; set; }

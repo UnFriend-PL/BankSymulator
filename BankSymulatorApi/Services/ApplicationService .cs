@@ -1,6 +1,7 @@
 ﻿using BankSymulatorApi.Database;
 using BankSymulatorApi.Models;
 using BankSymulatorApi.Models.DTO;
+using BankSymulatorApi.Models.Loans;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankSymulatorApi.Services
@@ -101,6 +102,8 @@ namespace BankSymulatorApi.Services
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
+
+
         private async Task<List<JointApplicationsDto>> FormatJointApplicationResponseList(List<JointAccountApplication> jointApplications)
         {
             List<JointApplicationsDto> result = new List<JointApplicationsDto>();
@@ -156,6 +159,32 @@ namespace BankSymulatorApi.Services
             var archiveApplications = await _context.JointAccountApplications.Where(a => a.Status == "Archived" && ( a.JointInquirerId == userId || a.JointApproverId == userId)).ToListAsync();
             var result = await FormatJointApplicationResponseList(archiveApplications);
             return result;
+        }
+
+
+        public async Task<ServiceResponse<List<Application>>> GetApplicationsByUserIdAsync(string userId, string status)
+        {
+            var serviceResponse = new ServiceResponse<List<Application>>();
+            List<LoanApplication> applications = new List<LoanApplication>();
+            switch (status)
+            {
+                case "Sent":
+                    applications = await  _context.loanApplications.Where(a => a.InquirerId == userId && a.Status == "Pending").ToListAsync();
+                    break;
+                case "Pending":
+                    applications = await _context.loanApplications.Where(a => a.ApproverId == userId && a.Status == "Pending").ToListAsync();
+                    break;
+                case "Archived":
+                    applications = await _context.loanApplications.Where(a => a.Status == "Archived" && (a.InquirerId == userId || a.ApproverId == userId)).ToListAsync();
+                    break;
+                default:
+                    serviceResponse.Success = false;
+                    serviceResponse.Errors = new[] { "Invalid status provided." };
+                    return serviceResponse;
+            }
+           serviceResponse.Data = applications.Select(x => (Application)x).ToList();
+            return serviceResponse;
+
         }
 
         public async Task<ServiceResponse<List<JointApplicationsDto>>> GetJointAccountApplicationsByUserIdAsync(string userId, string status)

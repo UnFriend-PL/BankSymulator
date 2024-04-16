@@ -47,6 +47,8 @@ export default function ApplicationModule() {
   return (
     <div className="applicationWrapper">
       <div className="applicationWrapper__applications">
+        <button>Loans</button>
+        <button>Accounts</button>
         <div className="applicationWrapper__applications__button">
           <button
             disabled={fetchStatus === "Pending"}

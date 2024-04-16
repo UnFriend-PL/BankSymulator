@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BankSymulatorApi.Models;
-using System.Security.Cryptography.Xml;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using BankSymulatorApi.Models.Loans;
 
 namespace BankSymulatorApi.Database
 {
@@ -53,6 +53,20 @@ namespace BankSymulatorApi.Database
             .Property(t => t.TransferId)
             .ValueGeneratedOnAdd()
             .IsRequired();
+
+            modelBuilder.Entity<Loan>()
+            .HasKey(l => l.Id);
+            modelBuilder.Entity<Loan>()
+                .Property(l => l.Id)
+                .ValueGeneratedOnAdd()
+                .IsRequired();
+
+            modelBuilder.Entity<Installment>()
+            .HasKey(i => i.Id);
+            modelBuilder.Entity<Installment>()
+                .Property(i => i.Id)
+                .ValueGeneratedOnAdd()
+                .IsRequired();
 
             // --------- relationships ------------
             modelBuilder.Entity<Account>()
@@ -133,6 +147,42 @@ namespace BankSymulatorApi.Database
                 .WithMany(b => b.JointInquirerApplications)
                 .HasForeignKey(t => t.JointInquirerId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Loans)
+                .WithOne(l => l.User)
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Loan>()
+                .HasOne(l => l.User) // Relacja z użytkownikiem
+                .WithMany(u => u.Loans) // Użytkownik może mieć wiele pożyczek
+                .HasForeignKey(l => l.UserId);
+
+            modelBuilder.Entity<Loan>()
+            .HasOne(l => l.AccountToTransfer)
+            .WithMany(a => a.LoansToTransfer)
+            .HasForeignKey(l => l.AccountNumberToTransfer)
+            .HasConstraintName("FK_Loan_AccountToTransfer")
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Loan>()
+                .HasOne(l => l.AccountToRepayment)
+                .WithMany(a => a.LoansToRepayment)
+                .HasForeignKey(l => l.AccountNumberToRepayment)
+                .HasConstraintName("FK_Loan_AccountToRepayment")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Installment>()
+                .HasOne(i => i.Loan)
+                .WithMany(l => l.Installments)
+                .HasForeignKey(i => i.LoanId);
+
+            modelBuilder.Entity<LoanApplication>()
+                .HasOne(la => la.AccountToTransfer);
+            modelBuilder.Entity<LoanApplication>()
+                .HasOne(la => la.AccountToRepayment);
         }
         public DbSet<User> Users { get; set; }
         public DbSet<IdentityRole> IdentityRoles { get; set; }
@@ -142,6 +192,8 @@ namespace BankSymulatorApi.Database
         public DbSet<Contributor> Contributors => Set<Contributor>();
         public DbSet<Withdraw> Withdraws => Set<Withdraw>();
         public DbSet<JointAccountApplication> JointAccountApplications => Set<JointAccountApplication>();
-    }
+        public DbSet<LoanApplication> loanApplications => Set<LoanApplication>();
+        public DbSet<Loan> Loans => Set<Loan>();    
+        public DbSet<Installment> Installments => Set<Installment>();   }
 
 }

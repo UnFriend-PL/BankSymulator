@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BankSymulatorApi.Models.Loans;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BankSymulatorApi.Models
@@ -10,6 +11,7 @@ namespace BankSymulatorApi.Models
         public DateTime BirthDate { get; set; }
         public string Address { get; set; }
         public string Pesel { get; set; }
+        public ICollection<Loan> Loans { get; set; } = new List<Loan>();
         public ICollection<Account> Accounts { get; set; } = new List<Account>();
         [InverseProperty("JointOwner")]
         public ICollection<Account> JointOwnedAccounts { get; set; } = new List<Account>();
@@ -24,6 +26,8 @@ namespace BankSymulatorApi.Models
 
         [InverseProperty("JointInquirer")]
         public ICollection<JointAccountApplication> JointInquirerApplications { get; set; } = new List<JointAccountApplication>();
+
+
     }
 
 }
