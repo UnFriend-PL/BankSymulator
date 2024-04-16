@@ -58,3 +58,15 @@ Register a user following the normal registration process.
 Identify the user's ID in the `AspNetUsers` table.
 Identify the admin role ID in the `AspNetRoles` table. The role name is typically "Admin".
 Insert a new record in the `AspNetUserRoles` table with the user's ID and the admin role ID.
+
+# Known Issues
+
+## Admin Mode Activation Requires Page Refresh
+
+**Issue:** After registering as an admin, the admin privileges may not immediately reflect without refreshing the page.
+
+**Solution:** If you've registered as an admin but cannot access admin features, try refreshing the page. This action should update the user's role and grant admin privileges.
+
+### Work in Progress
+
+I am actively working on addressing any known issues and improving the application's functionality. If you encounter any problems or have suggestions for improvement, please feel free to reach out or monitor the project's repository for updates.
