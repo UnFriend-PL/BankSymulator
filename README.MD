@@ -41,3 +41,20 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 License
 GNU GPLv3
+
+### How to use?
+
+## User
+
+Navigate to the client application running on http://localhost:5173/.
+Click on the "Register" button on navbar.
+Fill in the registration form with your details. This typically includes fields like username, email, and password.
+Click on the "Register" button to submit the form.
+Now you can log in and use application as user.
+
+## As Admin
+
+Register a user following the normal registration process.
+Identify the user's ID in the `AspNetUsers` table.
+Identify the admin role ID in the `AspNetRoles` table. The role name is typically "Admin".
+Insert a new record in the `AspNetUserRoles` table with the user's ID and the admin role ID.
