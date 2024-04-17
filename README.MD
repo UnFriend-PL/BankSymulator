@@ -16,6 +16,8 @@ dotnet ef database update
 
 This is the backend of the application, built with .NET. It contains the main logic for the bank simulator.
 
+Before running the application, ensure the database connection string is set up in appsetting.json file
+
 To run the API, navigate to the `BankSymulatorApi` directory and run:
 
 ```sh
@@ -27,6 +29,8 @@ The API will start on https://localhost:44397/.
 ## Banksymulatorclient
 
 This is the frontend of the application, built with React and Vite.
+
+Navigate to the vite.config.js file and ensure that the connection variable 'server' is correctly configured. 
 
 To run the client, navigate to the banksymulatorclient directory and run:
 
