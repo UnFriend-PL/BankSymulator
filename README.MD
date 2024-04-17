@@ -2,6 +2,20 @@
 
 This project consists of two main parts: the API and the client.
 
+## BankSymulatorApi
+
+This is the backend of the application, built with .NET. It contains the main logic for the bank simulator.
+
+Before the first running application, ensure the database connection string is set up in appsetting.json file and then go to the 'database setup' step before running the application.
+
+To run the API, navigate to the `BankSymulatorApi` directory and run:
+
+```sh
+dotnet run
+```
+
+The API will start on https://localhost:44397/.
+
 ## Database Setup
 
 This application uses Entity Framework Core for data access. Before running the application, you need to create the database.
@@ -11,20 +25,6 @@ Navigate to the `BankSymulatorApi` directory and run the following command:
 ```sh
 dotnet ef database update
 ```
-
-## BankSymulatorApi
-
-This is the backend of the application, built with .NET. It contains the main logic for the bank simulator.
-
-Before running the application, ensure the database connection string is set up in appsetting.json file
-
-To run the API, navigate to the `BankSymulatorApi` directory and run:
-
-```sh
-dotnet run
-```
-
-The API will start on https://localhost:44397/.
 
 ## Banksymulatorclient
 
