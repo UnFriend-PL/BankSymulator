@@ -42,7 +42,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 License
 GNU GPLv3
 
-### How to use?
+# How to use?
 
 ## User
 
@@ -58,3 +58,35 @@ Register a user following the normal registration process.
 Identify the user's ID in the `AspNetUsers` table.
 Identify the admin role ID in the `AspNetRoles` table. The role name is typically "Admin".
 Insert a new record in the `AspNetUserRoles` table with the user's ID and the admin role ID.
+
+## Screenshots
+
+Here are some screenshots of the application:
+
+### Login Page
+
+![Login Page](./screenshots/login.png)
+
+### Accounts Page
+
+![Accounts Page](./screenshots/accounts.png)
+
+## History view
+
+![History Page](./screenshots/history.png)
+
+### Profile Page
+
+![Profile Page](./screenshots/profile.png)
+
+### Applications Page
+
+![Applications Page](./screenshots/applications.png)
+
+### Admin Page
+
+![Admin Page](./screenshots/adminSearch.png)
+
+### Admin View
+
+![Admin View](./screenshots/adminView.png)

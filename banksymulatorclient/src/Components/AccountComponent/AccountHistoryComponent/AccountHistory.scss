@@ -60,10 +60,10 @@
     &__kindOfTransfer {
       font-weight: bold;
       flex-basis: 8%;
-      &.Income {
+      &.Incoming {
         color: $succesColor;
       }
-      &.Outcome {
+      &.Outcoming {
         color: $errorColor;
       }
     }

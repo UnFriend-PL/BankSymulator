@@ -89,7 +89,7 @@ export default function AccountHistory({ accountNumber, currency, refresh }) {
           </div>
           {history.map((item, index) => {
             let kindOfTransfer =
-              item.toAccountNumber === accountNumber ? "Income" : "Outcome";
+              item.toAccountNumber === accountNumber ? "Incoming" : "Outcoming";
             return (
               <div key={index} className="accountHistory__item">
                 <div
@@ -98,8 +98,8 @@ export default function AccountHistory({ accountNumber, currency, refresh }) {
                   {kindOfTransfer}
                 </div>
                 <div className="accountHistory__item__amount">
-                  {kindOfTransfer == "Income" ? "+" : "-"}
-                  {kindOfTransfer == "Income"
+                  {kindOfTransfer == "Incoming" ? "+" : "-"}
+                  {kindOfTransfer == "Incoming"
                     ? addThousandsSeparator(item.transferAmount.toFixed(2))
                     : addThousandsSeparator(
                         item.sourceCurrencyTransferAmount.toFixed(2)
@@ -110,7 +110,7 @@ export default function AccountHistory({ accountNumber, currency, refresh }) {
                   {item.message}
                 </div>
                 <div className="accountHistory__item__counterparty">
-                  {kindOfTransfer == "Income"
+                  {kindOfTransfer == "Incoming"
                     ? item.fromAccountNumber
                     : item.toAccountNumber}
                 </div>
