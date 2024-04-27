@@ -12,6 +12,7 @@
         public DateTime LoanEndDate { get; set; }
         public float InterestRate { get; set; }
         public float MonthlyInstallment { get; set; }
+        public string Name { get; set; }
         public string Currency { get; set; }
 
     }

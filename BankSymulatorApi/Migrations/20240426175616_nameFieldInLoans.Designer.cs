@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankSymulatorApi.Migrations
 {
     [DbContext(typeof(BankDbContext))]
-    [Migration("20240415195641_LoanApplicationModified")]
-    partial class LoanApplicationModified
+    [Migration("20240426175616_nameFieldInLoans")]
+    partial class nameFieldInLoans
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -663,6 +663,10 @@ namespace BankSymulatorApi.Migrations
 
                     b.Property<float>("MonthlyInstallment")
                         .HasColumnType("real");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("TotalAmountOfLoan")
                         .HasColumnType("real");

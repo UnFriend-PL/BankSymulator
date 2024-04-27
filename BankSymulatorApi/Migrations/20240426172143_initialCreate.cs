@@ -221,14 +221,23 @@ namespace BankSymulatorApi.Migrations
                     TotalAmountOfLoan = table.Column<float>(type: "real", nullable: true),
                     AccountToTransferAccountNumber = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     AccountNumberToTransfer = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AccountToRepaymentAccountNumber = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    AccountNumberToRepayment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LoanType = table.Column<int>(type: "int", nullable: true),
                     LoanStartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LoanEndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     InterestRate = table.Column<float>(type: "real", nullable: true),
-                    MonthlyInstallment = table.Column<float>(type: "real", nullable: true)
+                    MonthlyInstallment = table.Column<float>(type: "real", nullable: true),
+                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Application", x => x.ApplicationId);
+                    table.ForeignKey(
+                        name: "FK_Application_Accounts_AccountToRepaymentAccountNumber",
+                        column: x => x.AccountToRepaymentAccountNumber,
+                        principalTable: "Accounts",
+                        principalColumn: "AccountNumber");
                     table.ForeignKey(
                         name: "FK_Application_Accounts_AccountToTransferAccountNumber",
                         column: x => x.AccountToTransferAccountNumber,
@@ -433,6 +442,11 @@ namespace BankSymulatorApi.Migrations
                 name: "IX_Accounts_OwnerId",
                 table: "Accounts",
                 column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Application_AccountToRepaymentAccountNumber",
+                table: "Application",
+                column: "AccountToRepaymentAccountNumber");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Application_AccountToTransferAccountNumber",

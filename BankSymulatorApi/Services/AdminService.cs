@@ -37,7 +37,7 @@ namespace BankSymulatorApi.Services
             return result;
         }
 
-        public async Task<ServiceResponse<bool>> CreateJointAccountApplicationAsync(string userId, JointAccountApplicationDto model)
+        public async Task<ServiceResponse<bool>> CreateJointAccountApplicationAsync(string userId, JointAccountApplicationRquestDto model)
         {
             var user = await _userManager.FindByIdAsync(userId);
             var result = await _applicationService.CreateJointAccountApplicationAsync(user, model);
@@ -57,7 +57,7 @@ namespace BankSymulatorApi.Services
             return result;
         }
 
-        public async Task<ServiceResponse<List<JointApplicationsDto>>> GetUserApplications(string userId, string status)
+        public async Task<ServiceResponse<List<JointApplicationResponseDto>>> GetUserApplications(string userId, string status)
         {
            var result = await _applicationService.GetJointAccountApplicationsByUserIdAsync(userId, status);
             return result;

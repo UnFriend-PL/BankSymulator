@@ -185,7 +185,7 @@ namespace BankSymulatorApi.Database
                 .HasOne(la => la.AccountToRepayment);
         }
         public DbSet<User> Users { get; set; }
-        public DbSet<IdentityRole> IdentityRoles { get; set; }
+        public DbSet<IdentityRole> IdentityRoles => Set<IdentityRole>();
         public DbSet<Account> Accounts => Set<Account>();
         public DbSet<Transfer> Transfers => Set<Transfer>();
         public DbSet<Deposit> Deposits => Set<Deposit>();

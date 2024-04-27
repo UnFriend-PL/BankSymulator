@@ -8,10 +8,10 @@ namespace BankSymulatorApi.Services
     {
         public Task<ServiceResponse<UserDto>> GetUserInfo(string user);
         public Task<ServiceResponse<List<AccountDto>>> GetUserAccounts(string userId);
-        public Task<ServiceResponse<List<JointApplicationsDto>>> GetUserApplications(string userId, string status);
+        public Task<ServiceResponse<List<JointApplicationResponseDto>>> GetUserApplications(string userId, string status);
         public Task<ServiceResponse<bool>> EditUserDataAsync(EditUserDto model, string userId);
         public Task<ServiceResponse<bool>> CreateAdditionalAccountAsync( NewAccountDto model, string userId);
-        public Task<ServiceResponse<bool>> CreateJointAccountApplicationAsync(string userId, JointAccountApplicationDto model);
+        public Task<ServiceResponse<bool>> CreateJointAccountApplicationAsync(string userId, JointAccountApplicationRquestDto model);
 
     }
 }

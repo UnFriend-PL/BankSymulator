@@ -23,7 +23,7 @@ namespace BankSymulatorApi.Controllers
 
         [HttpPost("JointAccount")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> ApplicationForJointAccountApplicationAsync([FromBody] JointAccountApplicationDto model)
+        public async Task<IActionResult> ApplicationForJointAccountApplicationAsync([FromBody] JointAccountApplicationRquestDto model)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);

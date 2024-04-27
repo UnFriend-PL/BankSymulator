@@ -20,7 +20,6 @@ namespace BankSymulatorApi
 
             var services = builder.Services;
 
-
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -94,7 +93,7 @@ namespace BankSymulatorApi
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IApplicationService, ApplicationService>();
             services.AddScoped<IAdminService, AdminService>();
-            services.AddScoped<ILoanService, LoanService>();    
+            services.AddScoped<ILoanService, LoanService>();
             services.AddHttpClient();
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())

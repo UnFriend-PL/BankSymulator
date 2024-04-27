@@ -1,6 +1,6 @@
 ﻿namespace BankSymulatorApi.Models.DTO
 {
-    public class JointAccountApplicationDto
+    public class JointAccountApplicationRquestDto
     {
         public NewAccountDto AccountDetail { get; set; }
         public string JointEmail { get; set;}

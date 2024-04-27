@@ -1,5 +1,5 @@
 ﻿using BankSymulatorApi.Models;
-using BankSymulatorApi.Models.DTO.LoanDtos;
+using BankSymulatorApi.Models.DTO.Applications.LoanDtos;
 using BankSymulatorApi.Models.Loans;
 using BankSymulatorApi.Services;
 using BankSymulatorApi.Services.LoanService;
@@ -25,7 +25,7 @@ namespace BankSymulatorApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("apply")]
-        public async Task<ActionResult<Loan>> ApplyForLoan([FromBody] LoanDto loanRequest)
+        public async Task<ActionResult<Loan>> ApplyForLoan([FromBody] LoanRequestDto loanRequest)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)

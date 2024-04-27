@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankSymulatorApi.Migrations
 {
     [DbContext(typeof(BankDbContext))]
-    [Migration("20240415194621_initialCreate")]
+    [Migration("20240426172143_initialCreate")]
     partial class initialCreate
     {
         /// <inheritdoc />
@@ -631,12 +631,23 @@ namespace BankSymulatorApi.Migrations
                 {
                     b.HasBaseType("BankSymulatorApi.Models.Application");
 
+                    b.Property<string>("AccountNumberToRepayment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("AccountNumberToTransfer")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("AccountToRepaymentAccountNumber")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("AccountToTransferAccountNumber")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("InterestRate")
                         .HasColumnType("real");
@@ -647,11 +658,16 @@ namespace BankSymulatorApi.Migrations
                     b.Property<DateTime>("LoanStartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("LoanType")
+                        .HasColumnType("int");
+
                     b.Property<float>("MonthlyInstallment")
                         .HasColumnType("real");
 
                     b.Property<float>("TotalAmountOfLoan")
                         .HasColumnType("real");
+
+                    b.HasIndex("AccountToRepaymentAccountNumber");
 
                     b.HasIndex("AccountToTransferAccountNumber");
 
@@ -859,9 +875,15 @@ namespace BankSymulatorApi.Migrations
 
             modelBuilder.Entity("BankSymulatorApi.Models.Loans.LoanApplication", b =>
                 {
+                    b.HasOne("BankSymulatorApi.Models.Account", "AccountToRepayment")
+                        .WithMany()
+                        .HasForeignKey("AccountToRepaymentAccountNumber");
+
                     b.HasOne("BankSymulatorApi.Models.Account", "AccountToTransfer")
                         .WithMany()
                         .HasForeignKey("AccountToTransferAccountNumber");
+
+                    b.Navigation("AccountToRepayment");
 
                     b.Navigation("AccountToTransfer");
                 });

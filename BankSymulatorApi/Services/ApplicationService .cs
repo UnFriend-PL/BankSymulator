@@ -1,6 +1,8 @@
 ﻿using BankSymulatorApi.Database;
 using BankSymulatorApi.Models;
 using BankSymulatorApi.Models.DTO;
+using BankSymulatorApi.Models.DTO.Applications;
+using BankSymulatorApi.Models.DTO.Applications.LoanDtos;
 using BankSymulatorApi.Models.Loans;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +16,7 @@ namespace BankSymulatorApi.Services
             _context = context;
         }
 
-        public async Task<ServiceResponse<bool>> CreateJointAccountApplicationAsync(User user, JointAccountApplicationDto model)
+        public async Task<ServiceResponse<bool>> CreateJointAccountApplicationAsync(User user, JointAccountApplicationRquestDto model)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -88,7 +90,7 @@ namespace BankSymulatorApi.Services
                 }
                 catch (Exception ex)
                 {
-                    await transaction.RollbackAsync(); 
+                    await transaction.RollbackAsync();
                     return new ServiceResponse<bool>
                     {
                         Success = false,
@@ -104,14 +106,14 @@ namespace BankSymulatorApi.Services
         }
 
 
-        private async Task<List<JointApplicationsDto>> FormatJointApplicationResponseList(List<JointAccountApplication> jointApplications)
+        private async Task<List<JointApplicationResponseDto>> FormatJointApplicationResponseList(List<JointAccountApplication> jointApplications)
         {
-            List<JointApplicationsDto> result = new List<JointApplicationsDto>();
+            List<JointApplicationResponseDto> result = new List<JointApplicationResponseDto>();
             foreach (var application in jointApplications)
             {
                 var approver = await GetUserAsync(application.JointApproverId);
                 var inquirer = await GetUserAsync(application.JointInquirerId);
-                var jointApplication = new JointApplicationsDto
+                var jointApplication = new JointApplicationResponseDto
                 {
                     ApplicationId = application.ApplicationId,
                     AccountNumber = application.AccountNumber,
@@ -138,70 +140,96 @@ namespace BankSymulatorApi.Services
                 result.Add(jointApplication);
             }
             return result;
-            }
+        }
 
-        private async Task<List<JointApplicationsDto>> GetSentApplicationsAsync(string userId)
+        private async Task<List<JointApplicationResponseDto>> GetSentJointApplicationsAsync(string userId)
         {
             var sentApplications = await _context.JointAccountApplications.Where(a => a.JointInquirerId == userId && a.Status == "Pending").ToListAsync();
             var result = await FormatJointApplicationResponseList(sentApplications);
             return result;
         }
 
-        private async Task<List<JointApplicationsDto>> GetPendingApplicationsAsync(string userId)
+        private async Task<List<JointApplicationResponseDto>> GetPendingJointApplicationsAsync(string userId)
         {
             var pendingApplications = await _context.JointAccountApplications.Where(a => a.JointApproverId == userId && a.Status == "Pending").ToListAsync();
             var result = await FormatJointApplicationResponseList(pendingApplications);
             return result;
         }
 
-        private async Task<List<JointApplicationsDto>> GetArchiveApplicationsAsync(string userId)
+        private async Task<List<JointApplicationResponseDto>> GetArchivedJointApplicationsAsync(string userId)
         {
-            var archiveApplications = await _context.JointAccountApplications.Where(a => a.Status == "Archived" && ( a.JointInquirerId == userId || a.JointApproverId == userId)).ToListAsync();
+            var archiveApplications = await _context.JointAccountApplications.Where(a => a.Status == "Archived" && (a.JointInquirerId == userId || a.JointApproverId == userId)).ToListAsync();
             var result = await FormatJointApplicationResponseList(archiveApplications);
             return result;
         }
 
-
-        public async Task<ServiceResponse<List<Application>>> GetApplicationsByUserIdAsync(string userId, string status)
+        private async Task<List<LoanApplicationResponseDto>> GetArchivedLoanApplicationsAsync(string userId)
         {
-            var serviceResponse = new ServiceResponse<List<Application>>();
-            List<LoanApplication> applications = new List<LoanApplication>();
+            var archiveApplications = await _context.loanApplications
+                        .Where(a => a.InquirerId == userId && a.Status == "Archived")
+                        .Select(x => new LoanApplicationResponseDto(x))
+                        .ToListAsync();
+            return archiveApplications;
+        }
+        private async Task<List<LoanApplicationResponseDto>> GetPendingLoanApplicationsAsync(string userId)
+        {
+            var archiveApplications = await _context.loanApplications
+                        .Where(a => a.InquirerId == userId && a.Status == "Pending")
+                        .Select(x => new LoanApplicationResponseDto(x))
+                        .ToListAsync();
+            return archiveApplications;
+        }
+        private async Task<List<LoanApplicationResponseDto>> GeSentLoanApplicationsAsync(string userId)
+        {
+            var archiveApplications = await _context.loanApplications
+                        .Where(a => a.InquirerId == userId && a.Status == "Sent")
+                        .Select(x => new LoanApplicationResponseDto(x))
+                        .ToListAsync();
+            return archiveApplications;
+        }
+        public async Task<ServiceResponse<ApplicationsResponseDto>> GetApplicationsByUserIdAsync(string userId, string status)
+        {
+            var serviceResponse = new ServiceResponse<ApplicationsResponseDto>();
+            ApplicationsResponseDto applications = new ApplicationsResponseDto();
             switch (status)
             {
                 case "Sent":
-                    applications = await  _context.loanApplications.Where(a => a.InquirerId == userId && a.Status == "Pending").ToListAsync();
+                    applications.LoansApplications = await GeSentLoanApplicationsAsync(userId);
+                    applications.JointApplications = await GetSentJointApplicationsAsync(userId);
                     break;
                 case "Pending":
-                    applications = await _context.loanApplications.Where(a => a.ApproverId == userId && a.Status == "Pending").ToListAsync();
+                    applications.LoansApplications = await GetPendingLoanApplicationsAsync(userId);
+                    applications.JointApplications = await GetPendingJointApplicationsAsync(userId);
                     break;
                 case "Archived":
-                    applications = await _context.loanApplications.Where(a => a.Status == "Archived" && (a.InquirerId == userId || a.ApproverId == userId)).ToListAsync();
+                    applications.LoansApplications = await GetArchivedLoanApplicationsAsync(userId);
+                    applications.JointApplications = await GetArchivedJointApplicationsAsync(userId);
                     break;
                 default:
                     serviceResponse.Success = false;
                     serviceResponse.Errors = new[] { "Invalid status provided." };
                     return serviceResponse;
             }
-           serviceResponse.Data = applications.Select(x => (Application)x).ToList();
+            serviceResponse.Data = applications;
             return serviceResponse;
 
         }
 
-        public async Task<ServiceResponse<List<JointApplicationsDto>>> GetJointAccountApplicationsByUserIdAsync(string userId, string status)
+        public async Task<ServiceResponse<List<JointApplicationResponseDto>>> GetJointAccountApplicationsByUserIdAsync(string userId, string status)
         {
-            var serviceResponse = new ServiceResponse<List<JointApplicationsDto>>();
-            List<JointApplicationsDto> jointApplications = new List<JointApplicationsDto>();
+            var serviceResponse = new ServiceResponse<List<JointApplicationResponseDto>>();
+            List<JointApplicationResponseDto> jointApplications = new List<JointApplicationResponseDto>();
             switch (status)
             {
                 case "Sent":
-                    jointApplications = await GetSentApplicationsAsync(userId);
+                    jointApplications = await GetSentJointApplicationsAsync(userId);
 
                     break;
                 case "Pending":
-                    jointApplications = await GetPendingApplicationsAsync(userId);
+                    jointApplications = await GetPendingJointApplicationsAsync(userId);
                     break;
                 case "Archived":
-                    jointApplications = await GetArchiveApplicationsAsync(userId);
+                    jointApplications = await GetArchivedJointApplicationsAsync(userId);
                     break;
                 default:
                     serviceResponse.Success = false;
@@ -211,7 +239,7 @@ namespace BankSymulatorApi.Services
             if (jointApplications.Count == 0)
             {
                 serviceResponse.Success = true;
-                serviceResponse.Data = new List<JointApplicationsDto>();
+                serviceResponse.Data = new List<JointApplicationResponseDto>();
                 serviceResponse.Message = "Joint applications not founded.";
                 return serviceResponse;
 

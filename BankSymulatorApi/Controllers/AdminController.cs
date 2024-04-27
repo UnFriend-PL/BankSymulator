@@ -87,7 +87,7 @@ namespace BankSymulatorApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
         [HttpPost("Applications/JointApplications/{userId}")]
-        public async Task<IActionResult> CreateJointAccountApplication(string userId, [FromBody] JointAccountApplicationDto model)
+        public async Task<IActionResult> CreateJointAccountApplication(string userId, [FromBody] JointAccountApplicationRquestDto model)
         {
             var result = await _adminService.CreateJointAccountApplicationAsync(userId, model);
             if (result.Success)

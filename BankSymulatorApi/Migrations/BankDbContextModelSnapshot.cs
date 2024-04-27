@@ -661,6 +661,10 @@ namespace BankSymulatorApi.Migrations
                     b.Property<float>("MonthlyInstallment")
                         .HasColumnType("real");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<float>("TotalAmountOfLoan")
                         .HasColumnType("real");
 

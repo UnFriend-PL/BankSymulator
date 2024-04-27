@@ -1,5 +1,5 @@
 ﻿using BankSymulatorApi.Database;
-using BankSymulatorApi.Models.DTO.LoanDtos;
+using BankSymulatorApi.Models.DTO.Applications.LoanDtos;
 using BankSymulatorApi.Models.Loans;
 
 namespace BankSymulatorApi.Services.LoanService
@@ -11,7 +11,7 @@ namespace BankSymulatorApi.Services.LoanService
             _context = context;
         }
 
-        public async Task<ServiceResponse<string>> ApplyForLoan(LoanDto loanRequest, string userId)
+        public async Task<ServiceResponse<string>> ApplyForLoan(LoanRequestDto loanRequest, string userId)
         {
             var serviceResponse = new ServiceResponse<string>();
 
@@ -26,6 +26,7 @@ namespace BankSymulatorApi.Services.LoanService
                 ApproverId = userId,
                 InquirerId = userId,
                 Currency = loanRequest.Currency,
+                Name = loanRequest.Name,
                 Status = "Pending",
                 Subject = "Loan application",
                 Message = $"Loan application for {loanRequest.TotalAmountOfLoan} {loanRequest.Currency} has been submitted. Accept to sign an contract.",

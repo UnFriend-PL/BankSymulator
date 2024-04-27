@@ -1,9 +1,9 @@
 ﻿using BankSymulatorApi.Models.Loans;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BankSymulatorApi.Models.DTO.LoanDtos
+namespace BankSymulatorApi.Models.DTO.Applications.LoanDtos
 {
-    public class LoanDto
+    public class LoanRequestDto
     {
         public string Name { get; set; }
         public string Type { get; set; }
