@@ -8,7 +8,7 @@ namespace BankSymulatorApi.Models.DTO
         public string ApplicationId { get; set; }
         public string Message { get; set; }
         public string Subject { get; set; }
-        public string Status { get; set; }
+        public ApplicationStatus Status { get; set; }
 
         public DateTime SendTime { get; set; }
 

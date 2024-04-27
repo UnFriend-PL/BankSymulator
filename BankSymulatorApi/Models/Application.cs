@@ -24,7 +24,10 @@ namespace BankSymulatorApi.Models
         public string Subject { get; set; }
 
         [Required]
-        public string Status { get; set; }
+        public ApplicationStatus Status { get; set; }
+
+        [Required]
+        public ApplicationType Type { get; set; }
 
         public DateTime SendTime { get; set; }
 
@@ -46,5 +49,22 @@ namespace BankSymulatorApi.Models
         {
 
         }
+    }
+
+    public enum ApplicationStatus
+    {
+        Pending,
+        Sent,
+        Archived,
+        Accepted,
+        Rejected,
+        Expired
+    }
+    public enum ApplicationType
+    {
+        AccountApplication,
+        JointAccountApplication,
+        LoanApplication,
+        CreditCardApplication
     }
 }

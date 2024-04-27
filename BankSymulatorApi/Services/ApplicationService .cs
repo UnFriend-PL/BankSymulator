@@ -72,7 +72,7 @@ namespace BankSymulatorApi.Services
                         ApproverId = jointUser.Id,
                         JointApproverId = jointUser.Id,
                         SendTime = DateTime.Now,
-                        Status = "Pending",
+                        Status = ApplicationStatus.Pending,
                         Message = $"request for a joint account in {account.Currency} from {user.Name} {user.Surname}",
                         Subject = "Joint account application"
                     };
@@ -144,21 +144,21 @@ namespace BankSymulatorApi.Services
 
         private async Task<List<JointApplicationResponseDto>> GetSentJointApplicationsAsync(string userId)
         {
-            var sentApplications = await _context.JointAccountApplications.Where(a => a.JointInquirerId == userId && a.Status == "Pending").ToListAsync();
+            var sentApplications = await _context.JointAccountApplications.Where(a => a.JointInquirerId == userId && a.Status == ApplicationStatus.Sent).ToListAsync();
             var result = await FormatJointApplicationResponseList(sentApplications);
             return result;
         }
 
         private async Task<List<JointApplicationResponseDto>> GetPendingJointApplicationsAsync(string userId)
         {
-            var pendingApplications = await _context.JointAccountApplications.Where(a => a.JointApproverId == userId && a.Status == "Pending").ToListAsync();
+            var pendingApplications = await _context.JointAccountApplications.Where(a => a.JointApproverId == userId && a.Status == ApplicationStatus.Pending).ToListAsync();
             var result = await FormatJointApplicationResponseList(pendingApplications);
             return result;
         }
 
         private async Task<List<JointApplicationResponseDto>> GetArchivedJointApplicationsAsync(string userId)
         {
-            var archiveApplications = await _context.JointAccountApplications.Where(a => a.Status == "Archived" && (a.JointInquirerId == userId || a.JointApproverId == userId)).ToListAsync();
+            var archiveApplications = await _context.JointAccountApplications.Where(a => a.Status == ApplicationStatus.Archived && (a.JointInquirerId == userId || a.JointApproverId == userId)).ToListAsync();
             var result = await FormatJointApplicationResponseList(archiveApplications);
             return result;
         }
@@ -166,7 +166,7 @@ namespace BankSymulatorApi.Services
         private async Task<List<LoanApplicationResponseDto>> GetArchivedLoanApplicationsAsync(string userId)
         {
             var archiveApplications = await _context.loanApplications
-                        .Where(a => a.InquirerId == userId && a.Status == "Archived")
+                        .Where(a => a.InquirerId == userId && a.Status == ApplicationStatus.Archived)
                         .Select(x => new LoanApplicationResponseDto(x))
                         .ToListAsync();
             return archiveApplications;
@@ -174,7 +174,7 @@ namespace BankSymulatorApi.Services
         private async Task<List<LoanApplicationResponseDto>> GetPendingLoanApplicationsAsync(string userId)
         {
             var archiveApplications = await _context.loanApplications
-                        .Where(a => a.InquirerId == userId && a.Status == "Pending")
+                        .Where(a => a.InquirerId == userId && a.Status == ApplicationStatus.Pending)
                         .Select(x => new LoanApplicationResponseDto(x))
                         .ToListAsync();
             return archiveApplications;
@@ -182,7 +182,7 @@ namespace BankSymulatorApi.Services
         private async Task<List<LoanApplicationResponseDto>> GeSentLoanApplicationsAsync(string userId)
         {
             var archiveApplications = await _context.loanApplications
-                        .Where(a => a.InquirerId == userId && a.Status == "Sent")
+                        .Where(a => a.InquirerId == userId && a.Status == ApplicationStatus.Sent)
                         .Select(x => new LoanApplicationResponseDto(x))
                         .ToListAsync();
             return archiveApplications;
@@ -276,7 +276,7 @@ namespace BankSymulatorApi.Services
                         };
                     }
 
-                    application.Status = "Archived";
+                    application.Status = ApplicationStatus.Archived;
                     application.IsAccepted = isAccepted;
                     application.ReceiveTime = DateTime.Now;
 

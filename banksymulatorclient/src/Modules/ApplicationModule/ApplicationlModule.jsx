@@ -29,10 +29,10 @@ export default function ApplicationModule() {
     const fetchApplications = async () => {
       const endpoint =
         isLoginAsAdmin && searchedUser
-          ? `/api/Admin/Applications/JointApplications/${
+          ? `/api/Admin/Applications/Applications/${
               getSearchedUser() ? getSearchedUser().id : ""
             }/${fetchStatus}`
-          : `/api/Application/JointApplications/${fetchStatus}`;
+          : `/api/Application/Applications/${fetchStatus}`;
       const response = await apiService("get", endpoint, undefined, true);
       if (response.success === true) {
         setSentApplications(response.data);

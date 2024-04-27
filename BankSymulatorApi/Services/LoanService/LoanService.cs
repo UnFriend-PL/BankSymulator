@@ -1,4 +1,5 @@
 ﻿using BankSymulatorApi.Database;
+using BankSymulatorApi.Models;
 using BankSymulatorApi.Models.DTO.Applications.LoanDtos;
 using BankSymulatorApi.Models.Loans;
 
@@ -27,7 +28,7 @@ namespace BankSymulatorApi.Services.LoanService
                 InquirerId = userId,
                 Currency = loanRequest.Currency,
                 Name = loanRequest.Name,
-                Status = "Pending",
+                Status = ApplicationStatus.Pending,
                 Subject = "Loan application",
                 Message = $"Loan application for {loanRequest.TotalAmountOfLoan} {loanRequest.Currency} has been submitted. Accept to sign an contract.",
             };
