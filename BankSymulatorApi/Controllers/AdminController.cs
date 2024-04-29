@@ -46,7 +46,7 @@ namespace BankSymulatorApi.Controllers
         }
 
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
-        [HttpGet("Applications/JointApplications/{userId}/{status}")]
+        [HttpGet("Applications/Applications/{userId}/{status}")]
         public async Task<IActionResult> GetUserApplications(string userId, string status)
         {
             if (userId == null)

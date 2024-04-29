@@ -1,6 +1,7 @@
 ﻿using BankSymulatorApi.Database;
 using BankSymulatorApi.Models;
 using BankSymulatorApi.Models.DTO;
+using BankSymulatorApi.Models.DTO.Applications;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,9 +58,9 @@ namespace BankSymulatorApi.Services
             return result;
         }
 
-        public async Task<ServiceResponse<List<JointApplicationResponseDto>>> GetUserApplications(string userId, string status)
+        public async Task<ServiceResponse<ApplicationsResponseDto>> GetUserApplications(string userId, string status)
         {
-           var result = await _applicationService.GetJointAccountApplicationsByUserIdAsync(userId, status);
+           var result = await _applicationService.GetApplicationsByUserIdAsync(userId, status);
             return result;
         }
 
